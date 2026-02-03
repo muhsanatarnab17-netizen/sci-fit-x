@@ -50,12 +50,21 @@ export default function Landing() {
 
     setIsLoading(true);
 
-    const { error } = await signUp(signupEmail, signupPassword);
-    
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Please check your email to verify your account!");
+    try {
+      const { error } = await signUp(signupEmail, signupPassword);
+      
+      if (error) {
+        // Handle rate limit error specifically
+        if (error.message.includes("rate limit") || error.message.includes("too many")) {
+          toast.error("Too many signup attempts. Please wait a few minutes and try again.");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.success("Please check your email to verify your account!");
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred. Please try again.");
     }
     
     setIsLoading(false);
