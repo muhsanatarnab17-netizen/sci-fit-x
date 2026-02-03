@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import CameraCapture from "@/components/posture/CameraCapture";
 
 const POSTURE_QUESTIONS = [
   {
@@ -80,6 +82,9 @@ export default function Posture() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [score, setScore] = useState<number | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [cameraIssues, setCameraIssues] = useState<string[]>([]);
+  const [cameraRecommendations, setCameraRecommendations] = useState<string[]>([]);
+  const [analysisDetails, setAnalysisDetails] = useState<string | null>(null);
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -117,20 +122,38 @@ export default function Posture() {
     }
   };
 
-  const handleCameraAnalysis = async () => {
+  const handleCameraCapture = async (imageBase64: string) => {
     setIsAnalyzing(true);
-    // Simulate AI analysis
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const randomScore = Math.floor(Math.random() * 30) + 60; // 60-90
-    setScore(randomScore);
-    setIsAnalyzing(false);
-    setMode("results");
-
+    
     try {
-      await updateProfile.mutateAsync({ posture_score: randomScore });
-      toast.success("Camera analysis complete!");
+      const { data, error } = await supabase.functions.invoke("analyze-posture", {
+        body: { imageBase64 },
+      });
+
+      if (error) {
+        throw new Error(error.message || "Failed to analyze posture");
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const { score: analysisScore, issues, recommendations, details } = data;
+      
+      setScore(analysisScore);
+      setCameraIssues(issues || []);
+      setCameraRecommendations(recommendations || []);
+      setAnalysisDetails(details || null);
+      setMode("results");
+
+      // Save to profile
+      await updateProfile.mutateAsync({ posture_score: analysisScore });
+      toast.success("AI posture analysis complete!");
     } catch (error) {
-      toast.error("Failed to save analysis");
+      console.error("Posture analysis error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to analyze posture");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -369,48 +392,17 @@ export default function Posture() {
         {mode === "camera" && (
           <Card className="glass">
             <CardHeader>
-              <CardTitle>Camera Analysis</CardTitle>
+              <CardTitle>AI Camera Analysis</CardTitle>
               <CardDescription>
-                Position yourself in front of the camera for AI-powered posture analysis
+                Position yourself in front of the camera for real-time AI-powered posture analysis
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden">
-                {isAnalyzing ? (
-                  <div className="text-center">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-                    <p className="text-lg font-medium">Analyzing your posture...</p>
-                    <p className="text-sm text-muted-foreground">This may take a few seconds</p>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <Camera className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Camera preview will appear here</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Make sure you're in a well-lit area
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setMode("select")}>
-                  Cancel
-                </Button>
-                <Button onClick={handleCameraAnalysis} disabled={isAnalyzing}>
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="mr-2 h-4 w-4" />
-                      Start Analysis
-                    </>
-                  )}
-                </Button>
-              </div>
+            <CardContent>
+              <CameraCapture
+                onCapture={handleCameraCapture}
+                onCancel={() => setMode("select")}
+                isAnalyzing={isAnalyzing}
+              />
             </CardContent>
           </Card>
         )}
@@ -457,52 +449,65 @@ export default function Posture() {
               </CardContent>
             </Card>
 
-            {Object.keys(answers).length > 0 && (
-              <>
-                {/* Issues Found */}
-                {getIssues().length > 0 && (
-                  <Card className="glass border-destructive/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-destructive">
-                        <AlertCircle className="h-5 w-5" />
-                        Issues Detected
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {getIssues().map((issue, i) => (
-                          <li key={i} className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-destructive" />
-                            {issue}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                )}
+            {/* Show AI analysis details for camera mode */}
+            {analysisDetails && (
+              <Card className="glass border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    AI Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{analysisDetails}</p>
+                </CardContent>
+              </Card>
+            )}
 
-                {/* Recommendations */}
-                <Card className="glass border-accent/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-accent">
-                      <CheckCircle2 className="h-5 w-5" />
-                      Recommendations
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {getRecommendations().map((rec, i) => (
-                        <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-accent/5">
-                          <div className="p-1 rounded-full bg-accent/20 mt-0.5">
-                            <CheckCircle2 className="h-3 w-3 text-accent" />
-                          </div>
-                          {rec}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </>
+            {/* Issues from self-assessment or camera */}
+            {(Object.keys(answers).length > 0 ? getIssues().length > 0 : cameraIssues.length > 0) && (
+              <Card className="glass border-destructive/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="h-5 w-5" />
+                    Issues Detected
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {(Object.keys(answers).length > 0 ? getIssues() : cameraIssues).map((issue, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-destructive" />
+                        {issue}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Recommendations from self-assessment or camera */}
+            {(Object.keys(answers).length > 0 || cameraRecommendations.length > 0) && (
+              <Card className="glass border-accent/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-accent">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {(Object.keys(answers).length > 0 ? getRecommendations() : cameraRecommendations).map((rec, i) => (
+                      <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-accent/5">
+                        <div className="p-1 rounded-full bg-accent/20 mt-0.5">
+                          <CheckCircle2 className="h-3 w-3 text-accent" />
+                        </div>
+                        {rec}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             )}
 
             <Button
@@ -512,6 +517,9 @@ export default function Posture() {
                 setCurrentQuestion(0);
                 setAnswers({});
                 setScore(null);
+                setCameraIssues([]);
+                setCameraRecommendations([]);
+                setAnalysisDetails(null);
               }}
             >
               Take Another Assessment
