@@ -1,12 +1,14 @@
 import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
+import { usePostureHistory } from "@/hooks/usePostureHistory";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import {
   Target,
@@ -16,11 +18,17 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  History,
+  Dumbbell,
+  Lightbulb,
 } from "lucide-react";
 import { getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import CameraCapture from "@/components/posture/CameraCapture";
+import PostureHistory from "@/components/posture/PostureHistory";
+import ExerciseCard from "@/components/posture/ExerciseCard";
+import { getExercisesForIssues, getTipsForScore, type PostureTip } from "@/lib/posture-exercises";
 
 const POSTURE_QUESTIONS = [
   {
@@ -75,8 +83,17 @@ const POSTURE_QUESTIONS = [
   },
 ];
 
+const tipCategoryIcons: Record<string, typeof Lightbulb> = {
+  workspace: Target,
+  habit: CheckCircle2,
+  stretch: Dumbbell,
+  strength: Dumbbell,
+};
+
 export default function Posture() {
   const { profile, updateProfile } = useProfile();
+  const { saveAssessment } = usePostureHistory();
+  const [activeTab, setActiveTab] = useState<"assess" | "history">("assess");
   const [mode, setMode] = useState<"select" | "assessment" | "camera" | "results">("select");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -85,6 +102,7 @@ export default function Posture() {
   const [cameraIssues, setCameraIssues] = useState<string[]>([]);
   const [cameraRecommendations, setCameraRecommendations] = useState<string[]>([]);
   const [analysisDetails, setAnalysisDetails] = useState<string | null>(null);
+  const [assessmentType, setAssessmentType] = useState<"camera" | "self-assessment">("camera");
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -110,12 +128,24 @@ export default function Posture() {
 
   const handleCompleteAssessment = async () => {
     const calculatedScore = calculateScore();
+    const issues = getIssues();
+    const recommendations = getRecommendations();
+    
     setScore(calculatedScore);
+    setAssessmentType("self-assessment");
     setMode("results");
 
-    // Update profile with new score
+    // Save to database
     try {
-      await updateProfile.mutateAsync({ posture_score: calculatedScore });
+      await Promise.all([
+        updateProfile.mutateAsync({ posture_score: calculatedScore }),
+        saveAssessment.mutateAsync({
+          score: calculatedScore,
+          issues,
+          recommendations,
+          assessment_type: "self-assessment",
+        }),
+      ]);
       toast.success("Posture assessment saved!");
     } catch (error) {
       toast.error("Failed to save assessment");
@@ -144,10 +174,19 @@ export default function Posture() {
       setCameraIssues(issues || []);
       setCameraRecommendations(recommendations || []);
       setAnalysisDetails(details || null);
+      setAssessmentType("camera");
       setMode("results");
 
-      // Save to profile
-      await updateProfile.mutateAsync({ posture_score: analysisScore });
+      // Save to database
+      await Promise.all([
+        updateProfile.mutateAsync({ posture_score: analysisScore }),
+        saveAssessment.mutateAsync({
+          score: analysisScore,
+          issues: issues || [],
+          recommendations: recommendations || [],
+          assessment_type: "camera",
+        }),
+      ]);
       toast.success("AI posture analysis complete!");
     } catch (error) {
       console.error("Posture analysis error:", error);
@@ -166,7 +205,7 @@ export default function Posture() {
       issues.push("Prolonged sitting");
     }
     if (answers["back_pain"] === "frequently" || answers["back_pain"] === "sometimes") {
-      issues.push("Back pain issues");
+      issues.push("Lower back pain");
     }
     if (answers["neck_pain"] === "frequently" || answers["neck_pain"] === "sometimes") {
       issues.push("Neck tension");
@@ -200,6 +239,21 @@ export default function Posture() {
     return recs.length > 0 ? recs : ["Keep up the good work! Maintain your current habits."];
   };
 
+  // Get exercises and tips based on current results
+  const currentIssues = assessmentType === "camera" ? cameraIssues : getIssues();
+  const exercises = score !== null ? getExercisesForIssues(currentIssues) : [];
+  const tips = score !== null ? getTipsForScore(score) : [];
+
+  const resetAssessment = () => {
+    setMode("select");
+    setCurrentQuestion(0);
+    setAnswers({});
+    setScore(null);
+    setCameraIssues([]);
+    setCameraRecommendations([]);
+    setAnalysisDetails(null);
+  };
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
@@ -214,318 +268,384 @@ export default function Posture() {
           </p>
         </div>
 
-        {/* Current Score */}
-        {profile?.posture_score && currentPostureInfo && mode === "select" && (
-          <Card className="glass border-primary/20">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Current Posture Score</p>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-4xl font-bold text-primary">{profile.posture_score}</span>
-                    <Badge variant="outline" className="text-sm">
-                      {currentPostureInfo.label}
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "assess" | "history")}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="assess" className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              Assess
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-2">
+              <History className="h-4 w-4" />
+              Progress
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="assess" className="space-y-6 mt-6">
+            {/* Current Score */}
+            {profile?.posture_score && currentPostureInfo && mode === "select" && (
+              <Card className="glass border-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Current Posture Score</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-4xl font-bold text-primary">{profile.posture_score}</span>
+                        <Badge variant="outline" className="text-sm">
+                          {currentPostureInfo.label}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">{currentPostureInfo.description}</p>
+                    </div>
+                    <div className="w-24 h-24 relative">
+                      <svg className="w-24 h-24 transform -rotate-90">
+                        <circle
+                          cx="48"
+                          cy="48"
+                          r="40"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          className="text-muted"
+                        />
+                        <circle
+                          cx="48"
+                          cy="48"
+                          r="40"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          strokeDasharray={2 * Math.PI * 40}
+                          strokeDashoffset={2 * Math.PI * 40 * (1 - profile.posture_score / 100)}
+                          className="text-primary transition-all duration-1000"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Mode Selection */}
+            {mode === "select" && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card
+                  className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300"
+                  onClick={() => setMode("assessment")}
+                >
+                  <CardHeader>
+                    <div className="p-3 rounded-xl bg-primary/10 w-fit">
+                      <ClipboardList className="h-8 w-8 text-primary" />
+                    </div>
+                    <CardTitle className="mt-4">Self-Assessment</CardTitle>
+                    <CardDescription>
+                      Answer questions about your daily habits to get personalized posture insights
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button className="w-full">
+                      Start Assessment
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card
+                  className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300"
+                  onClick={() => setMode("camera")}
+                >
+                  <CardHeader>
+                    <div className="p-3 rounded-xl bg-secondary/10 w-fit">
+                      <Camera className="h-8 w-8 text-secondary" />
+                    </div>
+                    <CardTitle className="mt-4">Camera Analysis</CardTitle>
+                    <CardDescription>
+                      Use your camera for real-time AI-powered posture analysis and feedback
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button variant="secondary" className="w-full">
+                      Open Camera
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Self-Assessment Mode */}
+            {mode === "assessment" && (
+              <Card className="glass">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Self-Assessment</CardTitle>
+                    <Badge variant="outline">
+                      Question {currentQuestion + 1} of {POSTURE_QUESTIONS.length}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">{currentPostureInfo.description}</p>
-                </div>
-                <div className="w-24 h-24 relative">
-                  <svg className="w-24 h-24 transform -rotate-90">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      className="text-muted"
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={2 * Math.PI * 40}
-                      strokeDashoffset={2 * Math.PI * 40 * (1 - profile.posture_score / 100)}
-                      className="text-primary transition-all duration-1000"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Mode Selection */}
-        {mode === "select" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card
-              className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300"
-              onClick={() => setMode("assessment")}
-            >
-              <CardHeader>
-                <div className="p-3 rounded-xl bg-primary/10 w-fit">
-                  <ClipboardList className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="mt-4">Self-Assessment</CardTitle>
-                <CardDescription>
-                  Answer questions about your daily habits to get personalized posture insights
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full">
-                  Start Assessment
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card
-              className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300"
-              onClick={() => setMode("camera")}
-            >
-              <CardHeader>
-                <div className="p-3 rounded-xl bg-secondary/10 w-fit">
-                  <Camera className="h-8 w-8 text-secondary" />
-                </div>
-                <CardTitle className="mt-4">Camera Analysis</CardTitle>
-                <CardDescription>
-                  Use your camera for real-time AI-powered posture analysis and feedback
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="secondary" className="w-full">
-                  Open Camera
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Self-Assessment Mode */}
-        {mode === "assessment" && (
-          <Card className="glass">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Self-Assessment</CardTitle>
-                <Badge variant="outline">
-                  Question {currentQuestion + 1} of {POSTURE_QUESTIONS.length}
-                </Badge>
-              </div>
-              <Progress value={((currentQuestion + 1) / POSTURE_QUESTIONS.length) * 100} className="h-2" />
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium mb-4">
-                  {POSTURE_QUESTIONS[currentQuestion].question}
-                </h3>
-                <RadioGroup
-                  value={answers[POSTURE_QUESTIONS[currentQuestion].id] || ""}
-                  onValueChange={(value) =>
-                    handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, value)
-                  }
-                >
-                  <div className="space-y-3">
-                    {POSTURE_QUESTIONS[currentQuestion].options.map((option) => (
-                      <div
-                        key={option.value}
-                        className={cn(
-                          "flex items-center space-x-3 p-4 rounded-lg border cursor-pointer transition-all",
-                          answers[POSTURE_QUESTIONS[currentQuestion].id] === option.value
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
-                        )}
-                        onClick={() =>
-                          handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, option.value)
-                        }
-                      >
-                        <RadioGroupItem value={option.value} id={option.value} />
-                        <Label htmlFor={option.value} className="cursor-pointer flex-1">
-                          {option.label}
-                        </Label>
+                  <Progress value={((currentQuestion + 1) / POSTURE_QUESTIONS.length) * 100} className="h-2" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-medium mb-4">
+                      {POSTURE_QUESTIONS[currentQuestion].question}
+                    </h3>
+                    <RadioGroup
+                      value={answers[POSTURE_QUESTIONS[currentQuestion].id] || ""}
+                      onValueChange={(value) =>
+                        handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, value)
+                      }
+                    >
+                      <div className="space-y-3">
+                        {POSTURE_QUESTIONS[currentQuestion].options.map((option) => (
+                          <div
+                            key={option.value}
+                            className={cn(
+                              "flex items-center space-x-3 p-4 rounded-lg border cursor-pointer transition-all",
+                              answers[POSTURE_QUESTIONS[currentQuestion].id] === option.value
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
+                            )}
+                            onClick={() =>
+                              handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, option.value)
+                            }
+                          >
+                            <RadioGroupItem value={option.value} id={option.value} />
+                            <Label htmlFor={option.value} className="cursor-pointer flex-1">
+                              {option.label}
+                            </Label>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </RadioGroup>
                   </div>
-                </RadioGroup>
-              </div>
 
-              <div className="flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (currentQuestion === 0) {
-                      setMode("select");
-                      setAnswers({});
-                    } else {
-                      setCurrentQuestion(currentQuestion - 1);
-                    }
-                  }}
-                >
-                  {currentQuestion === 0 ? "Cancel" : "Back"}
-                </Button>
+                  <div className="flex justify-between">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (currentQuestion === 0) {
+                          setMode("select");
+                          setAnswers({});
+                        } else {
+                          setCurrentQuestion(currentQuestion - 1);
+                        }
+                      }}
+                    >
+                      {currentQuestion === 0 ? "Cancel" : "Back"}
+                    </Button>
 
-                {currentQuestion < POSTURE_QUESTIONS.length - 1 ? (
-                  <Button
-                    onClick={() => setCurrentQuestion(currentQuestion + 1)}
-                    disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
-                  >
-                    Next
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleCompleteAssessment}
-                    disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
-                  >
-                    Complete
-                  </Button>
+                    {currentQuestion < POSTURE_QUESTIONS.length - 1 ? (
+                      <Button
+                        onClick={() => setCurrentQuestion(currentQuestion + 1)}
+                        disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
+                      >
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleCompleteAssessment}
+                        disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
+                      >
+                        Complete
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Camera Mode */}
+            {mode === "camera" && (
+              <Card className="glass">
+                <CardHeader>
+                  <CardTitle>AI Camera Analysis</CardTitle>
+                  <CardDescription>
+                    Position yourself in front of the camera for real-time AI-powered posture analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CameraCapture
+                    onCapture={handleCameraCapture}
+                    onCancel={() => setMode("select")}
+                    isAnalyzing={isAnalyzing}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Results */}
+            {mode === "results" && score !== null && postureInfo && (
+              <div className="space-y-6">
+                <Card className="glass border-primary/20">
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">Your Posture Score</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center space-y-4">
+                    <div className="relative w-40 h-40 mx-auto">
+                      <svg className="w-40 h-40 transform -rotate-90">
+                        <circle
+                          cx="80"
+                          cy="80"
+                          r="70"
+                          stroke="currentColor"
+                          strokeWidth="12"
+                          fill="none"
+                          className="text-muted"
+                        />
+                        <circle
+                          cx="80"
+                          cy="80"
+                          r="70"
+                          stroke="currentColor"
+                          strokeWidth="12"
+                          fill="none"
+                          strokeDasharray={2 * Math.PI * 70}
+                          strokeDashoffset={2 * Math.PI * 70 * (1 - score / 100)}
+                          className="text-primary transition-all duration-1000"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-5xl font-bold">{score}</span>
+                        <span className="text-sm text-muted-foreground">out of 100</span>
+                      </div>
+                    </div>
+                    <Badge className="text-lg px-4 py-2">{postureInfo.label}</Badge>
+                    <p className="text-muted-foreground">{postureInfo.description}</p>
+                  </CardContent>
+                </Card>
+
+                {/* AI Analysis Details */}
+                {analysisDetails && (
+                  <Card className="glass border-primary/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        AI Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{analysisDetails}</p>
+                    </CardContent>
+                  </Card>
                 )}
+
+                {/* Issues Detected */}
+                {currentIssues.length > 0 && (
+                  <Card className="glass border-destructive/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-destructive">
+                        <AlertCircle className="h-5 w-5" />
+                        Issues Detected
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {currentIssues.map((issue, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            {issue}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Recommended Exercises */}
+                {exercises.length > 0 && (
+                  <Card className="glass border-accent/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-accent">
+                        <Dumbbell className="h-5 w-5" />
+                        Recommended Exercises
+                      </CardTitle>
+                      <CardDescription>
+                        Exercises tailored to address your posture issues
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {exercises.map((exercise) => (
+                          <ExerciseCard key={exercise.id} exercise={exercise} />
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Tips */}
+                {tips.length > 0 && (
+                  <Card className="glass border-secondary/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-secondary">
+                        <Lightbulb className="h-5 w-5" />
+                        Tips for Improvement
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {tips.map((tip) => {
+                          const Icon = tipCategoryIcons[tip.category] || Lightbulb;
+                          return (
+                            <div
+                              key={tip.id}
+                              className="flex items-start gap-3 p-3 rounded-lg bg-secondary/5"
+                            >
+                              <div className="p-2 rounded-full bg-secondary/20 mt-0.5">
+                                <Icon className="h-4 w-4 text-secondary" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm">{tip.title}</h4>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {tip.description}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Recommendations from assessment */}
+                {(assessmentType === "self-assessment" || cameraRecommendations.length > 0) && (
+                  <Card className="glass border-accent/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-accent">
+                        <CheckCircle2 className="h-5 w-5" />
+                        Quick Recommendations
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-3">
+                        {(assessmentType === "self-assessment" ? getRecommendations() : cameraRecommendations).map((rec, i) => (
+                          <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-accent/5">
+                            <div className="p-1 rounded-full bg-accent/20 mt-0.5">
+                              <CheckCircle2 className="h-3 w-3 text-accent" />
+                            </div>
+                            {rec}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Button className="w-full" onClick={resetAssessment}>
+                  Take Another Assessment
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Camera Mode */}
-        {mode === "camera" && (
-          <Card className="glass">
-            <CardHeader>
-              <CardTitle>AI Camera Analysis</CardTitle>
-              <CardDescription>
-                Position yourself in front of the camera for real-time AI-powered posture analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CameraCapture
-                onCapture={handleCameraCapture}
-                onCancel={() => setMode("select")}
-                isAnalyzing={isAnalyzing}
-              />
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Results */}
-        {mode === "results" && score !== null && postureInfo && (
-          <div className="space-y-6">
-            <Card className="glass border-primary/20">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Your Posture Score</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <div className="relative w-40 h-40 mx-auto">
-                  <svg className="w-40 h-40 transform -rotate-90">
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      stroke="currentColor"
-                      strokeWidth="12"
-                      fill="none"
-                      className="text-muted"
-                    />
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      stroke="currentColor"
-                      strokeWidth="12"
-                      fill="none"
-                      strokeDasharray={2 * Math.PI * 70}
-                      strokeDashoffset={2 * Math.PI * 70 * (1 - score / 100)}
-                      className="text-primary transition-all duration-1000"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-5xl font-bold">{score}</span>
-                    <span className="text-sm text-muted-foreground">out of 100</span>
-                  </div>
-                </div>
-                <Badge className="text-lg px-4 py-2">{postureInfo.label}</Badge>
-                <p className="text-muted-foreground">{postureInfo.description}</p>
-              </CardContent>
-            </Card>
-
-            {/* Show AI analysis details for camera mode */}
-            {analysisDetails && (
-              <Card className="glass border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    AI Analysis
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{analysisDetails}</p>
-                </CardContent>
-              </Card>
             )}
+          </TabsContent>
 
-            {/* Issues from self-assessment or camera */}
-            {(Object.keys(answers).length > 0 ? getIssues().length > 0 : cameraIssues.length > 0) && (
-              <Card className="glass border-destructive/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-destructive">
-                    <AlertCircle className="h-5 w-5" />
-                    Issues Detected
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {(Object.keys(answers).length > 0 ? getIssues() : cameraIssues).map((issue, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-destructive" />
-                        {issue}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Recommendations from self-assessment or camera */}
-            {(Object.keys(answers).length > 0 || cameraRecommendations.length > 0) && (
-              <Card className="glass border-accent/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-accent">
-                    <CheckCircle2 className="h-5 w-5" />
-                    Recommendations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {(Object.keys(answers).length > 0 ? getRecommendations() : cameraRecommendations).map((rec, i) => (
-                      <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-accent/5">
-                        <div className="p-1 rounded-full bg-accent/20 mt-0.5">
-                          <CheckCircle2 className="h-3 w-3 text-accent" />
-                        </div>
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-
-            <Button
-              className="w-full"
-              onClick={() => {
-                setMode("select");
-                setCurrentQuestion(0);
-                setAnswers({});
-                setScore(null);
-                setCameraIssues([]);
-                setCameraRecommendations([]);
-                setAnalysisDetails(null);
-              }}
-            >
-              Take Another Assessment
-            </Button>
-          </div>
-        )}
+          <TabsContent value="history" className="mt-6">
+            <PostureHistory />
+          </TabsContent>
+        </Tabs>
       </div>
     </AppLayout>
   );
