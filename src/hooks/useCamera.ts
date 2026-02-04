@@ -1,28 +1,40 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
+type FacingMode = "user" | "environment";
+
 interface UseCameraResult {
   videoRef: React.RefObject<HTMLVideoElement>;
   canvasRef: React.RefObject<HTMLCanvasElement>;
   isStreaming: boolean;
   error: string | null;
+  facingMode: FacingMode;
   startCamera: () => Promise<void>;
   stopCamera: () => void;
   captureImage: () => string | null;
+  switchCamera: () => Promise<void>;
 }
 
-export function useCamera(): UseCameraResult {
+export function useCamera(initialFacingMode: FacingMode = "environment"): UseCameraResult {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<FacingMode>(initialFacingMode);
 
-  const startCamera = useCallback(async () => {
+  const startCameraWithMode = useCallback(async (mode: FacingMode) => {
     setError(null);
+    
+    // Stop any existing stream first
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: "user",
+          facingMode: mode,
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
@@ -34,6 +46,7 @@ export function useCamera(): UseCameraResult {
         await videoRef.current.play();
         streamRef.current = stream;
         setIsStreaming(true);
+        setFacingMode(mode);
       }
     } catch (err) {
       console.error("Camera access error:", err);
@@ -42,6 +55,13 @@ export function useCamera(): UseCameraResult {
           setError("Camera access denied. Please allow camera permissions.");
         } else if (err.name === "NotFoundError") {
           setError("No camera found on this device.");
+        } else if (err.name === "OverconstrainedError") {
+          // If rear camera not available, try front camera
+          if (mode === "environment") {
+            console.log("Rear camera not available, trying front camera...");
+            return startCameraWithMode("user");
+          }
+          setError("Camera configuration not supported.");
         } else {
           setError(`Camera error: ${err.message}`);
         }
@@ -50,6 +70,10 @@ export function useCamera(): UseCameraResult {
       }
     }
   }, []);
+
+  const startCamera = useCallback(async () => {
+    await startCameraWithMode(facingMode);
+  }, [startCameraWithMode, facingMode]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -61,6 +85,11 @@ export function useCamera(): UseCameraResult {
     }
     setIsStreaming(false);
   }, []);
+
+  const switchCamera = useCallback(async () => {
+    const newMode: FacingMode = facingMode === "user" ? "environment" : "user";
+    await startCameraWithMode(newMode);
+  }, [facingMode, startCameraWithMode]);
 
   const captureImage = useCallback((): string | null => {
     if (!videoRef.current || !canvasRef.current) return null;
@@ -94,8 +123,10 @@ export function useCamera(): UseCameraResult {
     canvasRef,
     isStreaming,
     error,
+    facingMode,
     startCamera,
     stopCamera,
     captureImage,
+    switchCamera,
   };
 }
