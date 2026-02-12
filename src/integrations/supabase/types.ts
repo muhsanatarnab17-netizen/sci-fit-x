@@ -123,7 +123,6 @@ export type Database = {
           daily_calorie_goal: number | null
           dietary_restrictions: string[] | null
           eating_habits: string | null
-          email: string | null
           fitness_goals: string[] | null
           full_name: string | null
           gender: string | null
@@ -153,7 +152,6 @@ export type Database = {
           daily_calorie_goal?: number | null
           dietary_restrictions?: string[] | null
           eating_habits?: string | null
-          email?: string | null
           fitness_goals?: string[] | null
           full_name?: string | null
           gender?: string | null
@@ -183,7 +181,6 @@ export type Database = {
           daily_calorie_goal?: number | null
           dietary_restrictions?: string[] | null
           eating_habits?: string | null
-          email?: string | null
           fitness_goals?: string[] | null
           full_name?: string | null
           gender?: string | null

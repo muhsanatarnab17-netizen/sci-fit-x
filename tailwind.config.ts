@@ -95,6 +95,27 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px hsl(199 89% 48% / 0.3)" },
           "50%": { boxShadow: "0 0 30px hsl(199 89% 48% / 0.5)" },
         },
+        "tick-bounce": {
+          "0%": { transform: "scale(1)" },
+          "30%": { transform: "scale(1.3)" },
+          "50%": { transform: "scale(0.9)" },
+          "70%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "tick-check": {
+          "0%": { transform: "scale(0) rotate(-45deg)", opacity: "0" },
+          "50%": { transform: "scale(1.2) rotate(0deg)", opacity: "1" },
+          "100%": { transform: "scale(1) rotate(0deg)", opacity: "1" },
+        },
+        "tick-ripple": {
+          "0%": { transform: "scale(1)", opacity: "0.4" },
+          "100%": { transform: "scale(2.5)", opacity: "0" },
+        },
+        "tick-shrink": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(0.8)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
