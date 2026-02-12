@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
+import { useDailyTasks } from "@/hooks/useDailyTasks";
 import AppLayout from "@/components/layout/AppLayout";
+import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -25,12 +27,19 @@ import { cn } from "@/lib/utils";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { profile, isLoading } = useProfile();
+  const { tasks, isLoading: tasksLoading, toggleTask, seedDefaultTasks } = useDailyTasks();
 
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarding_completed) {
       navigate("/onboarding");
     }
   }, [profile, isLoading, navigate]);
+
+  useEffect(() => {
+    if (!tasksLoading && tasks.length === 0 && profile?.onboarding_completed) {
+      seedDefaultTasks.mutate();
+    }
+  }, [tasksLoading, tasks.length, profile?.onboarding_completed]);
 
   if (isLoading) {
     return (
@@ -42,23 +51,12 @@ export default function Dashboard() {
     );
   }
 
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
   const bmiCategory = profile.bmi ? getBMICategory(profile.bmi) : null;
   const postureInfo = getPostureScoreDescription(profile.posture_score);
-
-  // Mock data for demo
-  const todaysTasks = [
-    { id: 1, title: "Morning Stretches", category: "workout", completed: true },
-    { id: 2, title: "Drink 8 glasses of water", category: "hydration", completed: false },
-    { id: 3, title: "Log breakfast", category: "meal", completed: false },
-    { id: 4, title: "Posture check", category: "posture", completed: false },
-  ];
-
-  const completedTasks = todaysTasks.filter((t) => t.completed).length;
-  const taskProgress = (completedTasks / todaysTasks.length) * 100;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const taskProgress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
   return (
     <AppLayout>
@@ -92,9 +90,7 @@ export default function Dashboard() {
                   <p className="text-sm text-muted-foreground">BMI</p>
                   <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
                   {bmiCategory && (
-                    <Badge variant="outline" className="mt-1 text-xs">
-                      {bmiCategory.label}
-                    </Badge>
+                    <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>
                   )}
                 </div>
               </div>
@@ -140,9 +136,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-muted-foreground">Posture</p>
                   <p className="text-2xl font-bold">{profile.posture_score}</p>
-                  <Badge variant="outline" className="mt-1 text-xs">
-                    {postureInfo.label}
-                  </Badge>
+                  <Badge variant="outline" className="mt-1 text-xs">{postureInfo.label}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -160,7 +154,7 @@ export default function Dashboard() {
                   Today's Tasks
                 </CardTitle>
                 <CardDescription>
-                  {completedTasks} of {todaysTasks.length} completed
+                  {completedTasks} of {tasks.length} completed
                 </CardDescription>
               </div>
               <Button variant="outline" size="sm" onClick={() => navigate("/plans")}>
@@ -171,7 +165,7 @@ export default function Dashboard() {
             <CardContent>
               <Progress value={taskProgress} className="h-2 mb-4" />
               <div className="space-y-3">
-                {todaysTasks.map((task) => (
+                {tasks.map((task) => (
                   <div
                     key={task.id}
                     className={cn(
@@ -181,24 +175,11 @@ export default function Dashboard() {
                         : "bg-muted/30 border-border hover:border-primary/50"
                     )}
                   >
-                    <div
-                      className={cn(
-                        "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                        task.completed
-                          ? "border-accent bg-accent"
-                          : "border-muted-foreground"
-                      )}
-                    >
-                      {task.completed && (
-                        <svg className="w-3 h-3 text-background" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                    </div>
+                    <CompletionTick
+                      completed={!!task.completed}
+                      onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
+                      category={(task.category as any) || "workout"}
+                    />
                     <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
                       {task.title}
                     </span>
@@ -207,16 +188,18 @@ export default function Dashboard() {
                     </Badge>
                   </div>
                 ))}
+                {tasksLoading && (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
           {/* Quick Actions */}
           <div className="space-y-4">
-            <Card
-              className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300"
-              onClick={() => navigate("/posture")}
-            >
+            <Card className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300" onClick={() => navigate("/posture")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20">
@@ -231,10 +214,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card
-              className="glass border-accent/20 cursor-pointer hover:glow-green transition-all duration-300"
-              onClick={() => navigate("/plans")}
-            >
+            <Card className="glass border-accent/20 cursor-pointer hover:glow-green transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20">
@@ -249,10 +229,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card
-              className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300"
-              onClick={() => navigate("/plans")}
-            >
+            <Card className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-secondary/20 to-neon-pink/20">
@@ -267,10 +244,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card
-              className="glass border-neon-purple/20 cursor-pointer transition-all duration-300"
-              onClick={() => navigate("/progress")}
-            >
+            <Card className="glass border-neon-purple/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/progress")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-pink/20">
@@ -287,7 +261,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Sleep & Water Reminder */}
+        {/* Sleep & Activity */}
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="glass">
             <CardContent className="pt-6">

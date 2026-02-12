@@ -1,11 +1,12 @@
 import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
+import { useDailyTasks } from "@/hooks/useDailyTasks";
+import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dumbbell,
   Utensils,
@@ -22,57 +23,39 @@ import { toast } from "sonner";
 
 export default function Plans() {
   const { profile } = useProfile();
+  const { tasks, isLoading: tasksLoading, toggleTask } = useDailyTasks();
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState("workout");
 
-  // Mock workout plan based on profile
+  // Track local completion state for workout exercises and meals
+  const [completedExercises, setCompletedExercises] = useState<Record<number, boolean>>({});
+  const [completedMeals, setCompletedMeals] = useState<Record<string, boolean>>({});
+  const [sleepLogged, setSleepLogged] = useState(false);
+
   const workoutPlan = {
     title: "Today's Workout",
     duration: "45 mins",
     calories: 350,
     exercises: [
-      { name: "Warm-up Stretches", duration: "5 mins", completed: false },
-      { name: "Push-ups", sets: "3x12", completed: false },
-      { name: "Squats", sets: "3x15", completed: false },
-      { name: "Plank Hold", duration: "3x30s", completed: false },
-      { name: "Lunges", sets: "3x10 each", completed: false },
-      { name: "Cool-down", duration: "5 mins", completed: false },
+      { name: "Warm-up Stretches", duration: "5 mins" },
+      { name: "Push-ups", sets: "3x12" },
+      { name: "Squats", sets: "3x15" },
+      { name: "Plank Hold", duration: "3x30s" },
+      { name: "Lunges", sets: "3x10 each" },
+      { name: "Cool-down", duration: "5 mins" },
     ],
   };
 
-  // Mock meal plan
   const mealPlan = {
-    breakfast: {
-      time: "7:00 AM",
-      meal: "Oatmeal with berries and nuts",
-      calories: 350,
-      protein: 12,
-      carbs: 55,
-      fat: 10,
-    },
-    lunch: {
-      time: "12:30 PM",
-      meal: "Grilled chicken salad with quinoa",
-      calories: 480,
-      protein: 35,
-      carbs: 40,
-      fat: 18,
-    },
-    dinner: {
-      time: "7:00 PM",
-      meal: "Salmon with roasted vegetables",
-      calories: 520,
-      protein: 40,
-      carbs: 30,
-      fat: 25,
-    },
+    breakfast: { time: "7:00 AM", meal: "Oatmeal with berries and nuts", calories: 350, protein: 12, carbs: 55, fat: 10 },
+    lunch: { time: "12:30 PM", meal: "Grilled chicken salad with quinoa", calories: 480, protein: 35, carbs: 40, fat: 18 },
+    dinner: { time: "7:00 PM", meal: "Salmon with roasted vegetables", calories: 520, protein: 40, carbs: 30, fat: 25 },
     snacks: [
       { name: "Greek yogurt", calories: 120 },
       { name: "Apple with almond butter", calories: 200 },
     ],
   };
 
-  // Mock sleep plan
   const sleepPlan = {
     bedtime: "10:30 PM",
     wakeTime: "6:30 AM",
@@ -85,24 +68,25 @@ export default function Plans() {
     ],
   };
 
-  // Mock daily tasks
-  const dailyTasks = [
-    { id: 1, title: "Morning stretches", time: "6:30 AM", category: "workout", completed: false },
-    { id: 2, title: "Take vitamins", time: "7:00 AM", category: "health", completed: false },
-    { id: 3, title: "Drink 2 glasses of water", time: "8:00 AM", category: "hydration", completed: false },
-    { id: 4, title: "Posture check", time: "10:00 AM", category: "posture", completed: false },
-    { id: 5, title: "Mid-day walk", time: "12:00 PM", category: "workout", completed: false },
-    { id: 6, title: "Afternoon stretches", time: "3:00 PM", category: "posture", completed: false },
-    { id: 7, title: "Evening workout", time: "6:00 PM", category: "workout", completed: false },
-    { id: 8, title: "Meditation", time: "9:30 PM", category: "wellness", completed: false },
-  ];
-
   const handleGenerateNew = async () => {
     setIsGenerating(true);
-    // Simulate AI generation
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsGenerating(false);
     toast.success("New personalized plan generated!");
+  };
+
+  const toggleExercise = (index: number) => {
+    setCompletedExercises((prev) => ({ ...prev, [index]: !prev[index] }));
+    if (!completedExercises[index]) {
+      toast.success("Exercise completed! 💪");
+    }
+  };
+
+  const toggleMeal = (key: string) => {
+    setCompletedMeals((prev) => ({ ...prev, [key]: !prev[key] }));
+    if (!completedMeals[key]) {
+      toast.success("Meal logged! 🍽️");
+    }
   };
 
   return (
@@ -189,14 +173,20 @@ export default function Plans() {
                       key={i}
                       className={cn(
                         "flex items-center gap-3 p-4 rounded-lg border transition-all",
-                        "hover:border-primary/50 cursor-pointer"
+                        completedExercises[i]
+                          ? "bg-accent/5 border-accent/20"
+                          : "hover:border-primary/50"
                       )}
                     >
-                      <Checkbox id={`exercise-${i}`} />
+                      <CompletionTick
+                        completed={!!completedExercises[i]}
+                        onToggle={() => toggleExercise(i)}
+                        category="workout"
+                      />
                       <div className="flex-1">
-                        <label htmlFor={`exercise-${i}`} className="font-medium cursor-pointer">
+                        <span className={cn("font-medium", completedExercises[i] && "line-through text-muted-foreground")}>
                           {exercise.name}
-                        </label>
+                        </span>
                       </div>
                       <Badge variant="secondary">
                         {exercise.sets || exercise.duration}
@@ -243,19 +233,26 @@ export default function Plans() {
                 </CardContent>
               </Card>
 
-              {/* Meals */}
+              {/* Meals with completion ticks */}
               {[
                 { key: "breakfast", icon: "🌅", data: mealPlan.breakfast },
                 { key: "lunch", icon: "☀️", data: mealPlan.lunch },
                 { key: "dinner", icon: "🌙", data: mealPlan.dinner },
               ].map((meal) => (
-                <Card key={meal.key} className="glass">
+                <Card key={meal.key} className={cn("glass transition-all", completedMeals[meal.key] && "border-accent/20")}>
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{meal.icon}</span>
+                        <CompletionTick
+                          completed={!!completedMeals[meal.key]}
+                          onToggle={() => toggleMeal(meal.key)}
+                          category="meal"
+                          size="lg"
+                        />
                         <div>
-                          <h3 className="font-semibold capitalize">{meal.key}</h3>
+                          <h3 className={cn("font-semibold capitalize", completedMeals[meal.key] && "line-through text-muted-foreground")}>
+                            {meal.key}
+                          </h3>
                           <p className="text-muted-foreground">{meal.data.meal}</p>
                         </div>
                       </div>
@@ -316,15 +313,38 @@ export default function Plans() {
                   </div>
                 </div>
 
+                {/* Sleep completion */}
+                <div
+                  className={cn(
+                    "flex items-center gap-4 p-4 rounded-lg border transition-all",
+                    sleepLogged ? "bg-neon-purple/5 border-neon-purple/20" : "border-border"
+                  )}
+                >
+                  <CompletionTick
+                    completed={sleepLogged}
+                    onToggle={() => {
+                      setSleepLogged(!sleepLogged);
+                      if (!sleepLogged) toast.success("Sleep goal logged! 😴");
+                    }}
+                    category="sleep"
+                    size="lg"
+                  />
+                  <div>
+                    <h4 className={cn("font-medium", sleepLogged && "line-through text-muted-foreground")}>
+                      Log Sleep Goal Achieved
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Did you get {sleepPlan.targetHours}+ hours of sleep last night?
+                    </p>
+                  </div>
+                </div>
+
                 {/* Tips */}
                 <div>
                   <h4 className="font-medium mb-3">Sleep Tips</h4>
                   <div className="space-y-2">
                     {sleepPlan.tips.map((tip, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
-                      >
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
                         <div className="p-1 rounded-full bg-neon-purple/20">
                           <Moon className="h-3 w-3 text-neon-purple" />
                         </div>
@@ -337,7 +357,7 @@ export default function Plans() {
             </Card>
           </TabsContent>
 
-          {/* Tasks Tab */}
+          {/* Tasks Tab - Database backed */}
           <TabsContent value="tasks">
             <Card className="glass">
               <CardHeader>
@@ -351,25 +371,41 @@ export default function Plans() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {dailyTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-center gap-3 p-4 rounded-lg border hover:border-primary/50 transition-all"
-                    >
-                      <Checkbox id={`task-${task.id}`} />
-                      <div className="flex-1">
-                        <label htmlFor={`task-${task.id}`} className="font-medium cursor-pointer">
-                          {task.title}
-                        </label>
-                      </div>
-                      <Badge variant="outline" className="hidden sm:inline-flex">
-                        {task.time}
-                      </Badge>
-                      <Badge variant="secondary" className="capitalize text-xs">
-                        {task.category}
-                      </Badge>
+                  {tasksLoading ? (
+                    <div className="flex justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
-                  ))}
+                  ) : tasks.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      No tasks for today. Visit the Dashboard to generate your daily tasks.
+                    </p>
+                  ) : (
+                    tasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className={cn(
+                          "flex items-center gap-3 p-4 rounded-lg border transition-all",
+                          task.completed
+                            ? "bg-accent/5 border-accent/20"
+                            : "hover:border-primary/50"
+                        )}
+                      >
+                        <CompletionTick
+                          completed={!!task.completed}
+                          onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
+                          category={(task.category as any) || "workout"}
+                        />
+                        <div className="flex-1">
+                          <span className={cn("font-medium", task.completed && "line-through text-muted-foreground")}>
+                            {task.title}
+                          </span>
+                        </div>
+                        <Badge variant="secondary" className="capitalize text-xs">
+                          {task.category}
+                        </Badge>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -40,7 +40,7 @@ const navItems = [
 export default function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -103,7 +103,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     <Avatar className="h-9 w-9 border-2 border-primary/20">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="bg-primary/10 text-primary">
-                        {profile?.full_name?.charAt(0) || profile?.email?.charAt(0) || "U"}
+                        {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -111,7 +111,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">
                     <p className="font-medium truncate">{profile?.full_name || "User"}</p>
-                    <p className="text-sm text-muted-foreground truncate">{profile?.email}</p>
+                    <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>

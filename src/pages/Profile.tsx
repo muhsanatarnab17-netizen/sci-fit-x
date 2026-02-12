@@ -29,7 +29,7 @@ import { calculateBMI, calculateBMR, calculateDailyCalories, getBMICategory, typ
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { profile, updateProfile, isLoading } = useProfile();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -110,12 +110,12 @@ export default function Profile() {
               <Avatar className="h-24 w-24 border-4 border-primary/20">
                 <AvatarImage src={profile.avatar_url || undefined} />
                 <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                  {profile.full_name?.charAt(0) || profile.email?.charAt(0) || "U"}
+                  {profile.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center md:text-left flex-1">
                 <h2 className="text-2xl font-bold">{profile.full_name || "Fitness Champion"}</h2>
-                <p className="text-muted-foreground">{profile.email}</p>
+                <p className="text-muted-foreground">{user?.email}</p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
                   <Badge variant="outline" className="capitalize">
                     {profile.activity_level?.replace("_", " ") || "Active"}
