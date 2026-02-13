@@ -1,7 +1,7 @@
 # 🥗 AI-Powered Nutrition & Fitness Dashboard
 **A modern, production-ready web application for personalized health tracking.**
 
-[Live Demo Link](INSERT_YOUR_PUBLISHED_LOVABLE_URL_HERE)
+[Live Demo Link](sci-fit-x.lovable.app)
 
 ## 🚀 The Project
 This application was built to solve the gap between generic diet plans and personalized nutrition. It features a sleek, high-performance UI and integrates real-time data management.
