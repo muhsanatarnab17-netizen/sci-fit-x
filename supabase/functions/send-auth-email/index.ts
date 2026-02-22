@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "resend";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -17,6 +18,8 @@ interface AuthEmailRequest {
   redirect_to?: string;
 }
 
+const VALID_TYPES = ["signup", "recovery", "email_change", "magic_link"];
+
 const getEmailContent = (type: string, confirmUrl: string) => {
   switch (type) {
     case "signup":
@@ -28,17 +31,15 @@ const getEmailContent = (type: string, confirmUrl: string) => {
               <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
               <p style="color: #94a3b8; margin-top: 8px;">Your AI-Powered Fitness Partner</p>
             </div>
-            
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
               <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Welcome aboard! 🎉</h2>
               <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
                 You're one step away from starting your fitness transformation. Click the button below to confirm your email and unlock your personalized health journey.
               </p>
               <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Confirm Email & Get Started
+                Confirm Email &amp; Get Started
               </a>
             </div>
-            
             <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
               If you didn't create an account, you can safely ignore this email.
             </p>
@@ -53,7 +54,6 @@ const getEmailContent = (type: string, confirmUrl: string) => {
             <div style="text-align: center; margin-bottom: 32px;">
               <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
             </div>
-            
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
               <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Password Reset Request</h2>
               <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
@@ -63,7 +63,6 @@ const getEmailContent = (type: string, confirmUrl: string) => {
                 Reset Password
               </a>
             </div>
-            
             <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
               This link expires in 1 hour. If you didn't request this, ignore this email.
             </p>
@@ -78,7 +77,6 @@ const getEmailContent = (type: string, confirmUrl: string) => {
             <div style="text-align: center; margin-bottom: 32px;">
               <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
             </div>
-            
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
               <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Magic Login Link</h2>
               <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
@@ -88,7 +86,6 @@ const getEmailContent = (type: string, confirmUrl: string) => {
                 Sign In to FitLife Pro
               </a>
             </div>
-            
             <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
               This link expires in 1 hour.
             </p>
@@ -115,14 +112,57 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const payload: AuthEmailRequest = await req.json();
     const { email, type, token_hash, redirect_to } = payload;
 
     if (!email || !type) {
-      throw new Error("Missing required fields: email and type");
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Build the confirmation URL
+    // Validate type
+    if (!VALID_TYPES.includes(type)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email type" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 255) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const baseUrl = redirect_to || Deno.env.get("SUPABASE_URL");
     const confirmUrl = token_hash 
       ? `${baseUrl}/auth/v1/verify?token=${token_hash}&type=${type}&redirect_to=${redirect_to || ''}`
@@ -130,7 +170,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { subject, html } = getEmailContent(type, confirmUrl || "");
 
-    // Get the from email - use the verified domain
     const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "FitLife Pro <noreply@resend.dev>";
 
     const emailResponse = await resend.emails.send({
@@ -140,18 +179,17 @@ const handler = async (req: Request): Promise<Response> => {
       html,
     });
 
-    console.log("Auth email sent successfully:", emailResponse);
+    console.log("Auth email sent successfully");
 
-    return new Response(JSON.stringify({ success: true, ...emailResponse }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error sending auth email:", errorMessage);
+    console.error("Error sending auth email");
     
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Failed to send email" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
