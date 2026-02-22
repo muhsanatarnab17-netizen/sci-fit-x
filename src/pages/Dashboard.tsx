@@ -20,8 +20,8 @@ import {
   ChevronRight,
   Zap,
   Heart,
-  Loader2,
-} from "lucide-react";
+  Loader2 } from
+"lucide-react";
 import { getBMICategory, getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
 
@@ -49,8 +49,8 @@ export default function Dashboard() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </AppLayout>
-    );
+      </AppLayout>);
+
   }
 
   if (!profile) return null;
@@ -58,7 +58,7 @@ export default function Dashboard() {
   const bmiCategory = profile.bmi ? getBMICategory(profile.bmi) : null;
   const postureInfo = getPostureScoreDescription(profile.posture_score);
   const completedTasks = tasks.filter((t) => t.completed).length;
-  const taskProgress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+  const taskProgress = tasks.length > 0 ? completedTasks / tasks.length * 100 : 0;
 
   return (
     <AppLayout>
@@ -91,9 +91,9 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-muted-foreground">BMI</p>
                   <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
-                  {bmiCategory && (
-                    <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>
-                  )}
+                  {bmiCategory &&
+                  <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>
+                  }
                 </div>
               </div>
             </CardContent>
@@ -167,21 +167,21 @@ export default function Dashboard() {
             <CardContent>
               <Progress value={taskProgress} className="h-2 mb-4" />
               <div className="space-y-3">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg border transition-all",
-                      task.completed
-                        ? "bg-accent/5 border-accent/20"
-                        : "bg-muted/30 border-border hover:border-primary/50"
-                    )}
-                  >
+                {tasks.map((task) =>
+                <div
+                  key={task.id}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-lg border transition-all",
+                    task.completed ?
+                    "bg-accent/5 border-accent/20" :
+                    "bg-muted/30 border-border hover:border-primary/50"
+                  )}>
+
                     <CompletionTick
-                      completed={!!task.completed}
-                      onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
-                      category={(task.category as any) || "workout"}
-                    />
+                    completed={!!task.completed}
+                    onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
+                    category={task.category as any || "workout"} />
+
                     <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
                       {task.title}
                     </span>
@@ -189,12 +189,12 @@ export default function Dashboard() {
                       {task.category}
                     </Badge>
                   </div>
-                ))}
-                {tasksLoading && (
-                  <div className="flex justify-center py-4">
+                )}
+                {tasksLoading &&
+                <div className="flex justify-center py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
-                )}
+                }
               </div>
             </CardContent>
           </Card>
@@ -220,7 +220,7 @@ export default function Dashboard() {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20">
-                    <Dumbbell className="h-8 w-8 text-accent" />
+                    <Dumbbell className="h-8 w-8 text-accent opacity-100" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Today's Workout</h3>
@@ -309,6 +309,6 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
-    </AppLayout>
-  );
+    </AppLayout>);
+
 }
