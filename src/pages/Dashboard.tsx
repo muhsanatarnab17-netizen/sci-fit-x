@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { useDailyTasks } from "@/hooks/useDailyTasks";
+import { useStreak } from "@/hooks/useStreak";
 import AppLayout from "@/components/layout/AppLayout";
 import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { profile, isLoading } = useProfile();
   const { tasks, isLoading: tasksLoading, toggleTask, seedDefaultTasks } = useDailyTasks();
+  const { streak } = useStreak();
 
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarding_completed) {
@@ -72,8 +74,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full glass">
               <Zap className="h-4 w-4 text-neon-orange" />
-              <span className="text-sm font-medium">7 day streak</span>
-              <span className="text-lg">🔥</span>
+              <span className="text-sm font-medium">{streak > 0 ? `${streak} day streak` : "No streak yet"}</span>
+              {streak > 0 && <span className="text-lg">🔥</span>}
             </div>
           </div>
         </div>

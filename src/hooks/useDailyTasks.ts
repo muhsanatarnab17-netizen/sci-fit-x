@@ -63,16 +63,59 @@ export function useDailyTasks() {
     mutationFn: async () => {
       if (!user?.id) throw new Error("No user");
 
-      const defaults = [
-        { title: "Morning Stretches", category: "workout" },
-        { title: "Drink 8 glasses of water", category: "hydration" },
-        { title: "Log breakfast", category: "meal" },
-        { title: "Posture check", category: "posture" },
-        { title: "Take vitamins", category: "health" },
-        { title: "Evening workout", category: "workout" },
-        { title: "Log dinner", category: "meal" },
-        { title: "Sleep by 10:30 PM", category: "sleep" },
-      ];
+      // Profile-aware defaults based on user's fitness goals and preferences
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("fitness_goals, activity_level, dietary_restrictions, workout_experience")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const defaults: { title: string; category: string }[] = [];
+
+      // Core tasks everyone gets
+      defaults.push({ title: "Drink 8 glasses of water", category: "hydration" });
+      defaults.push({ title: "Posture check", category: "posture" });
+
+      // Workout tasks based on experience
+      const experience = profile?.workout_experience || "beginner";
+      if (experience === "beginner") {
+        defaults.push({ title: "Morning stretches (10 min)", category: "workout" });
+        defaults.push({ title: "Light exercise (20 min)", category: "workout" });
+      } else if (experience === "intermediate") {
+        defaults.push({ title: "Morning warm-up", category: "workout" });
+        defaults.push({ title: "Workout session (45 min)", category: "workout" });
+      } else {
+        defaults.push({ title: "Morning mobility work", category: "workout" });
+        defaults.push({ title: "Training session (60 min)", category: "workout" });
+      }
+
+      // Meal tasks
+      defaults.push({ title: "Log breakfast", category: "meal" });
+      defaults.push({ title: "Log lunch", category: "meal" });
+      defaults.push({ title: "Log dinner", category: "meal" });
+
+      // Goal-specific tasks
+      const goals = profile?.fitness_goals || [];
+      if (goals.includes("weight_loss")) {
+        defaults.push({ title: "Track calorie intake", category: "health" });
+      }
+      if (goals.includes("muscle_gain")) {
+        defaults.push({ title: "Hit protein target", category: "meal" });
+      }
+      if (goals.includes("better_sleep")) {
+        defaults.push({ title: "Sleep by 10:30 PM", category: "sleep" });
+      }
+      if (goals.includes("stress_reduction")) {
+        defaults.push({ title: "5 min meditation", category: "health" });
+      }
+
+      // Always include sleep
+      if (!defaults.some((d) => d.category === "sleep")) {
+        defaults.push({ title: "Sleep by 10:30 PM", category: "sleep" });
+      }
+
+      // Health supplements
+      defaults.push({ title: "Take vitamins", category: "health" });
 
       const rows = defaults.map((d) => ({
         user_id: user.id,
