@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.analyze-posture]
 verify_jwt = false
+
+[functions.generate-plans]
+verify_jwt = false
