@@ -219,8 +219,8 @@ export default function Dashboard() {
             <Card className="glass border-accent/20 cursor-pointer hover:glow-green transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20">
-                    <Dumbbell className="h-8 w-8 text-accent opacity-100" />
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20 bg-[#0fb35b]">
+                    <Dumbbell className="h-8 w-8 text-accent opacity-100 bg-primary-foreground" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Today's Workout</h3>
