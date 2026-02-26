@@ -204,29 +204,29 @@ export default function Dashboard() {
             <Card className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300" onClick={() => navigate("/posture")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20">
+                  <div className="p-3 rounded-xl bg-primary/10 shadow-[0_0_15px_hsl(187_100%_50%/0.2)]">
                     <Target className="h-8 w-8 text-primary" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Posture Check</h3>
                     <p className="text-sm text-muted-foreground">Start AI analysis</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <ChevronRight className="h-5 w-5 text-primary/60" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="glass border-accent/20 cursor-pointer hover:glow-green transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass border-neon-green/20 cursor-pointer hover:glow-green transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20">
-                    <Dumbbell className="h-8 w-8 text-accent opacity-100" />
+                  <div className="p-3 rounded-xl bg-neon-green/10 shadow-[0_0_15px_hsl(160_80%_45%/0.2)]">
+                    <Dumbbell className="h-8 w-8 text-neon-green" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Today's Workout</h3>
                     <p className="text-sm text-muted-foreground">View your plan</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <ChevronRight className="h-5 w-5 text-neon-green/60" />
                 </div>
               </CardContent>
             </Card>
@@ -234,29 +234,29 @@ export default function Dashboard() {
             <Card className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-secondary/20 to-neon-pink/20">
+                  <div className="p-3 rounded-xl bg-secondary/10 shadow-[0_0_15px_hsl(260_60%_55%/0.2)]">
                     <Utensils className="h-8 w-8 text-secondary" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Meal Plan</h3>
                     <p className="text-sm text-muted-foreground">Check today's meals</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <ChevronRight className="h-5 w-5 text-secondary/60" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="glass border-neon-purple/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/progress")}>
+            <Card className="glass border-neon-pink/20 cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_hsl(330_81%_60%/0.3)]" onClick={() => navigate("/progress")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-pink/20">
-                    <TrendingUp className="h-8 w-8 text-neon-purple" />
+                  <div className="p-3 rounded-xl bg-neon-pink/10 shadow-[0_0_15px_hsl(330_81%_60%/0.2)]">
+                    <TrendingUp className="h-8 w-8 text-neon-pink" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">View Progress</h3>
                     <p className="text-sm text-muted-foreground">Track your journey</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <ChevronRight className="h-5 w-5 text-neon-pink/60" />
                 </div>
               </CardContent>
             </Card>
