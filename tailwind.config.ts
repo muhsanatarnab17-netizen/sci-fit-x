@@ -217,9 +217,9 @@ export default {
   		},
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-  			'gradient-primary': 'linear-gradient(135deg, hsl(199, 89%, 48%), hsl(271, 81%, 56%))',
-  			'gradient-accent': 'linear-gradient(135deg, hsl(142, 76%, 36%), hsl(199, 89%, 48%))',
-  			'gradient-warm': 'linear-gradient(135deg, hsl(25, 95%, 53%), hsl(330, 81%, 60%))'
+			'gradient-primary': 'linear-gradient(135deg, hsl(187, 100%, 50%), hsl(260, 60%, 55%))',
+			'gradient-accent': 'linear-gradient(135deg, hsl(160, 80%, 45%), hsl(187, 100%, 50%))',
+			'gradient-warm': 'linear-gradient(135deg, hsl(25, 95%, 53%), hsl(330, 81%, 60%))'
   		},
   		boxShadow: {
   			'2xs': 'var(--shadow-2xs)',
