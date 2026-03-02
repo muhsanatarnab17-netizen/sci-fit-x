@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { useDailyTasks } from "@/hooks/useDailyTasks";
 import { useStreak } from "@/hooks/useStreak";
+import { useWorkoutHistory } from "@/hooks/useWorkoutHistory";
+import { useMealHistory } from "@/hooks/useMealHistory";
+import { usePostureHistory } from "@/hooks/usePostureHistory";
 import AppLayout from "@/components/layout/AppLayout";
+import WeightLogDialog from "@/components/weight/WeightLogDialog";
 import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,8 +24,9 @@ import {
   ChevronRight,
   Zap,
   Heart,
-  Loader2 } from
-"lucide-react";
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
 import { getBMICategory, getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +35,9 @@ export default function Dashboard() {
   const { profile, isLoading } = useProfile();
   const { tasks, isLoading: tasksLoading, toggleTask, seedDefaultTasks } = useDailyTasks();
   const { streak } = useStreak();
+  const { totalWorkouts, thisMonthWorkouts } = useWorkoutHistory();
+  const { mealLogs } = useMealHistory();
+  const { stats: postureStats } = usePostureHistory();
 
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarding_completed) {
@@ -49,8 +57,8 @@ export default function Dashboard() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </AppLayout>);
-
+      </AppLayout>
+    );
   }
 
   if (!profile) return null;
@@ -58,7 +66,12 @@ export default function Dashboard() {
   const bmiCategory = profile.bmi ? getBMICategory(profile.bmi) : null;
   const postureInfo = getPostureScoreDescription(profile.posture_score);
   const completedTasks = tasks.filter((t) => t.completed).length;
-  const taskProgress = tasks.length > 0 ? completedTasks / tasks.length * 100 : 0;
+  const taskProgress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+
+  // Activity summary from real data
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayMeals = (mealLogs || []).filter((l) => l.logged_at.startsWith(todayStr)).length;
+  const todayCalories = (mealLogs || []).filter((l) => l.logged_at.startsWith(todayStr)).reduce((s, l) => s + (l.calories || 0), 0);
 
   return (
     <AppLayout>
@@ -72,6 +85,7 @@ export default function Dashboard() {
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
           <div className="flex items-center gap-3">
+            <WeightLogDialog />
             <div className="flex items-center gap-2 px-4 py-2 rounded-full glass">
               <Zap className="h-4 w-4 text-neon-orange" />
               <span className="text-sm font-medium">{streak > 0 ? `${streak} day streak` : "No streak yet"}</span>
@@ -91,9 +105,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-muted-foreground">BMI</p>
                   <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
-                  {bmiCategory &&
-                  <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>
-                  }
+                  {bmiCategory && <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>}
                 </div>
               </div>
             </CardContent>
@@ -103,12 +115,12 @@ export default function Dashboard() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-secondary/10">
-                  <Flame className="h-5 w-5 text-secondary" />
+                  <Dumbbell className="h-5 w-5 text-secondary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">BMR</p>
-                  <p className="text-2xl font-bold">{profile.bmr || "--"}</p>
-                  <p className="text-xs text-muted-foreground">cal/day</p>
+                  <p className="text-sm text-muted-foreground">Workouts</p>
+                  <p className="text-2xl font-bold">{thisMonthWorkouts}</p>
+                  <p className="text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
                 </div>
               </div>
             </CardContent>
@@ -118,12 +130,12 @@ export default function Dashboard() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-accent/10">
-                  <Target className="h-5 w-5 text-accent" />
+                  <Utensils className="h-5 w-5 text-accent-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Daily Goal</p>
-                  <p className="text-2xl font-bold">{profile.daily_calorie_goal || "--"}</p>
-                  <p className="text-xs text-muted-foreground">calories</p>
+                  <p className="text-sm text-muted-foreground">Today's Meals</p>
+                  <p className="text-2xl font-bold">{todayMeals}</p>
+                  <p className="text-xs text-muted-foreground">{todayCalories} cal logged</p>
                 </div>
               </div>
             </CardContent>
@@ -137,7 +149,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Posture</p>
-                  <p className="text-2xl font-bold">{profile.posture_score}</p>
+                  <p className="text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
                   <Badge variant="outline" className="mt-1 text-xs">{postureInfo.label}</Badge>
                 </div>
               </div>
@@ -167,21 +179,21 @@ export default function Dashboard() {
             <CardContent>
               <Progress value={taskProgress} className="h-2 mb-4" />
               <div className="space-y-3">
-                {tasks.map((task) =>
-                <div
-                  key={task.id}
-                  className={cn(
-                    "flex items-center gap-3 p-3 rounded-lg border transition-all",
-                    task.completed ?
-                    "bg-accent/5 border-accent/20" :
-                    "bg-muted/30 border-border hover:border-primary/50"
-                  )}>
-
+                {tasks.slice(0, 6).map((task) => (
+                  <div
+                    key={task.id}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-lg border transition-all",
+                      task.completed
+                        ? "bg-accent/5 border-accent/20"
+                        : "bg-muted/30 border-border hover:border-primary/50"
+                    )}
+                  >
                     <CompletionTick
-                    completed={!!task.completed}
-                    onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
-                    category={task.category as any || "workout"} />
-
+                      completed={!!task.completed}
+                      onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
+                      category={(task.category as any) || "workout"}
+                    />
                     <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
                       {task.title}
                     </span>
@@ -189,12 +201,17 @@ export default function Dashboard() {
                       {task.category}
                     </Badge>
                   </div>
+                ))}
+                {tasks.length > 6 && (
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/plans")} className="w-full text-muted-foreground">
+                    +{tasks.length - 6} more tasks
+                  </Button>
                 )}
-                {tasksLoading &&
-                <div className="flex justify-center py-4">
+                {tasksLoading && (
+                  <div className="flex justify-center py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
-                }
+                )}
               </div>
             </CardContent>
           </Card>
@@ -209,7 +226,9 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Posture Check</h3>
-                    <p className="text-sm text-muted-foreground">Start AI analysis</p>
+                    <p className="text-sm text-muted-foreground">
+                      {postureStats.totalAssessments} assessments done
+                    </p>
                   </div>
                   <ChevronRight className="h-5 w-5 text-primary/60" />
                 </div>
@@ -263,7 +282,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Sleep & Activity */}
+        {/* Activity Summary */}
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="glass">
             <CardContent className="pt-6">
@@ -292,23 +311,25 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-primary/10">
-                    <Activity className="h-6 w-6 text-primary" />
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Activity Level</h3>
-                    <p className="text-sm text-muted-foreground capitalize">
-                      {profile.activity_level?.replace("_", " ") || "Not set"}
+                    <h3 className="font-semibold">Today's Progress</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {completedTasks}/{tasks.length} tasks done
                     </p>
                   </div>
                 </div>
-                <Badge className="capitalize">
-                  {profile.workout_experience || "beginner"}
+                <Badge className={cn(
+                  taskProgress === 100 ? "bg-neon-green/20 text-neon-green" : ""
+                )}>
+                  {taskProgress === 100 ? "All Done! 🎉" : `${Math.round(taskProgress)}%`}
                 </Badge>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </AppLayout>);
-
+    </AppLayout>
+  );
 }

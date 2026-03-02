@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
 import { useDailyTasks } from "@/hooks/useDailyTasks";
-import { useGeneratePlans, GeneratedPlans } from "@/hooks/useGeneratePlans";
+import { useCachedPlans } from "@/hooks/useCachedPlans";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import CompletionTick from "@/components/ui/completion-tick";
@@ -25,51 +25,59 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+// Track completed items in localStorage so they persist across navigation
+function useLocalState<T>(key: string, initial: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : initial;
+    } catch {
+      return initial;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(state));
+  }, [key, state]);
+
+  return [state, setState];
+}
+
 export default function Plans() {
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { tasks, isLoading: tasksLoading, toggleTask, seedDefaultTasks } = useDailyTasks();
-  const { plans, isGenerating, generate } = useGeneratePlans();
+  const { tasks, isLoading: tasksLoading, toggleTask } = useDailyTasks();
+  const { plans, isGenerating, generateAndCache, seedTasksFromPlan, hasPlansToday } = useCachedPlans();
   const [activeTab, setActiveTab] = useState("workout");
 
-  const [completedExercises, setCompletedExercises] = useState<Record<number, boolean>>({});
-  const [completedMeals, setCompletedMeals] = useState<Record<string, boolean>>({});
-  const [sleepLogged, setSleepLogged] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+  const [completedExercises, setCompletedExercises] = useLocalState<Record<number, boolean>>(`exercises_${user?.id}_${today}`, {});
+  const [completedMeals, setCompletedMeals] = useLocalState<Record<string, boolean>>(`meals_${user?.id}_${today}`, {});
+  const [sleepLogged, setSleepLogged] = useLocalState<boolean>(`sleep_${user?.id}_${today}`, false);
 
-  // Auto-generate plans on first load if profile is complete
+  // Auto-generate plans only if none cached for today
   useEffect(() => {
-    if (profile?.onboarding_completed && !plans && !isGenerating) {
-      generate(profile);
+    if (profile?.onboarding_completed && !hasPlansToday && !isGenerating) {
+      generateAndCache.mutateAsync(profile).then((result) => {
+        if (result) seedTasksFromPlan(result);
+      });
     }
-  }, [profile?.onboarding_completed]);
+  }, [profile?.onboarding_completed, hasPlansToday]);
 
   const handleGenerateNew = async () => {
     if (!profile) return;
     setCompletedExercises({});
     setCompletedMeals({});
     setSleepLogged(false);
-    const result = await generate(profile);
-    // Seed AI-generated daily tasks
-    if (result?.dailyTasks && user?.id) {
-      const today = new Date().toISOString().split("T")[0];
-      // Delete existing tasks for today and seed new ones
-      await supabase.from("daily_tasks").delete().eq("user_id", user.id).eq("scheduled_for", today);
-      const rows = result.dailyTasks.map((t) => ({
-        user_id: user.id,
-        title: t.title,
-        category: t.category,
-        scheduled_for: today,
-        completed: false,
-      }));
-      await supabase.from("daily_tasks").insert(rows);
-    }
+    const result = await generateAndCache.mutateAsync(profile);
+    if (result) await seedTasksFromPlan(result);
   };
 
   const toggleExercise = async (index: number) => {
+    const wasCompleted = completedExercises[index];
     setCompletedExercises((prev) => ({ ...prev, [index]: !prev[index] }));
-    if (!completedExercises[index]) {
+    if (!wasCompleted) {
       toast.success("Exercise completed! 💪");
-      // Log completed exercise to workout_logs
       if (user?.id && plans?.workout) {
         const exercise = plans.workout.exercises[index];
         await supabase.from("workout_logs").insert({
@@ -84,10 +92,10 @@ export default function Plans() {
   };
 
   const toggleMeal = async (key: string) => {
+    const wasCompleted = completedMeals[key];
     setCompletedMeals((prev) => ({ ...prev, [key]: !prev[key] }));
-    if (!completedMeals[key]) {
+    if (!wasCompleted) {
       toast.success("Meal logged! 🍽️");
-      // Log completed meal
       if (user?.id && plans?.meals) {
         const mealData = plans.meals[key as keyof typeof plans.meals];
         if (mealData && "calories" in mealData) {
@@ -260,7 +268,7 @@ export default function Plans() {
                         <p className="text-sm text-muted-foreground">Protein</p>
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-accent">
+                        <p className="text-2xl font-bold text-accent-foreground">
                           {mealPlan.breakfast.carbs + mealPlan.lunch.carbs + mealPlan.dinner.carbs}g
                         </p>
                         <p className="text-sm text-muted-foreground">Carbs</p>
@@ -412,7 +420,7 @@ export default function Plans() {
             <Card className="glass">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ListTodo className="h-5 w-5 text-accent" />
+                  <ListTodo className="h-5 w-5 text-accent-foreground" />
                   Daily Health Tasks
                 </CardTitle>
                 <CardDescription>
