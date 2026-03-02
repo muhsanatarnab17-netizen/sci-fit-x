@@ -2,6 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+function formatDate(dateStr: string, short = false) {
+  const d = new Date(dateStr);
+  return short
+    ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function filterByDays(logs: any[], dateKey: string, days: number) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return logs.filter((l) => new Date(l[dateKey]) >= cutoff);
+}
+
 export function useWeightHistory() {
   const { user } = useAuth();
 
@@ -14,17 +27,23 @@ export function useWeightHistory() {
         .select("*")
         .eq("user_id", user.id)
         .order("recorded_at", { ascending: true })
-        .limit(100);
+        .limit(200);
       if (error) throw error;
       return data || [];
     },
     enabled: !!user?.id,
   });
 
-  const chartData = (weightLogs || []).map((log) => ({
-    date: new Date(log.recorded_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    weight: Number(log.weight_kg),
-  }));
+  const toChartData = (logs: any[]) =>
+    logs.map((log) => ({
+      date: formatDate(log.recorded_at),
+      value: Number(log.weight_kg),
+      weight: Number(log.weight_kg),
+    }));
+
+  const weeklyData = toChartData(filterByDays(weightLogs || [], "recorded_at", 7));
+  const monthlyData = toChartData(filterByDays(weightLogs || [], "recorded_at", 30));
+  const chartData = toChartData(weightLogs || []);
 
   const latest = weightLogs?.[weightLogs.length - 1];
   const first = weightLogs?.[0];
@@ -33,5 +52,5 @@ export function useWeightHistory() {
     ? ((weightChange / Number(first.weight_kg)) * 100).toFixed(1)
     : null;
 
-  return { weightLogs, chartData, weightChange, weightChangePercent, isLoading };
+  return { weightLogs, chartData, weeklyData, monthlyData, weightChange, weightChangePercent, isLoading };
 }

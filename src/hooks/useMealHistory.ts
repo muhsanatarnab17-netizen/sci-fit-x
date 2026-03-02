@@ -2,6 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+function filterByDays(logs: any[], dateKey: string, days: number) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return logs.filter((l) => new Date(l[dateKey]) >= cutoff);
+}
+
+function aggregateCalByDay(logs: any[]) {
+  const map: Record<string, number> = {};
+  logs.forEach((l) => {
+    const key = new Date(l.logged_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    map[key] = (map[key] || 0) + (l.calories || 0);
+  });
+  return Object.entries(map).map(([date, value]) => ({ date, value }));
+}
+
 export function useMealHistory() {
   const { user } = useAuth();
 
@@ -21,7 +36,6 @@ export function useMealHistory() {
     enabled: !!user?.id,
   });
 
-  // Aggregate by day for current week
   const now = new Date();
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
@@ -37,5 +51,8 @@ export function useMealHistory() {
     }
   });
 
-  return { mealLogs, weeklyData, isLoading };
+  const weeklyChart = aggregateCalByDay(filterByDays(mealLogs || [], "logged_at", 7));
+  const monthlyChart = aggregateCalByDay(filterByDays(mealLogs || [], "logged_at", 30));
+
+  return { mealLogs, weeklyData, weeklyChart, monthlyChart, isLoading };
 }

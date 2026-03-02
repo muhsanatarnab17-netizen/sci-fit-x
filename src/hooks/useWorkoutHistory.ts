@@ -2,6 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+function filterByDays(logs: any[], dateKey: string, days: number) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return logs.filter((l) => new Date(l[dateKey]) >= cutoff);
+}
+
+function aggregateByDay(logs: any[]) {
+  const map: Record<string, number> = {};
+  logs.forEach((l) => {
+    const key = new Date(l.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    map[key] = (map[key] || 0) + l.duration_minutes;
+  });
+  return Object.entries(map).map(([date, value]) => ({ date, value }));
+}
+
 export function useWorkoutHistory() {
   const { user } = useAuth();
 
@@ -21,7 +36,6 @@ export function useWorkoutHistory() {
     enabled: !!user?.id,
   });
 
-  // Aggregate by day of week for current week
   const now = new Date();
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
@@ -37,11 +51,14 @@ export function useWorkoutHistory() {
     }
   });
 
+  const weeklyChart = aggregateByDay(filterByDays(workoutLogs || [], "completed_at", 7));
+  const monthlyChart = aggregateByDay(filterByDays(workoutLogs || [], "completed_at", 30));
+
   const totalWorkouts = workoutLogs?.length || 0;
   const thisMonthWorkouts = (workoutLogs || []).filter((l) => {
     const d = new Date(l.completed_at);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
-  return { workoutLogs, weeklyData, totalWorkouts, thisMonthWorkouts, isLoading };
+  return { workoutLogs, weeklyData, weeklyChart, monthlyChart, totalWorkouts, thisMonthWorkouts, isLoading };
 }

@@ -13,6 +13,26 @@ export interface PostureAssessment {
   assessed_at: string;
 }
 
+function filterByDays(items: PostureAssessment[], days: number) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return items.filter((a) => new Date(a.assessed_at) >= cutoff);
+}
+
+function aggregateByDay(items: PostureAssessment[]): { date: string; value: number }[] {
+  const map: Record<string, { score: number; count: number }> = {};
+  items.forEach((a) => {
+    const key = new Date(a.assessed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (!map[key]) map[key] = { score: 0, count: 0 };
+    map[key].score += a.score;
+    map[key].count += 1;
+  });
+  return Object.entries(map).map(([date, { score, count }]) => ({
+    date,
+    value: Math.round(score / count),
+  }));
+}
+
 export function usePostureHistory() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -21,14 +41,12 @@ export function usePostureHistory() {
     queryKey: ["posture-assessments", user?.id],
     queryFn: async (): Promise<PostureAssessment[]> => {
       if (!user?.id) return [];
-      
       const { data, error } = await supabase
         .from("posture_assessments")
         .select("*")
         .eq("user_id", user.id)
         .order("assessed_at", { ascending: false })
         .limit(50);
-
       if (error) throw error;
       return data as PostureAssessment[];
     },
@@ -43,7 +61,6 @@ export function usePostureHistory() {
       assessment_type: "camera" | "self-assessment";
     }) => {
       if (!user?.id) throw new Error("No user logged in");
-
       const { data, error } = await supabase
         .from("posture_assessments")
         .insert({
@@ -55,7 +72,6 @@ export function usePostureHistory() {
         })
         .select()
         .single();
-
       if (error) throw error;
       return data;
     },
@@ -67,10 +83,13 @@ export function usePostureHistory() {
     },
   });
 
-  // Calculate statistics
+  const sorted = [...(assessments || [])].reverse(); // ascending order
+  const weeklyChart = aggregateByDay(filterByDays(sorted, 7));
+  const monthlyChart = aggregateByDay(filterByDays(sorted, 30));
+
   const stats = {
     totalAssessments: assessments?.length || 0,
-    averageScore: assessments?.length 
+    averageScore: assessments?.length
       ? Math.round(assessments.reduce((sum, a) => sum + a.score, 0) / assessments.length)
       : 0,
     latestScore: assessments?.[0]?.score || null,
@@ -84,25 +103,16 @@ export function usePostureHistory() {
     weeklyProgress: calculateWeeklyProgress(assessments || []),
   };
 
-  return {
-    assessments,
-    isLoading,
-    saveAssessment,
-    stats,
-  };
+  return { assessments, isLoading, saveAssessment, stats, weeklyChart, monthlyChart };
 }
 
 function calculateWeeklyProgress(assessments: PostureAssessment[]): { date: string; score: number }[] {
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
-  // Filter assessments from the last 7 days
   const recentAssessments = assessments.filter((a) => {
     const date = new Date(a.assessed_at);
     return date >= weekAgo && date <= now;
   });
-
-  // Group by date and take the latest score per day
   const dailyScores: Record<string, number> = {};
   recentAssessments.forEach((a) => {
     const dateKey = new Date(a.assessed_at).toISOString().split("T")[0];
@@ -110,8 +120,6 @@ function calculateWeeklyProgress(assessments: PostureAssessment[]): { date: stri
       dailyScores[dateKey] = a.score;
     }
   });
-
-  // Convert to array and sort by date
   return Object.entries(dailyScores)
     .map(([date, score]) => ({ date, score }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
