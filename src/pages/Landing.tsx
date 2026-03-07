@@ -119,7 +119,7 @@ export default function Landing() {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
-                <img src={appLogo} alt="Sci-Fit-X Logo" className="h-5 w-5" />
+                <img src={appLogo} alt="PosFitx Logo" className="h-5 w-5" />
                 <span className="text-sm text-muted-foreground">Your AI-Powered Fitness Partner</span>
               </div>
 
