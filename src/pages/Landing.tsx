@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Activity, Dumbbell, Heart, Target, Zap } from "lucide-react";
+import { Dumbbell, Target, Zap, Apple } from "lucide-react";
+import appLogo from "@/assets/app-logo.png";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -54,7 +55,6 @@ export default function Landing() {
       const { error } = await signUp(signupEmail, signupPassword);
       
       if (error) {
-        // Handle rate limit error specifically
         if (error.message.includes("rate limit") || error.message.includes("too many")) {
           toast.error("Too many signup attempts. Please wait a few minutes and try again.");
         } else {
@@ -75,21 +75,33 @@ export default function Landing() {
       icon: Target,
       title: "Posture Detection",
       description: "AI-powered posture analysis to help you stand tall",
+      color: "text-neon-blue",
+      bgColor: "bg-neon-blue/10",
+      glowColor: "shadow-[0_8px_30px_-4px_hsl(var(--neon-blue)/0.5)]",
     },
     {
       icon: Dumbbell,
       title: "Custom Workouts",
       description: "Personalized exercise plans tailored to your goals",
+      color: "text-neon-purple",
+      bgColor: "bg-neon-purple/10",
+      glowColor: "shadow-[0_8px_30px_-4px_hsl(var(--neon-purple)/0.5)]",
     },
     {
-      icon: Heart,
+      icon: Apple,
       title: "Diet Planning",
       description: "Nutrition guidance based on your preferences",
+      color: "text-neon-green",
+      bgColor: "bg-neon-green/10",
+      glowColor: "shadow-[0_8px_30px_-4px_hsl(var(--neon-green)/0.5)]",
     },
     {
       icon: Zap,
       title: "Daily Tasks",
       description: "Smart to-do lists to keep you on track",
+      color: "text-neon-orange",
+      bgColor: "bg-neon-orange/10",
+      glowColor: "shadow-[0_8px_30px_-4px_hsl(var(--neon-orange)/0.5)]",
     },
   ];
 
@@ -107,18 +119,22 @@ export default function Landing() {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
-                <Activity className="h-4 w-4 text-primary animate-pulse" />
+                <img src={appLogo} alt="Sci-Fit-X Logo" className="h-5 w-5" />
                 <span className="text-sm text-muted-foreground">Your AI-Powered Fitness Partner</span>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
-                Transform Your{" "}
-                <span className="gradient-text">Health</span>{" "}
-                With Smart AI
-              </h1>
+              <div>
+                <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
+                  Restart your{" "}
+                  <span className="gradient-text">Lifestyle</span>
+                </h1>
+                <p className="text-xl md:text-2xl font-display font-medium text-muted-foreground mt-2">
+                  with Smart AI specialized on Health
+                </p>
+              </div>
 
               <p className="text-lg text-muted-foreground max-w-lg">
-                FitLife Pro combines AI-powered posture detection, personalized workout plans, 
+                Sci-Fit-X combines AI-powered posture detection, personalized workout plans, 
                 and smart nutrition guidance to help you achieve your fitness goals.
               </p>
 
@@ -127,10 +143,10 @@ export default function Landing() {
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className="flex items-start gap-3 p-4 rounded-lg glass hover:glow-blue transition-all duration-300"
+                    className={`relative flex items-start gap-3 p-4 rounded-lg glass hover:scale-[1.02] transition-all duration-300 ${feature.glowColor}`}
                   >
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <feature.icon className="h-5 w-5 text-primary" />
+                    <div className={`p-2 rounded-lg ${feature.bgColor}`}>
+                      <feature.icon className={`h-5 w-5 ${feature.color}`} />
                     </div>
                     <div>
                       <h3 className="font-medium text-sm">{feature.title}</h3>
@@ -145,10 +161,10 @@ export default function Landing() {
             <div className="lg:pl-12">
               <Card className="glass border-border/50">
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10 w-fit">
-                    <Activity className="h-8 w-8 text-primary" />
+                  <div className="mx-auto mb-4 w-fit">
+                    <img src={appLogo} alt="Sci-Fit-X Logo" className="h-14 w-14" />
                   </div>
-                  <CardTitle className="text-2xl font-display">FitLife Pro</CardTitle>
+                  <CardTitle className="text-2xl font-display">Sci-Fit-X</CardTitle>
                   <CardDescription>Start your fitness journey today</CardDescription>
                 </CardHeader>
                 <CardContent>
