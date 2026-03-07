@@ -80,7 +80,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold">
-              Hey There <span className="bg-gradient-to-r from-[hsl(43,100%,70%)] to-[hsl(0,0%,80%)] bg-clip-text text-transparent font-serif italic drop-shadow-[0_0_8px_hsl(43,100%,70%/0.4)]">CHAMP</span>
+              <span className="bg-gradient-to-r from-[hsl(0,0%,75%)] to-[hsl(0,0%,90%)] bg-clip-text text-transparent drop-shadow-[0_0_6px_hsl(0,0%,80%/0.3)]">Hey There </span><span className="bg-gradient-to-r from-[hsl(43,100%,55%)] to-[hsl(43,100%,75%)] bg-clip-text text-transparent drop-shadow-[0_0_8px_hsl(43,100%,65%/0.4)]">CHAMP</span>
             </h1>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
