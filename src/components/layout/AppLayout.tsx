@@ -136,8 +136,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-center gap-2 mb-8">
-                    <Activity className="h-6 w-6 text-primary" />
-                    <span className="font-display font-bold text-xl gradient-text">FitLife Pro</span>
+                    <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
+                    <span className="font-display font-bold text-xl gradient-text">Sci-Fit-X</span>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">
