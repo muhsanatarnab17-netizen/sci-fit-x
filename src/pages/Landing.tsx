@@ -119,7 +119,7 @@ export default function Landing() {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
-                <img src={appLogo} alt="Sci-Fit-X Logo" className="h-5 w-5" />
+                <img src={appLogo} alt="PosFitx Logo" className="h-5 w-5" />
                 <span className="text-sm text-muted-foreground">Your AI-Powered Fitness Partner</span>
               </div>
 
@@ -134,7 +134,7 @@ export default function Landing() {
               </div>
 
               <p className="text-lg text-muted-foreground max-w-lg">
-                Sci-Fit-X combines AI-powered posture detection, personalized workout plans, 
+                PosFitx combines AI-powered posture detection, personalized workout plans, 
                 and smart nutrition guidance to help you achieve your fitness goals.
               </p>
 
@@ -162,9 +162,9 @@ export default function Landing() {
               <Card className="glass border-border/50">
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-4 w-fit">
-                    <img src={appLogo} alt="Sci-Fit-X Logo" className="h-14 w-14" />
+                    <img src={appLogo} alt="PosFitx Logo" className="h-14 w-14" />
                   </div>
-                  <CardTitle className="text-2xl font-display">Sci-Fit-X</CardTitle>
+                  <CardTitle className="text-2xl font-display">PosFitx</CardTitle>
                   <CardDescription>Start your fitness journey today</CardDescription>
                 </CardHeader>
                 <CardContent>

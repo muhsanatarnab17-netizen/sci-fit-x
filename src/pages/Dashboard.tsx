@@ -80,7 +80,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold">
-              Welcome back, <span className="gradient-text">{profile.full_name?.split(" ")[0] || "Champion"}</span>! 💪
+              Hey There <span className="bg-gradient-to-r from-[hsl(43,100%,70%)] to-[hsl(0,0%,80%)] bg-clip-text text-transparent font-serif italic drop-shadow-[0_0_8px_hsl(43,100%,70%/0.4)]">CHAMP</span>
             </h1>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>

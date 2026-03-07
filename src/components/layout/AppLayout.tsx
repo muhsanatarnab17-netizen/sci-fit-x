@@ -81,10 +81,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-primary/10">
-                <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
+                <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
               </div>
               <span className="font-display font-bold text-xl hidden sm:inline gradient-text">
-                Sci-Fit-X
+                PosFitx
               </span>
             </Link>
 
@@ -136,8 +136,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-center gap-2 mb-8">
-                    <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
-                    <span className="font-display font-bold text-xl gradient-text">Sci-Fit-X</span>
+                    <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
+                    <span className="font-display font-bold text-xl gradient-text">PosFitx</span>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">

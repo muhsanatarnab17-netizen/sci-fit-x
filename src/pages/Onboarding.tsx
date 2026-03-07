@@ -107,7 +107,7 @@ export default function Onboarding() {
         onboarding_step: TOTAL_STEPS,
       });
 
-      toast.success("Profile created! Welcome to Sci-Fit-X!");
+      toast.success("Profile created! Welcome to PosFitx!");
       navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to save profile. Please try again.");
@@ -140,8 +140,8 @@ export default function Onboarding() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <img src="/app-logo.png" alt="Sci-Fit-X" className="h-8 w-8" />
-            <span className="text-2xl font-display font-bold gradient-text">Sci-Fit-X</span>
+            <img src="/app-logo.png" alt="PosFitx" className="h-8 w-8" />
+            <span className="text-2xl font-display font-bold gradient-text">PosFitx</span>
           </div>
           <h1 className="text-2xl font-bold mb-2">Let's Set Up Your Profile</h1>
           <p className="text-muted-foreground">Step {currentStep} of {TOTAL_STEPS}</p>
