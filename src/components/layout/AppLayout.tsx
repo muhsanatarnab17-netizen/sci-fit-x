@@ -84,7 +84,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
               </div>
               <span className="font-display font-bold text-xl hidden sm:inline gradient-text">
-                Sci-Fit-X
+                PosFitx
               </span>
             </Link>
 
