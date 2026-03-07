@@ -162,9 +162,9 @@ export default function Landing() {
               <Card className="glass border-border/50">
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-4 w-fit">
-                    <img src={appLogo} alt="Sci-Fit-X Logo" className="h-14 w-14" />
+                    <img src={appLogo} alt="PosFitx Logo" className="h-14 w-14" />
                   </div>
-                  <CardTitle className="text-2xl font-display">Sci-Fit-X</CardTitle>
+                  <CardTitle className="text-2xl font-display">PosFitx</CardTitle>
                   <CardDescription>Start your fitness journey today</CardDescription>
                 </CardHeader>
                 <CardContent>
