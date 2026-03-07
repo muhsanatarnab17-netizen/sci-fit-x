@@ -81,10 +81,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-primary/10">
-                <Activity className="h-6 w-6 text-primary" />
+                <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
               </div>
               <span className="font-display font-bold text-xl hidden sm:inline gradient-text">
-                FitLife Pro
+                Sci-Fit-X
               </span>
             </Link>
 
