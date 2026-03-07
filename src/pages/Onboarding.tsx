@@ -107,7 +107,7 @@ export default function Onboarding() {
         onboarding_step: TOTAL_STEPS,
       });
 
-      toast.success("Profile created! Welcome to FitLife Pro!");
+      toast.success("Profile created! Welcome to Sci-Fit-X!");
       navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to save profile. Please try again.");
