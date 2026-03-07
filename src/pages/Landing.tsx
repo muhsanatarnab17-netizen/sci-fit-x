@@ -134,7 +134,7 @@ export default function Landing() {
               </div>
 
               <p className="text-lg text-muted-foreground max-w-lg">
-                Sci-Fit-X combines AI-powered posture detection, personalized workout plans, 
+                PosFitx combines AI-powered posture detection, personalized workout plans, 
                 and smart nutrition guidance to help you achieve your fitness goals.
               </p>
 
