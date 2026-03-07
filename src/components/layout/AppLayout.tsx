@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
-  Activity,
   LayoutDashboard,
   Target,
   Calendar,
@@ -82,10 +81,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-primary/10">
-                <Activity className="h-6 w-6 text-primary" />
+                <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
               </div>
               <span className="font-display font-bold text-xl hidden sm:inline gradient-text">
-                FitLife Pro
+                Sci-Fit-X
               </span>
             </Link>
 
@@ -137,8 +136,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-center gap-2 mb-8">
-                    <Activity className="h-6 w-6 text-primary" />
-                    <span className="font-display font-bold text-xl gradient-text">FitLife Pro</span>
+                    <img src="/app-logo.png" alt="Sci-Fit-X" className="h-6 w-6" />
+                    <span className="font-display font-bold text-xl gradient-text">Sci-Fit-X</span>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">

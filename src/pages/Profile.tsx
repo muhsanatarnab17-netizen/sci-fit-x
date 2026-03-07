@@ -152,7 +152,7 @@ export default function Profile() {
           </Card>
           <Card className="glass">
             <CardContent className="pt-6 text-center">
-              <Activity className="h-6 w-6 mx-auto text-accent mb-2" />
+              <Scale className="h-6 w-6 mx-auto text-accent mb-2" />
               <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
               <p className="text-sm text-muted-foreground">BMI</p>
               {bmiCategory && (
