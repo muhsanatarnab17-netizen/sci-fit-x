@@ -10,7 +10,7 @@
 @layer base {
   :root {
     /* Deep slate/charcoal with Electric Cyan */
-    --background: 220 20% 10%;
+    --background: 220 22% 7%;
     --foreground: 210 20% 95%;
 
     --card: 220 18% 13%;
