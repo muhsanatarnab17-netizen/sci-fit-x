@@ -131,9 +131,10 @@ export default function Landing() {
 
               <div>
                 <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
-                  <span className="inline-block relative">
-                    <img src={leafyR} alt="R" className="inline-block h-[1.15em] w-auto align-baseline -mb-[0.05em] -mr-[0.08em]" />
-                  </span>estart your{" "}
+                  <span className="inline-flex items-end leading-none">
+                    <img src={leafyR} alt="R" className="inline-block h-[1.3em] w-auto -mb-[0.08em] -mr-[0.02em] drop-shadow-[0_0_8px_rgba(0,200,100,0.3)]" />
+                    <span>estart your</span>
+                  </span>{" "}
                   <span className="gradient-text">Lifestyle</span>
                 </h1>
                 <p className="text-xl md:text-2xl font-display font-medium text-muted-foreground mt-2">
