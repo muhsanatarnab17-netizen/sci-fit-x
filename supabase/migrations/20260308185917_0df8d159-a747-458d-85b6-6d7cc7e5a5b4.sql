@@ -1,0 +1,2 @@
+ALTER TABLE public.daily_tasks DROP CONSTRAINT daily_tasks_category_check;
+ALTER TABLE public.daily_tasks ADD CONSTRAINT daily_tasks_category_check CHECK (category = ANY (ARRAY['workout','meal','posture','sleep','hydration','health','fun','social','gaming','other']));
