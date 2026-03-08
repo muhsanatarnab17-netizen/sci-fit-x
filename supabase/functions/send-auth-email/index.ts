@@ -163,10 +163,51 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const baseUrl = redirect_to || Deno.env.get("SUPABASE_URL");
+    // Enforce email ownership: the caller can only send auth emails to their own email
+    const callerEmail = (claimsData.claims as Record<string, unknown>).email as string | undefined;
+    if (callerEmail && email.toLowerCase() !== callerEmail.toLowerCase()) {
+      return new Response(
+        JSON.stringify({ error: "You can only send auth emails to your own email address" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate redirect_to against allowed domains
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const allowedOrigins = [
+      supabaseUrl,
+      "https://sci-fit-x.lovable.app",
+      "https://id-preview--52e56e5c-67de-441a-a285-866601d5c260.lovable.app",
+    ].filter(Boolean);
+
+    let validatedRedirect = supabaseUrl;
+    if (redirect_to) {
+      try {
+        const redirectUrl = new URL(redirect_to);
+        const isAllowed = allowedOrigins.some((origin) => {
+          try {
+            return new URL(origin).origin === redirectUrl.origin;
+          } catch { return false; }
+        });
+        if (!isAllowed) {
+          return new Response(
+            JSON.stringify({ error: "Invalid redirect URL" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        validatedRedirect = redirect_to;
+      } catch {
+        return new Response(
+          JSON.stringify({ error: "Invalid redirect URL format" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    const baseUrl = validatedRedirect;
     const confirmUrl = token_hash 
-      ? `${baseUrl}/auth/v1/verify?token=${token_hash}&type=${type}&redirect_to=${redirect_to || ''}`
-      : redirect_to || baseUrl;
+      ? `${baseUrl}/auth/v1/verify?token=${token_hash}&type=${type}&redirect_to=${validatedRedirect}`
+      : validatedRedirect;
 
     const { subject, html } = getEmailContent(type, confirmUrl || "");
 
