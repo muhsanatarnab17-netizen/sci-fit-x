@@ -79,43 +79,43 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/dashboard" className="flex items-center gap-1.5">
-              {/* Triangular container for logo */}
-              <div className="relative flex items-center justify-center" style={{
-                width: '40px',
-                height: '40px',
-                clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                background: 'linear-gradient(180deg, hsl(187 100% 50% / 0.2) 0%, hsl(187 100% 50% / 0.08) 100%)',
-                filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.3))',
+            <Link to="/dashboard" className="flex items-center gap-1">
+              {/* Solid background logo container */}
+              <div className="relative flex items-center justify-center rounded-lg overflow-hidden" style={{
+                width: '44px',
+                height: '44px',
+                background: 'hsl(220 22% 7%)',
+                border: '1.5px solid hsl(187 100% 50% / 0.25)',
+                boxShadow: '0 0 12px hsl(187 100% 50% / 0.15)',
               }}>
-                <img src="/app-logo.png" alt="PosFitx" className="h-7 w-7 mt-2.5 object-contain" style={{
+                <img src="/app-logo.png" alt="PosFitx" className="w-full h-full object-cover" style={{
                   filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
                 }} />
               </div>
-              {/* Curved backbone text using SVG path */}
-              <svg className="hidden sm:block" width="110" height="40" viewBox="0 0 110 40" style={{
-                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
+              {/* Curved backbone text */}
+              <svg className="hidden sm:block" width="120" height="44" viewBox="0 0 120 44" style={{
+                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
               }}>
                 <defs>
-                  <path id="spineCurve" d="M 2 35 C 15 8, 35 2, 55 6 S 95 18, 108 8" fill="none" />
-                  <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(187 100% 70%)" />
-                    <stop offset="30%" stopColor="hsl(187 100% 50%)" />
-                    <stop offset="70%" stopColor="hsl(187 100% 35%)" />
-                    <stop offset="100%" stopColor="hsl(190 60% 25%)" />
+                  {/* S-curve backbone shape for text */}
+                  <path id="spineCurve" d="M 4 38 C 20 10, 40 2, 60 8 S 100 22, 116 6" fill="none" />
+                  {/* Dimmed gray backbone silhouette behind text */}
+                  <path id="spineShape" d="M 4 38 C 20 10, 40 2, 60 8 S 100 22, 116 6" fill="none" />
+                  <linearGradient id="spineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="hsl(187 100% 65%)" />
+                    <stop offset="40%" stopColor="hsl(187 100% 50%)" />
+                    <stop offset="100%" stopColor="hsl(190 80% 40%)" />
                   </linearGradient>
                 </defs>
-                <text fill="url(#spineGrad)" fontFamily="'Space Grotesk', system-ui, sans-serif" fontWeight="700" fontSize="16" letterSpacing="3" textAnchor="start">
+                {/* Backbone silhouette - two parallel curves */}
+                <path d="M 4 40 C 20 12, 40 4, 60 10 S 100 24, 116 8" fill="none" stroke="hsl(215 15% 25%)" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+                <path d="M 4 36 C 20 8, 40 0, 60 6 S 100 20, 116 4" fill="none" stroke="hsl(215 15% 20%)" strokeWidth="3" strokeLinecap="round" opacity="0.2" />
+                {/* Main text along spine curve */}
+                <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="15" letterSpacing="2.5" textAnchor="start">
                   <textPath href="#spineCurve" startOffset="0%">
-                    P●S᛫Fi᛫t◦x
+                    PosFitx
                   </textPath>
                 </text>
-                {/* Vertebrae dots along the curve */}
-                <circle cx="8" cy="32" r="1" fill="hsl(187 100% 50% / 0.3)" />
-                <circle cx="25" cy="14" r="0.8" fill="hsl(187 100% 50% / 0.25)" />
-                <circle cx="45" cy="6" r="0.7" fill="hsl(187 100% 50% / 0.2)" />
-                <circle cx="70" cy="10" r="0.8" fill="hsl(187 100% 50% / 0.25)" />
-                <circle cx="90" cy="14" r="0.7" fill="hsl(187 100% 50% / 0.2)" />
               </svg>
             </Link>
 
@@ -166,26 +166,26 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
-                  <div className="flex items-center gap-1.5 mb-8">
-                    <div className="relative flex items-center justify-center" style={{
-                      width: '36px',
-                      height: '36px',
-                      clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                      background: 'linear-gradient(180deg, hsl(187 100% 50% / 0.2) 0%, hsl(187 100% 50% / 0.08) 100%)',
-                      filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.3))',
+                  <div className="flex items-center gap-1 mb-8">
+                    <div className="relative flex items-center justify-center rounded-lg overflow-hidden" style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'hsl(220 22% 7%)',
+                      border: '1.5px solid hsl(187 100% 50% / 0.25)',
+                      boxShadow: '0 0 12px hsl(187 100% 50% / 0.15)',
                     }}>
-                      <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6 mt-2 object-contain" style={{
+                      <img src="/app-logo.png" alt="PosFitx" className="w-full h-full object-cover" style={{
                         filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
                       }} />
                     </div>
-                    <svg width="100" height="36" viewBox="0 0 110 40" style={{
-                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
+                    <svg width="110" height="40" viewBox="0 0 120 44" style={{
+                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
                     }}>
-                      <use href="#spineCurve" />
-                      <use href="#spineGrad" />
-                      <text fill="url(#spineGrad)" fontFamily="'Space Grotesk', system-ui, sans-serif" fontWeight="700" fontSize="16" letterSpacing="3" textAnchor="start">
+                      <path d="M 4 40 C 20 12, 40 4, 60 10 S 100 24, 116 8" fill="none" stroke="hsl(215 15% 25%)" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+                      <path d="M 4 36 C 20 8, 40 0, 60 6 S 100 20, 116 4" fill="none" stroke="hsl(215 15% 20%)" strokeWidth="3" strokeLinecap="round" opacity="0.2" />
+                      <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="15" letterSpacing="2.5" textAnchor="start">
                         <textPath href="#spineCurve" startOffset="0%">
-                          P●S᛫Fi᛫t◦x
+                          PosFitx
                         </textPath>
                       </text>
                     </svg>
