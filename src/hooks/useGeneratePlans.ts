@@ -48,11 +48,11 @@ export function useGeneratePlans() {
   const [plans, setPlans] = useState<GeneratedPlans | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const generate = async (profile: Profile) => {
+  const generate = async () => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-plans", {
-        body: { profile },
+        body: {},
       });
 
       if (error) {

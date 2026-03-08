@@ -37,9 +37,9 @@ export function useCachedPlans() {
   });
 
   const generateAndCache = useMutation({
-    mutationFn: async (profile: Profile): Promise<GeneratedPlans> => {
+    mutationFn: async (): Promise<GeneratedPlans> => {
       const { data, error } = await supabase.functions.invoke("generate-plans", {
-        body: { profile },
+        body: {},
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
