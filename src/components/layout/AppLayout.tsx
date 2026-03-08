@@ -150,7 +150,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-end gap-2 mb-8">
                     <img src="/app-logo.png" alt="PosFitx" className="h-12 w-12 object-contain" style={{
-                      filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.5))',
+                      filter: 'hue-rotate(200deg) saturate(1.8) brightness(0.7) contrast(1.6) drop-shadow(0 0 10px hsl(260 70% 45% / 0.7)) drop-shadow(0 0 20px hsl(240 60% 50% / 0.4))',
                     }} />
                     <span className="text-xl font-semibold tracking-widest pb-0.5" style={{
                       fontFamily: "'Work Sans', system-ui, sans-serif",
