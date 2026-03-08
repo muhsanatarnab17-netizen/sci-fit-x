@@ -45,7 +45,7 @@ const VALID_STRESS_LEVELS = ["low", "moderate", "high", "very_high"] as const;
 
 const ProfileUpdateSchema = z.object({
   full_name: z.string().max(200).optional().nullable(),
-  username: z.string().max(50).regex(/^[a-z0-9_]*$/, "Username can only contain lowercase letters, numbers, and underscores").optional().nullable(),
+  username: z.string().max(50).regex(/^[a-zA-Z0-9_]*$/, "Username can only contain letters, numbers, and underscores").optional().nullable(),
   avatar_url: z.string().url().max(2048).optional().nullable(),
   age: z.number().int().min(1).max(120).optional().nullable(),
   gender: z.enum(VALID_GENDERS).optional().nullable(),
