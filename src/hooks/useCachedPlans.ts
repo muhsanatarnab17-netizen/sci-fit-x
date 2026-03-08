@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Profile } from "@/hooks/useProfile";
 import { GeneratedPlans } from "@/hooks/useGeneratePlans";
 import { toast } from "sonner";
 
@@ -37,9 +36,9 @@ export function useCachedPlans() {
   });
 
   const generateAndCache = useMutation({
-    mutationFn: async (profile: Profile): Promise<GeneratedPlans> => {
+    mutationFn: async (): Promise<GeneratedPlans> => {
       const { data, error } = await supabase.functions.invoke("generate-plans", {
-        body: { profile },
+        body: {},
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
