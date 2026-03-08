@@ -166,16 +166,29 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
-                  <div className="flex items-center gap-2 mb-8">
-                    <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
-                    <span className="font-display font-bold text-xl tracking-[0.25em] uppercase" style={{
-                      background: 'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 50%) 30%, hsl(187 100% 35%) 70%, hsl(190 60% 25%) 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                  <div className="flex items-center gap-1.5 mb-8">
+                    <div className="relative flex items-center justify-center" style={{
+                      width: '36px',
+                      height: '36px',
+                      clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                      background: 'linear-gradient(180deg, hsl(187 100% 50% / 0.2) 0%, hsl(187 100% 50% / 0.08) 100%)',
+                      filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.3))',
+                    }}>
+                      <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6 mt-2 object-contain" style={{
+                        filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
+                      }} />
+                    </div>
+                    <svg width="100" height="36" viewBox="0 0 110 40" style={{
                       filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
                     }}>
-                      P<span style={{ fontSize: '0.7em', verticalAlign: 'middle', opacity: 0.7 }}>●</span>S<span style={{ display: 'inline-block', width: '2px', height: '0.6em', background: 'hsl(187 100% 50% / 0.5)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>F<span style={{ display: 'inline-block', width: '2px', height: '0.8em', background: 'hsl(187 100% 45% / 0.4)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>i<span style={{ display: 'inline-block', width: '2px', height: '0.5em', background: 'hsl(187 100% 40% / 0.3)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>t<span style={{ fontSize: '0.65em', verticalAlign: 'middle', opacity: 0.5 }}>◦</span>x
-                    </span>
+                      <use href="#spineCurve" />
+                      <use href="#spineGrad" />
+                      <text fill="url(#spineGrad)" fontFamily="'Space Grotesk', system-ui, sans-serif" fontWeight="700" fontSize="16" letterSpacing="3" textAnchor="start">
+                        <textPath href="#spineCurve" startOffset="0%">
+                          P●S᛫Fi᛫t◦x
+                        </textPath>
+                      </text>
+                    </svg>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">
