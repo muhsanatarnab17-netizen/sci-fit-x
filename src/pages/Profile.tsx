@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ import {
   LogOut,
   Save,
   Loader2,
+  Camera,
 } from "lucide-react";
 import { calculateBMI, calculateBMR, calculateDailyCalories, getBMICategory, type ACTIVITY_MULTIPLIERS } from "@/lib/health-utils";
 
@@ -32,12 +34,68 @@ export default function Profile() {
   const { user, signOut } = useAuth();
   const { profile, updateProfile, isLoading } = useProfile();
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Editable fields
-  const [fullName, setFullName] = useState(profile?.full_name || "");
-  const [height, setHeight] = useState(profile?.height_cm || 170);
-  const [weight, setWeight] = useState(profile?.weight_kg || 70);
-  const [sleepHours, setSleepHours] = useState(profile?.sleep_hours || 8);
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [height, setHeight] = useState(170);
+  const [weight, setWeight] = useState(70);
+  const [sleepHours, setSleepHours] = useState(8);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (profile) {
+      setFullName(profile.full_name || "");
+      setUsername(profile.username || "");
+      setHeight(profile.height_cm || 170);
+      setWeight(profile.weight_kg || 70);
+      setSleepHours(profile.sleep_hours || 8);
+      setAvatarUrl(profile.avatar_url);
+    }
+  }, [profile]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be less than 2MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      // Add cache buster
+      const url = `${publicUrl}?t=${Date.now()}`;
+      setAvatarUrl(url);
+      
+      await updateProfile.mutateAsync({ avatar_url: url });
+      toast.success("Avatar updated!");
+    } catch (err: any) {
+      toast.error("Failed to upload avatar: " + err.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -57,6 +115,7 @@ export default function Profile() {
     try {
       await updateProfile.mutateAsync({
         full_name: fullName,
+        username: username || null,
         height_cm: height,
         weight_kg: weight,
         sleep_hours: sleepHours,
@@ -107,14 +166,37 @@ export default function Profile() {
         <Card className="glass">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <Avatar className="h-24 w-24 border-4 border-primary/20">
-                <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                  {profile.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <Avatar className="h-24 w-24 border-4 border-primary/20">
+                  <AvatarImage src={avatarUrl || undefined} />
+                  <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                    {profile.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  {isUploading ? (
+                    <Loader2 className="h-6 w-6 text-white animate-spin" />
+                  ) : (
+                    <Camera className="h-6 w-6 text-white" />
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+              </div>
               <div className="text-center md:text-left flex-1">
                 <h2 className="text-2xl font-bold">{profile.full_name || "Fitness Champion"}</h2>
+                {profile.username && (
+                  <p className="text-sm text-primary">@{profile.username}</p>
+                )}
                 <p className="text-muted-foreground">{user?.email}</p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
                   <Badge variant="outline" className="capitalize">
@@ -191,6 +273,18 @@ export default function Profile() {
                   placeholder="Your name"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  placeholder="your_username"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Age</Label>
                 <Input value={profile.age || ""} disabled className="opacity-50" />
