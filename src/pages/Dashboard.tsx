@@ -91,11 +91,12 @@ export default function Dashboard() {
                   WebkitTextFillColor: 'transparent',
                 }}>Hey There ! CHAMP</span>
                 
-                {/* "Hey There !" - frosty outline style */}
-                <span className="relative" style={{
+                {/* "Hey There !" - goldish silver, smaller, bolder */}
+                <span className="relative text-2xl md:text-3xl font-black" style={{
+                  background: 'linear-gradient(180deg, hsl(43 60% 80%), hsl(38 40% 55%), hsl(43 50% 70%))',
+                  WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  WebkitTextStroke: '1.5px hsl(0 0% 55%)',
-                  filter: 'drop-shadow(0 0 8px hsl(25 100% 50% / 0.3)) drop-shadow(0 0 20px hsl(260 70% 50% / 0.2))',
+                  filter: 'drop-shadow(0 0 8px hsl(43 50% 50% / 0.4)) drop-shadow(0 0 20px hsl(25 80% 50% / 0.2))',
                 }}>Hey There ! </span>
 
                 {/* CHAMP - each letter frosty glass with colored backlight */}
