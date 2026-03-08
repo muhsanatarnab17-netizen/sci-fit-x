@@ -79,7 +79,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/dashboard" className="flex items-center gap-1">
+            <Link to="/dashboard" className="flex items-center gap-2">
               {/* Solid background logo container */}
               <div className="relative flex items-center justify-center rounded-lg overflow-hidden" style={{
                 width: '44px',
@@ -92,26 +92,23 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
                 }} />
               </div>
-              {/* Curved backbone text */}
-              <svg className="hidden sm:block" width="120" height="44" viewBox="0 0 120 44" style={{
-                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
+              {/* Backbone text - small wavy xray bone curve */}
+              <svg className="hidden sm:block" width="90" height="28" viewBox="0 0 90 28" style={{
+                filter: 'drop-shadow(0 0 5px hsl(187 100% 50% / 0.3))',
               }}>
                 <defs>
-                  {/* S-curve backbone shape for text */}
-                  <path id="spineCurve" d="M 4 38 C 20 10, 40 2, 60 8 S 100 22, 116 6" fill="none" />
-                  {/* Dimmed gray backbone silhouette behind text */}
-                  <path id="spineShape" d="M 4 38 C 20 10, 40 2, 60 8 S 100 22, 116 6" fill="none" />
+                  <path id="spineCurve" d="M 2 20 C 12 10, 22 10, 32 16 S 52 22, 62 14 S 78 8, 88 12" fill="none" />
                   <linearGradient id="spineGrad" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="hsl(187 100% 65%)" />
                     <stop offset="40%" stopColor="hsl(187 100% 50%)" />
                     <stop offset="100%" stopColor="hsl(190 80% 40%)" />
                   </linearGradient>
                 </defs>
-                {/* Backbone silhouette - two parallel curves */}
-                <path d="M 4 40 C 20 12, 40 4, 60 10 S 100 24, 116 8" fill="none" stroke="hsl(215 15% 25%)" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
-                <path d="M 4 36 C 20 8, 40 0, 60 6 S 100 20, 116 4" fill="none" stroke="hsl(215 15% 20%)" strokeWidth="3" strokeLinecap="round" opacity="0.2" />
-                {/* Main text along spine curve */}
-                <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="15" letterSpacing="2.5" textAnchor="start">
+                {/* Xray bone silhouette - two subtle parallel wavy lines */}
+                <path d="M 2 21 C 12 11, 22 11, 32 17 S 52 23, 62 15 S 78 9, 88 13" fill="none" stroke="hsl(215 15% 28%)" strokeWidth="8" strokeLinecap="round" opacity="0.2" />
+                <path d="M 2 19 C 12 9, 22 9, 32 15 S 52 21, 62 13 S 78 7, 88 11" fill="none" stroke="hsl(215 15% 22%)" strokeWidth="3" strokeLinecap="round" opacity="0.15" />
+                {/* Text along bone curve */}
+                <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="13" letterSpacing="2" textAnchor="start">
                   <textPath href="#spineCurve" startOffset="0%">
                     PosFitx
                   </textPath>
