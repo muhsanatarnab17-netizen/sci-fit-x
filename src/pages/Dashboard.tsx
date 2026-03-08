@@ -148,7 +148,7 @@ export default function Dashboard() {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
           {/* BMI - combined Activity + Heart */}
-          <Card className="glass border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
+          <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
