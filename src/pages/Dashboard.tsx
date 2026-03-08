@@ -110,19 +110,19 @@ export default function Dashboard() {
                     'hsl(187 100% 50% / 0.7)',
                     'hsl(260 80% 55% / 0.7)',
                     'hsl(25 100% 55% / 0.7)',
-                    'hsl(330 80% 55% / 0.7)',
-                    'hsl(25 100% 50% / 0.7)',
                   ];
                   const strokePalette = [
                     'hsl(187 100% 70% / 0.7)',
                     'hsl(260 80% 70% / 0.7)',
                     'hsl(25 100% 70% / 0.7)',
-                    'hsl(330 80% 65% / 0.7)',
-                    'hsl(25 100% 65% / 0.7)',
                   ];
+                  const len = displayName.replace(/\s/g, '').length;
+                  const sectionSize = Math.ceil(len / 3);
+                  let charIndex = 0;
                   return displayName.split('').map((letter, i) => {
                     if (letter === ' ') return <span key={`u-${i}`}>&nbsp;</span>;
-                    const ci = i % glowPalette.length;
+                    const ci = Math.min(Math.floor(charIndex / sectionSize), 2);
+                    charIndex++;
                     return (
                       <span key={`u-${i}`} className="relative inline-block" style={{
                         WebkitTextFillColor: 'transparent',
