@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import CategoryBadge from "@/components/ui/category-badge";
 import {
   Activity,
   Flame,
@@ -197,9 +198,7 @@ export default function Dashboard() {
                     <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
                       {task.title}
                     </span>
-                    <Badge variant="secondary" className="text-xs capitalize">
-                      {task.category}
-                    </Badge>
+                    <CategoryBadge category={task.category || "other"} />
                   </div>
                 ))}
                 {tasks.length > 6 && (
