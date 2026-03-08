@@ -80,39 +80,45 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold uppercase" style={{
+            <h1 className="text-4xl md:text-5xl font-black uppercase relative" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
-                letterSpacing: '5px',
-                transform: 'perspective(600px) rotateY(-3deg)',
+                letterSpacing: '6px',
               }}>
-                <span style={{
-                  background: 'linear-gradient(180deg, hsl(0 0% 85%) 0%, hsl(0 0% 55%) 100%)',
+                {/* Backlight glow layer */}
+                <span className="absolute inset-0 blur-xl opacity-60 pointer-events-none" aria-hidden="true" style={{
+                  background: 'linear-gradient(90deg, hsl(25 100% 50% / 0.4), hsl(260 80% 50% / 0.3), hsl(187 100% 50% / 0.4), hsl(330 80% 50% / 0.3), hsl(25 100% 50% / 0.4))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(2px 2px 0 hsl(0 0% 20%)) drop-shadow(0 0 8px hsl(0 0% 60% / 0.3))',
-                }}>Hey There </span>
+                }}>Hey There ! CHAMP</span>
+                
+                {/* "Hey There !" - frosty outline style */}
+                <span className="relative" style={{
+                  WebkitTextFillColor: 'transparent',
+                  WebkitTextStroke: '1.5px hsl(0 0% 55%)',
+                  filter: 'drop-shadow(0 0 8px hsl(25 100% 50% / 0.3)) drop-shadow(0 0 20px hsl(260 70% 50% / 0.2))',
+                }}>Hey There ! </span>
+
+                {/* CHAMP - each letter frosty glass with colored backlight */}
                 {'CHAMP'.split('').map((letter, i) => {
-                  const colors = [
-                    'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 40%) 100%)',
-                    'linear-gradient(180deg, hsl(260 80% 70%) 0%, hsl(260 70% 40%) 100%)',
-                    'linear-gradient(180deg, hsl(330 80% 65%) 0%, hsl(330 70% 35%) 100%)',
-                    'linear-gradient(180deg, hsl(150 80% 60%) 0%, hsl(150 70% 35%) 100%)',
-                    'linear-gradient(180deg, hsl(35 100% 65%) 0%, hsl(35 90% 40%) 100%)',
+                  const glowColors = [
+                    'hsl(187 100% 50% / 0.7)',
+                    'hsl(260 80% 55% / 0.7)',
+                    'hsl(25 100% 55% / 0.7)',
+                    'hsl(330 80% 55% / 0.7)',
+                    'hsl(25 100% 50% / 0.7)',
                   ];
-                  const glows = [
-                    'hsl(187 100% 50% / 0.5)',
-                    'hsl(260 80% 50% / 0.5)',
-                    'hsl(330 80% 50% / 0.5)',
-                    'hsl(150 80% 50% / 0.5)',
-                    'hsl(35 100% 50% / 0.5)',
+                  const strokeColors = [
+                    'hsl(187 100% 70% / 0.7)',
+                    'hsl(260 80% 70% / 0.7)',
+                    'hsl(25 100% 70% / 0.7)',
+                    'hsl(330 80% 65% / 0.7)',
+                    'hsl(25 100% 65% / 0.7)',
                   ];
                   return (
-                    <span key={i} style={{
-                      background: colors[i],
-                      WebkitBackgroundClip: 'text',
+                    <span key={i} className="relative inline-block" style={{
                       WebkitTextFillColor: 'transparent',
-                      filter: `drop-shadow(2px 3px 0 hsl(0 0% 8%)) drop-shadow(1px 1px 0 hsl(0 0% 15%)) drop-shadow(0 0 10px ${glows[i]})`,
-                      display: 'inline-block',
+                      WebkitTextStroke: `1.5px ${strokeColors[i]}`,
+                      filter: `drop-shadow(0 0 12px ${glowColors[i]}) drop-shadow(0 0 25px ${glowColors[i]})`,
                     }}>{letter}</span>
                   );
                 })}
