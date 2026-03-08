@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-8 stagger-children">
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -146,9 +146,9 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
           {/* BMI - combined Activity + Heart */}
-          <Card className="glass border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
+          <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
@@ -167,7 +167,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Workouts - green */}
-          <Card className="glass border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
+          <Card className="glass hover-lift hover-glow-green border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
@@ -183,7 +183,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Meals - orange */}
-          <Card className="glass border-neon-orange/20 transition-all duration-300 shadow-[0_4px_25px_hsl(25_100%_50%/0.25)]">
+          <Card className="glass hover-lift hover-glow-orange border-neon-orange/20 transition-all duration-300 shadow-[0_4px_25px_hsl(25_100%_50%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
@@ -199,7 +199,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Posture - spine-like, deep neon */}
-          <Card className="glass border-neon-purple/20 transition-all duration-300 shadow-[0_4px_25px_hsl(260_80%_55%/0.25)]">
+          <Card className="glass hover-lift hover-glow-purple border-neon-purple/20 transition-all duration-300 shadow-[0_4px_25px_hsl(260_80%_55%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
@@ -232,7 +232,7 @@ export default function Dashboard() {
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Today's Tasks */}
-          <Card className="lg:col-span-2 glass">
+          <Card className="lg:col-span-2 glass-elevated">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
@@ -287,8 +287,8 @@ export default function Dashboard() {
           </Card>
 
           {/* Quick Actions */}
-          <div className="space-y-4">
-            <Card className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300" onClick={() => navigate("/posture")}>
+          <div className="space-y-4 stagger-children">
+            <Card className="glass hover-lift hover-glow-blue border-primary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/posture")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-primary/10 shadow-[0_0_15px_hsl(187_100%_50%/0.2)]">
@@ -305,7 +305,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-neon-green/20 cursor-pointer hover:glow-green transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-green border-neon-green/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-green/10 shadow-[0_0_15px_hsl(160_80%_45%/0.2)]">
@@ -320,7 +320,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-purple border-secondary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-secondary/10 shadow-[0_0_15px_hsl(260_60%_55%/0.2)]">
@@ -335,7 +335,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-neon-pink/20 cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_hsl(330_81%_60%/0.3)]" onClick={() => navigate("/progress")}>
+            <Card className="glass hover-lift hover-glow-pink border-neon-pink/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/progress")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-pink/10 shadow-[0_0_15px_hsl(330_81%_60%/0.2)]">

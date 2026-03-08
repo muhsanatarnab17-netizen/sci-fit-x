@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
 @tailwind base;
@@ -29,7 +30,7 @@
 
     /* Muted slate tones */
     --muted: 220 15% 20%;
-    --muted-foreground: 215 15% 60%;
+    --muted-foreground: 215 15% 68%;
 
     /* Cyan-tinted accent */
     --accent: 190 80% 12%;
@@ -90,35 +91,7 @@
     --spacing: 0.25rem;
   }
 
-  .light {
-    --background: 220 22% 7%;
-    --foreground: 210 20% 95%;
-    --card: 220 18% 13%;
-    --card-foreground: 210 20% 95%;
-    --popover: 220 18% 16%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 187 100% 50%;
-    --primary-foreground: 220 20% 8%;
-    --secondary: 260 60% 55%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 220 15% 20%;
-    --muted-foreground: 215 15% 60%;
-    --accent: 190 80% 12%;
-    --accent-foreground: 187 100% 60%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 187 100% 50%;
-    --sidebar-background: 220 20% 8%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 187 100% 50%;
-    --sidebar-primary-foreground: 220 20% 8%;
-    --sidebar-accent: 220 15% 20%;
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 187 100% 50%;
-  }
+  /* Light mode intentionally mirrors dark — PosFitx is a dark-only app */
   .dark {
     --background: 220 22% 7%;
     --foreground: 210 20% 95%;
@@ -131,7 +104,7 @@
     --secondary: 260 60% 55%;
     --secondary-foreground: 0 0% 100%;
     --muted: 220 15% 20%;
-    --muted-foreground: 215 15% 60%;
+    --muted-foreground: 215 15% 68%;
     --accent: 190 80% 12%;
     --accent-foreground: 187 100% 60%;
     --destructive: 0 84% 60%;
@@ -175,17 +148,21 @@
 }
 
 @layer utilities {
-  /* Glow effects */
+  /* Glow effects — all 5 neon colors */
   .glow-blue {
     box-shadow: var(--shadow-glow-blue);
   }
-
   .glow-purple {
     box-shadow: var(--shadow-glow-purple);
   }
-
   .glow-green {
     box-shadow: var(--shadow-glow-green);
+  }
+  .glow-pink {
+    box-shadow: 0 0 20px hsl(var(--neon-pink) / 0.3);
+  }
+  .glow-orange {
+    box-shadow: 0 0 20px hsl(var(--neon-orange) / 0.3);
   }
 
   /* Gradient text */
@@ -205,6 +182,15 @@
     box-shadow: 0 4px 30px hsl(0 0% 0% / 0.15);
   }
 
+  /* Elevated glass — for primary content cards */
+  .glass-elevated {
+    background: hsl(var(--card) / 0.65);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 8px 40px hsl(0 0% 0% / 0.2);
+  }
+
   /* Glass navbar */
   .glass-nav {
     background: hsl(var(--background) / 0.6);
@@ -218,15 +204,72 @@
     border: 1px solid hsl(var(--neon-blue));
     box-shadow: inset 0 0 10px hsl(var(--neon-blue) / 0.1), var(--shadow-glow-blue);
   }
-
   .neon-border-purple {
     border: 1px solid hsl(var(--neon-purple));
     box-shadow: inset 0 0 10px hsl(var(--neon-purple) / 0.1), var(--shadow-glow-purple);
   }
-
   .neon-border-green {
     border: 1px solid hsl(var(--neon-green));
     box-shadow: inset 0 0 10px hsl(var(--neon-green) / 0.1), var(--shadow-glow-green);
+  }
+
+  /* Staggered fade-in for child elements */
+  .stagger-children > * {
+    opacity: 0;
+    animation: stagger-fade-in 0.5s ease-out forwards;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 400ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 480ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 560ms; }
+
+  @keyframes stagger-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hover lift — subtle scale + glow increase */
+  .hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Hover glow intensify */
+  .hover-glow-blue:hover {
+    box-shadow: 0 0 28px hsl(var(--neon-blue) / 0.45), 0 4px 20px hsl(0 0% 0% / 0.15);
+  }
+  .hover-glow-purple:hover {
+    box-shadow: 0 0 28px hsl(var(--neon-purple) / 0.45), 0 4px 20px hsl(0 0% 0% / 0.15);
+  }
+  .hover-glow-green:hover {
+    box-shadow: 0 0 28px hsl(var(--neon-green) / 0.45), 0 4px 20px hsl(0 0% 0% / 0.15);
+  }
+  .hover-glow-pink:hover {
+    box-shadow: 0 0 28px hsl(var(--neon-pink) / 0.45), 0 4px 20px hsl(0 0% 0% / 0.15);
+  }
+  .hover-glow-orange:hover {
+    box-shadow: 0 0 28px hsl(var(--neon-orange) / 0.45), 0 4px 20px hsl(0 0% 0% / 0.15);
+  }
+
+  /* Icon hover pulse */
+  .icon-hover {
+    transition: transform 0.2s ease;
+  }
+  .icon-hover:hover .icon-target {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
   }
 
   /* Animation utilities */
