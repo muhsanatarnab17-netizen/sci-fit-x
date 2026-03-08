@@ -80,9 +80,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-3">
-              <img src="/app-logo.png" alt="PosFitx" className="h-10 w-10 object-contain" style={{
-                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
-              }} />
+              <div className="h-10 w-10 overflow-hidden rounded-full flex items-center justify-center">
+                <img src="/app-logo.png" alt="PosFitx" className="h-[160%] w-[160%] object-cover" style={{
+                  filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
+                }} />
+              </div>
               <span className="hidden sm:block text-lg font-medium tracking-widest" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
                 background: 'linear-gradient(90deg, hsl(187 100% 65%), hsl(187 100% 50%), hsl(190 80% 40%))',
@@ -142,9 +144,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-center gap-3 mb-8">
-                    <img src="/app-logo.png" alt="PosFitx" className="h-9 w-9 object-contain" style={{
-                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
-                    }} />
+                    <div className="h-9 w-9 overflow-hidden rounded-full flex items-center justify-center">
+                      <img src="/app-logo.png" alt="PosFitx" className="h-[160%] w-[160%] object-cover" style={{
+                        filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
+                      }} />
+                    </div>
                     <span className="text-lg font-medium tracking-widest" style={{
                       fontFamily: "'Work Sans', system-ui, sans-serif",
                       background: 'linear-gradient(90deg, hsl(187 100% 65%), hsl(187 100% 50%), hsl(190 80% 40%))',
