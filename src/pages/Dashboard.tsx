@@ -89,10 +89,10 @@ export default function Dashboard() {
                   background: 'linear-gradient(90deg, hsl(25 100% 50% / 0.4), hsl(260 80% 50% / 0.3), hsl(187 100% 50% / 0.4), hsl(330 80% 50% / 0.3), hsl(25 100% 50% / 0.4))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                }}>Hey There ! CHAMP</span>
+                }}>{`Hi There ${profile.full_name || ''} ! CHAMP`}</span>
                 
-                {/* "Hi There !" - frosty glass matching CHAMP style, silver metallic */}
-                {'Hi There ! '.split('').map((letter, i) => {
+                {/* "Hi There {name} !" - frosty glass matching CHAMP style, silver metallic */}
+                {`Hi There ${profile.full_name || ''} ! `.split('').map((letter, i) => {
                   if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
                   return (
                     <span key={`ht-${i}`} className="relative inline-block text-2xl md:text-3xl font-black" style={{
