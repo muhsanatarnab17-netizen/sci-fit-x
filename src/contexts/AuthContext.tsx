@@ -38,14 +38,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, metadata?: { full_name?: string; username?: string }) => {
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
       },
     });
+
+    // After signup, update the profile with full_name and username
+    if (!error && data.user) {
+      const updates: Record<string, string> = {};
+      if (metadata?.full_name) updates.full_name = metadata.full_name;
+      if (metadata?.username) updates.username = metadata.username;
+      
+      if (Object.keys(updates).length > 0) {
+        setTimeout(async () => {
+          await supabase
+            .from("profiles")
+            .update(updates)
+            .eq("user_id", data.user!.id);
+        }, 500);
+      }
+    }
+
     return { error };
   };
 
