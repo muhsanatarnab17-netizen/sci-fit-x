@@ -167,7 +167,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Workouts - green */}
-          <Card className="glass border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
+          <Card className="glass hover-lift hover-glow-green border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
