@@ -141,29 +141,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72">
-                  <div className="flex items-center gap-1 mb-8">
-                    <div className="relative flex items-center justify-center rounded-lg overflow-hidden" style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'hsl(220 22% 7%)',
-                      border: '1.5px solid hsl(187 100% 50% / 0.25)',
-                      boxShadow: '0 0 12px hsl(187 100% 50% / 0.15)',
+                  <div className="flex items-center gap-3 mb-8">
+                    <img src="/app-logo.png" alt="PosFitx" className="h-9 w-9 object-contain" style={{
+                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
+                    }} />
+                    <span className="text-lg font-medium tracking-widest" style={{
+                      fontFamily: "'Work Sans', system-ui, sans-serif",
+                      background: 'linear-gradient(90deg, hsl(187 100% 65%), hsl(187 100% 50%), hsl(190 80% 40%))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
                     }}>
-                      <img src="/app-logo.png" alt="PosFitx" className="w-full h-full object-cover" style={{
-                        filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
-                      }} />
-                    </div>
-                    <svg width="80" height="26" viewBox="0 0 90 28" style={{
-                      filter: 'drop-shadow(0 0 5px hsl(187 100% 50% / 0.3))',
-                    }}>
-                      <path d="M 2 21 C 12 11, 22 11, 32 17 S 52 23, 62 15 S 78 9, 88 13" fill="none" stroke="hsl(215 15% 28%)" strokeWidth="8" strokeLinecap="round" opacity="0.2" />
-                      <path d="M 2 19 C 12 9, 22 9, 32 15 S 52 21, 62 13 S 78 7, 88 11" fill="none" stroke="hsl(215 15% 22%)" strokeWidth="3" strokeLinecap="round" opacity="0.15" />
-                      <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="13" letterSpacing="2" textAnchor="start">
-                        <textPath href="#spineCurve" startOffset="0%">
-                          PosFitx
-                        </textPath>
-                      </text>
-                    </svg>
+                      PosFitx
+                    </span>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">
