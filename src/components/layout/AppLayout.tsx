@@ -175,12 +175,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
                       }} />
                     </div>
-                    <svg width="110" height="40" viewBox="0 0 120 44" style={{
-                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
+                    <svg width="80" height="26" viewBox="0 0 90 28" style={{
+                      filter: 'drop-shadow(0 0 5px hsl(187 100% 50% / 0.3))',
                     }}>
-                      <path d="M 4 40 C 20 12, 40 4, 60 10 S 100 24, 116 8" fill="none" stroke="hsl(215 15% 25%)" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
-                      <path d="M 4 36 C 20 8, 40 0, 60 6 S 100 20, 116 4" fill="none" stroke="hsl(215 15% 20%)" strokeWidth="3" strokeLinecap="round" opacity="0.2" />
-                      <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="15" letterSpacing="2.5" textAnchor="start">
+                      <path d="M 2 21 C 12 11, 22 11, 32 17 S 52 23, 62 15 S 78 9, 88 13" fill="none" stroke="hsl(215 15% 28%)" strokeWidth="8" strokeLinecap="round" opacity="0.2" />
+                      <path d="M 2 19 C 12 9, 22 9, 32 15 S 52 21, 62 13 S 78 7, 88 11" fill="none" stroke="hsl(215 15% 22%)" strokeWidth="3" strokeLinecap="round" opacity="0.15" />
+                      <text fill="url(#spineGrad)" fontFamily="'Work Sans', system-ui, sans-serif" fontWeight="700" fontSize="13" letterSpacing="2" textAnchor="start">
                         <textPath href="#spineCurve" startOffset="0%">
                           PosFitx
                         </textPath>
