@@ -61,6 +61,29 @@ serve(async (req) => {
       );
     }
 
+    // Reject payloads > ~10 MB (base64 overhead ~33%)
+    const MAX_BASE64 = 14 * 1024 * 1024;
+    if (typeof imageBase64 !== "string" || imageBase64.length > MAX_BASE64) {
+      return new Response(
+        JSON.stringify({ error: "Image too large (max 10 MB)" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Validate supported image data-URI prefix
+    if (!/^data:image\/(jpeg|png|webp);base64,/.test(imageBase64)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid image format. Supported: JPEG, PNG, WebP" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     console.log("Analyzing posture from image...");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
