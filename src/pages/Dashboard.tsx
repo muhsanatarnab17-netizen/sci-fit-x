@@ -198,9 +198,7 @@ export default function Dashboard() {
                     <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
                       {task.title}
                     </span>
-                    <Badge variant="secondary" className="text-xs capitalize">
-                      {task.category}
-                    </Badge>
+                    <CategoryBadge category={task.category || "other"} />
                   </div>
                 ))}
                 {tasks.length > 6 && (
