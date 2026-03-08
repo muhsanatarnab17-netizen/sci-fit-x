@@ -91,13 +91,17 @@ export default function Dashboard() {
                   WebkitTextFillColor: 'transparent',
                 }}>Hey There ! CHAMP</span>
                 
-                {/* "Hey There !" - goldish silver, smaller, bolder */}
-                <span className="relative text-2xl md:text-3xl font-black" style={{
-                  background: 'linear-gradient(180deg, hsl(220 10% 85%), hsl(220 15% 55%), hsl(220 20% 35%), hsl(220 22% 12%))',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 6px hsl(220 15% 60% / 0.3))',
-                }}>Hi There ! </span>
+                {/* "Hi There !" - frosty glass matching CHAMP style, silver metallic */}
+                {'Hi There ! '.split('').map((letter, i) => {
+                  if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
+                  return (
+                    <span key={`ht-${i}`} className="relative inline-block text-2xl md:text-3xl font-black" style={{
+                      WebkitTextFillColor: 'transparent',
+                      WebkitTextStroke: '1.5px hsl(220 20% 75% / 0.8)',
+                      filter: 'drop-shadow(0 0 10px hsl(220 20% 70% / 0.5)) drop-shadow(0 0 20px hsl(220 15% 60% / 0.3))',
+                    }}>{letter}</span>
+                  );
+                })}
 
                 {/* CHAMP - each letter frosty glass with colored backlight */}
                 {'CHAMP'.split('').map((letter, i) => {
