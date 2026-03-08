@@ -19,6 +19,8 @@ export default function Landing() {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  const [signupFullName, setSignupFullName] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
