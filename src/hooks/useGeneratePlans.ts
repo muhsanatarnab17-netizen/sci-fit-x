@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 
 export interface WorkoutPlan {
