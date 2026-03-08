@@ -7,13 +7,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Authenticate
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -42,8 +45,9 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Fetch profile server-side from DB instead of trusting client data
     const userId = claimsData.claims.sub as string;
+
+    // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
@@ -57,9 +61,66 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are an expert fitness, nutrition, and sleep coach. Generate a personalized daily plan based on the user's profile. Be specific with exercises, meals, and sleep recommendations. Adapt everything to their experience level, goals, dietary restrictions, allergies, injuries, and body metrics.`;
+    // Fetch recent user history for personalization (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const cutoff = sevenDaysAgo.toISOString();
 
-    const userPrompt = `Create a personalized daily plan for this user:
+    const [workoutRes, mealRes, weightRes, taskRes] = await Promise.all([
+      supabase.from("workout_logs").select("*").eq("user_id", userId).gte("completed_at", cutoff).order("completed_at", { ascending: false }).limit(20),
+      supabase.from("meal_logs").select("*").eq("user_id", userId).gte("logged_at", cutoff).order("logged_at", { ascending: false }).limit(20),
+      supabase.from("weight_logs").select("*").eq("user_id", userId).order("recorded_at", { ascending: false }).limit(10),
+      supabase.from("daily_tasks").select("*").eq("user_id", userId).gte("scheduled_for", sevenDaysAgo.toISOString().split("T")[0]).order("scheduled_for", { ascending: false }).limit(30),
+    ]);
+
+    const recentWorkouts = workoutRes.data || [];
+    const recentMeals = mealRes.data || [];
+    const recentWeights = weightRes.data || [];
+    const recentTasks = taskRes.data || [];
+
+    // Build history context
+    const workoutSummary = recentWorkouts.length > 0
+      ? recentWorkouts.map(w => `${formatDate(w.completed_at)}: ${w.workout_type} - ${w.duration_minutes}min, ${w.calories_burned || 0}cal${w.exercises ? `, exercises: ${JSON.stringify(w.exercises)}` : ""}`).join("\n")
+      : "No recent workouts logged.";
+
+    const mealSummary = recentMeals.length > 0
+      ? recentMeals.map(m => `${formatDate(m.logged_at)}: ${m.meal_type || "meal"} - ${m.calories || 0}cal, P:${m.protein_g || 0}g C:${m.carbs_g || 0}g F:${m.fat_g || 0}g`).join("\n")
+      : "No recent meals logged.";
+
+    const weightSummary = recentWeights.length > 0
+      ? recentWeights.map(w => `${formatDate(w.recorded_at)}: ${w.weight_kg}kg`).join(", ")
+      : "No weight records.";
+
+    const completedTaskTitles = recentTasks.filter(t => t.completed).map(t => t.title);
+    const skippedTaskTitles = recentTasks.filter(t => !t.completed).map(t => t.title);
+
+    const taskSummary = recentTasks.length > 0
+      ? `Completed tasks: ${completedTaskTitles.length > 0 ? completedTaskTitles.join(", ") : "none"}\nSkipped/incomplete tasks: ${skippedTaskTitles.length > 0 ? skippedTaskTitles.join(", ") : "none"}`
+      : "No recent task history.";
+
+    const systemPrompt = `You are an expert fitness, nutrition, sleep, and lifestyle coach who creates PERSONALIZED and PROGRESSIVE plans. You must:
+
+1. ANALYZE the user's recent history carefully to understand their current fitness level, eating patterns, and preferences.
+2. BUILD ON their progress — don't restart from scratch each time. If they did push-ups yesterday, progress naturally (more reps, harder variation, or complementary exercises).
+3. AVOID repeating the exact same exercises/meals they already had recently unless it makes sense for their program.
+4. For dailyTasks: Generate FUN, RISK-FREE, ENJOYABLE challenges and activities. Examples:
+   - "Sprint 100 meters in under 60 seconds" (adjust time to their level)
+   - "Hold a plank for 90 seconds"
+   - "Play 30 minutes of your favorite sport (basketball, badminton, etc.)"
+   - "Go for a 20-minute cycling tour around your neighborhood"
+   - "Swim 4 laps without stopping"
+   - "Play a competitive esports session for 45 minutes (take stretch breaks!)"
+   - "Try a new indoor game (table tennis, bowling, darts)"
+   - "Do 50 jumping jacks in under 2 minutes"
+   - "Take a 30-minute nature walk and photograph 5 interesting things"
+   - "Challenge a friend to a step count competition today"
+   Mix physical challenges, outdoor adventures, indoor games, esports, social activities, and mindfulness tasks.
+   IMPORTANT: All tasks must be SAFE and appropriate for the user's fitness level and any injuries they have.
+5. Ensure CONTINUITY — the new plan should feel like a natural next step, not a completely different program.`;
+
+    const userPrompt = `Create today's personalized plan for this user:
+
+## Profile
 - Age: ${profile.age || "unknown"}
 - Gender: ${profile.gender || "unknown"}
 - Weight: ${profile.weight_kg ? profile.weight_kg + " kg" : "unknown"}
@@ -78,6 +139,26 @@ serve(async (req) => {
 - Sleep Hours Target: ${profile.sleep_hours || 8}
 - Work Schedule: ${profile.work_schedule || "unknown"}
 - Stress Level: ${profile.stress_level || "unknown"}
+
+## Recent Weight Trend (last 7 days)
+${weightSummary}
+
+## Recent Workout History (last 7 days)
+${workoutSummary}
+
+## Recent Meal History (last 7 days)
+${mealSummary}
+
+## Recent Task History (last 7 days)
+${taskSummary}
+
+## Instructions
+- Design today's workout to PROGRESS from what they did recently (vary muscle groups, increase intensity slightly, or introduce new exercises).
+- If they skipped workouts recently, make today's plan lighter and more approachable.
+- Meal plan should complement their recent nutrition — if they've been low on protein, emphasize protein today.
+- For dailyTasks: Create 6-8 FUN and VARIED tasks mixing physical challenges, games (indoor/outdoor/esports), social activities, and wellness habits. Make them specific with measurable goals (e.g., "Run 200m in under 50 seconds" not just "Go running"). Ensure all are risk-free and enjoyable.
+- DO NOT repeat the same tasks they had recently. Keep it fresh and exciting.
+- Sleep tips should address their specific stress level and work schedule.
 
 Generate a complete personalized plan for today.`;
 
@@ -98,7 +179,7 @@ Generate a complete personalized plan for today.`;
             type: "function",
             function: {
               name: "generate_daily_plans",
-              description: "Return a complete personalized daily plan with workout, meals, and sleep schedule",
+              description: "Return a complete personalized daily plan with workout, meals, sleep schedule, and fun daily tasks",
               parameters: {
                 type: "object",
                 properties: {
@@ -202,8 +283,8 @@ Generate a complete personalized plan for today.`;
                     items: {
                       type: "object",
                       properties: {
-                        title: { type: "string" },
-                        category: { type: "string", enum: ["workout", "meal", "hydration", "posture", "health", "sleep"] },
+                        title: { type: "string", description: "Specific, fun, measurable task with a clear goal" },
+                        category: { type: "string", enum: ["workout", "meal", "hydration", "posture", "health", "sleep", "fun", "social", "gaming"] },
                       },
                       required: ["title", "category"],
                       additionalProperties: false,
