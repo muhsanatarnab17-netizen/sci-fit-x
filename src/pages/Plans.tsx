@@ -58,7 +58,7 @@ export default function Plans() {
   // Auto-generate plans only if none cached for today
   useEffect(() => {
     if (profile?.onboarding_completed && !hasPlansToday && !isGenerating) {
-      generateAndCache.mutateAsync(profile).then((result) => {
+      generateAndCache.mutateAsync().then((result) => {
         if (result) seedTasksFromPlan(result);
       });
     }
