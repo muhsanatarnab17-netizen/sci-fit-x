@@ -287,8 +287,8 @@ export default function Dashboard() {
           </Card>
 
           {/* Quick Actions */}
-          <div className="space-y-4">
-            <Card className="glass border-primary/20 cursor-pointer hover:glow-blue transition-all duration-300" onClick={() => navigate("/posture")}>
+          <div className="space-y-4 stagger-children">
+            <Card className="glass hover-lift hover-glow-blue border-primary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/posture")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-primary/10 shadow-[0_0_15px_hsl(187_100%_50%/0.2)]">
