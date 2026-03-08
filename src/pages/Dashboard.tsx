@@ -142,11 +142,15 @@ export default function Dashboard() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="glass border-primary/20 hover:glow-blue transition-all duration-300">
+          {/* BMI - combined Activity + Heart */}
+          <Card className="glass border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Activity className="h-5 w-5 text-primary" />
+                <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
+                  <div className="relative">
+                    <Activity className="h-7 w-7 text-primary" strokeWidth={1.5} />
+                    <Heart className="h-3.5 w-3.5 text-neon-pink absolute -bottom-0.5 -right-1" strokeWidth={1.5} />
+                  </div>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">BMI</p>
@@ -157,11 +161,12 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-secondary/20 hover:glow-purple transition-all duration-300">
+          {/* Workouts - green */}
+          <Card className="glass border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-secondary/10">
-                  <Dumbbell className="h-5 w-5 text-secondary" />
+                <div className="p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
+                  <Dumbbell className="h-7 w-7 text-neon-green" strokeWidth={1.5} />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Workouts</p>
@@ -172,11 +177,12 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-accent/20 hover:glow-green transition-all duration-300">
+          {/* Meals - orange */}
+          <Card className="glass border-neon-orange/20 transition-all duration-300 shadow-[0_4px_25px_hsl(25_100%_50%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-accent/10">
-                  <Utensils className="h-5 w-5 text-accent-foreground" />
+                <div className="p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
+                  <Utensils className="h-7 w-7 text-neon-orange" strokeWidth={1.5} />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Today's Meals</p>
@@ -187,11 +193,26 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-neon-orange/20 transition-all duration-300">
+          {/* Posture - spine-like, deep neon */}
+          <Card className="glass border-neon-purple/20 transition-all duration-300 shadow-[0_4px_25px_hsl(260_80%_55%/0.25)]">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-neon-orange/10">
-                  <Heart className="h-5 w-5 text-neon-orange" />
+                <div className="p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
+                  {/* Spine-like vertical icon */}
+                  <div className="flex flex-col items-center gap-[2px] h-7 w-7 justify-center">
+                    {[5, 6.5, 7.5, 7, 5.5, 4].map((w, i) => (
+                      <div
+                        key={i}
+                        className="rounded-full bg-neon-purple"
+                        style={{
+                          width: `${w * 2.5}px`,
+                          height: '3px',
+                          opacity: 0.7 + (i < 3 ? i * 0.1 : (5 - i) * 0.1),
+                          boxShadow: '0 0 6px hsl(260 80% 55% / 0.6)',
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Posture</p>
