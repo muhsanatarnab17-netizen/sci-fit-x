@@ -93,11 +93,11 @@ export default function Dashboard() {
                 
                 {/* "Hey There !" - goldish silver, smaller, bolder */}
                 <span className="relative text-2xl md:text-3xl font-black" style={{
-                  background: 'linear-gradient(180deg, hsl(43 60% 80%), hsl(38 40% 55%), hsl(43 50% 70%))',
+                  background: 'linear-gradient(180deg, hsl(220 10% 85%), hsl(220 15% 55%), hsl(220 20% 35%), hsl(220 22% 12%))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 8px hsl(43 50% 50% / 0.4)) drop-shadow(0 0 20px hsl(25 80% 50% / 0.2))',
-                }}>Hey There ! </span>
+                  filter: 'drop-shadow(0 0 6px hsl(220 15% 60% / 0.3))',
+                }}>Hi There ! </span>
 
                 {/* CHAMP - each letter frosty glass with colored backlight */}
                 {'CHAMP'.split('').map((letter, i) => {
