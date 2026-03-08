@@ -79,22 +79,44 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/dashboard" className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-primary/10">
-                <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
-              </div>
-              <span className="hidden sm:inline font-display font-bold text-xl tracking-[0.25em] uppercase" style={{
-                background: 'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 50%) 30%, hsl(187 100% 35%) 70%, hsl(190 60% 25%) 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textShadow: 'none',
-                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
-                fontStretch: 'condensed',
-                letterSpacing: '0.3em',
-                fontWeight: 700,
+            <Link to="/dashboard" className="flex items-center gap-1.5">
+              {/* Triangular container for logo */}
+              <div className="relative flex items-center justify-center" style={{
+                width: '40px',
+                height: '40px',
+                clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                background: 'linear-gradient(180deg, hsl(187 100% 50% / 0.2) 0%, hsl(187 100% 50% / 0.08) 100%)',
+                filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.3))',
               }}>
-                P<span style={{ fontSize: '0.7em', verticalAlign: 'middle', opacity: 0.7 }}>●</span>S<span style={{ display: 'inline-block', width: '2px', height: '0.6em', background: 'hsl(187 100% 50% / 0.5)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>F<span style={{ display: 'inline-block', width: '2px', height: '0.8em', background: 'hsl(187 100% 45% / 0.4)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>i<span style={{ display: 'inline-block', width: '2px', height: '0.5em', background: 'hsl(187 100% 40% / 0.3)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>t<span style={{ fontSize: '0.65em', verticalAlign: 'middle', opacity: 0.5 }}>◦</span>x
-              </span>
+                <img src="/app-logo.png" alt="PosFitx" className="h-7 w-7 mt-2.5 object-contain" style={{
+                  filter: 'drop-shadow(0 0 4px hsl(187 100% 50% / 0.5))',
+                }} />
+              </div>
+              {/* Curved backbone text using SVG path */}
+              <svg className="hidden sm:block" width="110" height="40" viewBox="0 0 110 40" style={{
+                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
+              }}>
+                <defs>
+                  <path id="spineCurve" d="M 2 35 C 15 8, 35 2, 55 6 S 95 18, 108 8" fill="none" />
+                  <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(187 100% 70%)" />
+                    <stop offset="30%" stopColor="hsl(187 100% 50%)" />
+                    <stop offset="70%" stopColor="hsl(187 100% 35%)" />
+                    <stop offset="100%" stopColor="hsl(190 60% 25%)" />
+                  </linearGradient>
+                </defs>
+                <text fill="url(#spineGrad)" fontFamily="'Space Grotesk', system-ui, sans-serif" fontWeight="700" fontSize="16" letterSpacing="3" textAnchor="start">
+                  <textPath href="#spineCurve" startOffset="0%">
+                    P●S᛫Fi᛫t◦x
+                  </textPath>
+                </text>
+                {/* Vertebrae dots along the curve */}
+                <circle cx="8" cy="32" r="1" fill="hsl(187 100% 50% / 0.3)" />
+                <circle cx="25" cy="14" r="0.8" fill="hsl(187 100% 50% / 0.25)" />
+                <circle cx="45" cy="6" r="0.7" fill="hsl(187 100% 50% / 0.2)" />
+                <circle cx="70" cy="10" r="0.8" fill="hsl(187 100% 50% / 0.25)" />
+                <circle cx="90" cy="14" r="0.7" fill="hsl(187 100% 50% / 0.2)" />
+              </svg>
             </Link>
 
             {/* Desktop Navigation */}
