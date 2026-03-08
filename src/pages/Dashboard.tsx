@@ -320,7 +320,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-secondary/20 cursor-pointer hover:glow-purple transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-purple border-secondary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-secondary/10 shadow-[0_0_15px_hsl(260_60%_55%/0.2)]">
