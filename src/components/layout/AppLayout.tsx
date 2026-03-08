@@ -83,8 +83,17 @@ export default function AppLayout({ children }: AppLayoutProps) {
               <div className="p-1.5 rounded-lg bg-primary/10">
                 <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
               </div>
-              <span className="font-display font-bold text-xl hidden sm:inline gradient-text">
-                PosFitx
+              <span className="hidden sm:inline font-display font-bold text-xl tracking-[0.25em] uppercase" style={{
+                background: 'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 50%) 30%, hsl(187 100% 35%) 70%, hsl(190 60% 25%) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: 'none',
+                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
+                fontStretch: 'condensed',
+                letterSpacing: '0.3em',
+                fontWeight: 700,
+              }}>
+                P<span style={{ fontSize: '0.7em', verticalAlign: 'middle', opacity: 0.7 }}>●</span>S<span style={{ display: 'inline-block', width: '2px', height: '0.6em', background: 'hsl(187 100% 50% / 0.5)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>F<span style={{ display: 'inline-block', width: '2px', height: '0.8em', background: 'hsl(187 100% 45% / 0.4)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>i<span style={{ display: 'inline-block', width: '2px', height: '0.5em', background: 'hsl(187 100% 40% / 0.3)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>t<span style={{ fontSize: '0.65em', verticalAlign: 'middle', opacity: 0.5 }}>◦</span>x
               </span>
             </Link>
 
