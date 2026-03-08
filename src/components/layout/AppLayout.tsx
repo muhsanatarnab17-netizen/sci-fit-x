@@ -123,6 +123,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">
                     <p className="font-medium truncate">{profile?.full_name || "User"}</p>
+                    {profile?.username && (
+                      <p className="text-xs text-primary truncate">@{profile.username}</p>
+                    )}
                     <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
