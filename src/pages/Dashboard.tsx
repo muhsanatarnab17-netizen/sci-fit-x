@@ -232,7 +232,7 @@ export default function Dashboard() {
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Today's Tasks */}
-          <Card className="lg:col-span-2 glass">
+          <Card className="lg:col-span-2 glass-elevated">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
