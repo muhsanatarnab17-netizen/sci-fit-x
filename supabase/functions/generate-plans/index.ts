@@ -42,10 +42,17 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const { profile } = await req.json();
-    if (!profile) {
+    // Fetch profile server-side from DB instead of trusting client data
+    const userId = claimsData.claims.sub as string;
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (profileError || !profile) {
       return new Response(
-        JSON.stringify({ error: "Profile data required" }),
+        JSON.stringify({ error: "Profile not found. Please complete onboarding first." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
