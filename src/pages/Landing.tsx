@@ -112,13 +112,13 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ background: 'hsl(220 22% 5%)' }}>
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-background" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
+        {/* Background gradient - deeper and more dramatic */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-secondary/4 to-transparent" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/15 rounded-full blur-3xl" />
 
         <div className="relative container mx-auto px-4 py-12 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -168,7 +168,7 @@ export default function Landing() {
 
             {/* Right Content - Auth Form */}
             <div className="lg:pl-12">
-              <Card className="glass border-border/50">
+              <Card className="glass border-border/50" style={{ background: 'hsl(220 18% 10% / 0.85)' }}>
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-4 w-fit">
                     <img src={appLogo} alt="PosFitx Logo" className="h-14 w-14" />
