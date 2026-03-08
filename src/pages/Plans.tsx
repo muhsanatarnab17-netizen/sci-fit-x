@@ -69,7 +69,7 @@ export default function Plans() {
     setCompletedExercises({});
     setCompletedMeals({});
     setSleepLogged(false);
-    const result = await generateAndCache.mutateAsync(profile);
+    const result = await generateAndCache.mutateAsync();
     if (result) await seedTasksFromPlan(result);
   };
 

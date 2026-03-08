@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { GeneratedPlans } from "@/hooks/useGeneratePlans";
-import { GeneratedPlans } from "@/hooks/useGeneratePlans";
 import { toast } from "sonner";
 
 const TODAY_KEY = () => new Date().toISOString().split("T")[0];
