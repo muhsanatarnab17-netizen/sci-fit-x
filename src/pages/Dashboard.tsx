@@ -82,22 +82,40 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold uppercase" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
-                letterSpacing: '4px',
+                letterSpacing: '5px',
+                transform: 'perspective(600px) rotateY(-3deg)',
               }}>
                 <span style={{
-                  background: 'linear-gradient(180deg, hsl(0 0% 90%) 0%, hsl(0 0% 60%) 50%, hsl(0 0% 40%) 100%)',
+                  background: 'linear-gradient(180deg, hsl(0 0% 85%) 0%, hsl(0 0% 55%) 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 6px hsl(0 0% 70% / 0.3))',
-                  textShadow: 'none',
+                  filter: 'drop-shadow(2px 2px 0 hsl(0 0% 20%)) drop-shadow(0 0 8px hsl(0 0% 60% / 0.3))',
                 }}>Hey There </span>
-                <span style={{
-                  background: 'linear-gradient(180deg, hsl(187 100% 75%) 0%, hsl(260 70% 55%) 40%, hsl(240 60% 35%) 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 2px 0 hsl(240 60% 20%)) drop-shadow(0 0 12px hsl(260 70% 50% / 0.6)) drop-shadow(0 0 30px hsl(187 100% 50% / 0.3))',
-                  WebkitTextStroke: '0.5px hsl(187 100% 70% / 0.3)',
-                }}>CHAMP</span>
+                {'CHAMP'.split('').map((letter, i) => {
+                  const colors = [
+                    'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 40%) 100%)',
+                    'linear-gradient(180deg, hsl(260 80% 70%) 0%, hsl(260 70% 40%) 100%)',
+                    'linear-gradient(180deg, hsl(330 80% 65%) 0%, hsl(330 70% 35%) 100%)',
+                    'linear-gradient(180deg, hsl(150 80% 60%) 0%, hsl(150 70% 35%) 100%)',
+                    'linear-gradient(180deg, hsl(35 100% 65%) 0%, hsl(35 90% 40%) 100%)',
+                  ];
+                  const glows = [
+                    'hsl(187 100% 50% / 0.5)',
+                    'hsl(260 80% 50% / 0.5)',
+                    'hsl(330 80% 50% / 0.5)',
+                    'hsl(150 80% 50% / 0.5)',
+                    'hsl(35 100% 50% / 0.5)',
+                  ];
+                  return (
+                    <span key={i} style={{
+                      background: colors[i],
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: `drop-shadow(2px 3px 0 hsl(0 0% 8%)) drop-shadow(1px 1px 0 hsl(0 0% 15%)) drop-shadow(0 0 10px ${glows[i]})`,
+                      display: 'inline-block',
+                    }}>{letter}</span>
+                  );
+                })}
               </h1>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
