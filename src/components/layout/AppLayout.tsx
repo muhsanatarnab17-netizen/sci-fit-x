@@ -146,7 +146,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <SheetContent side="right" className="w-72">
                   <div className="flex items-center gap-2 mb-8">
                     <img src="/app-logo.png" alt="PosFitx" className="h-6 w-6" />
-                    <span className="font-display font-bold text-xl gradient-text">PosFitx</span>
+                    <span className="font-display font-bold text-xl tracking-[0.25em] uppercase" style={{
+                      background: 'linear-gradient(180deg, hsl(187 100% 70%) 0%, hsl(187 100% 50%) 30%, hsl(187 100% 35%) 70%, hsl(190 60% 25%) 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.4))',
+                    }}>
+                      P<span style={{ fontSize: '0.7em', verticalAlign: 'middle', opacity: 0.7 }}>●</span>S<span style={{ display: 'inline-block', width: '2px', height: '0.6em', background: 'hsl(187 100% 50% / 0.5)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>F<span style={{ display: 'inline-block', width: '2px', height: '0.8em', background: 'hsl(187 100% 45% / 0.4)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>i<span style={{ display: 'inline-block', width: '2px', height: '0.5em', background: 'hsl(187 100% 40% / 0.3)', verticalAlign: 'middle', margin: '0 1px', borderRadius: '1px' }}></span>t<span style={{ fontSize: '0.65em', verticalAlign: 'middle', opacity: 0.5 }}>◦</span>x
+                    </span>
                   </div>
                   <NavLinks mobile />
                   <div className="absolute bottom-8 left-6 right-6">
