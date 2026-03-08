@@ -79,11 +79,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/dashboard" className="flex items-center gap-3">
-              <img src="/app-logo.png" alt="PosFitx" className="h-10 w-10 object-contain" style={{
-                filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.5))',
+            <Link to="/dashboard" className="flex items-end gap-2">
+              <img src="/app-logo.png" alt="PosFitx" className="h-14 w-14 object-contain" style={{
+                filter: 'drop-shadow(0 0 8px hsl(187 100% 50% / 0.5))',
               }} />
-              <span className="hidden sm:block text-lg font-medium tracking-widest" style={{
+              <span className="hidden sm:block text-2xl font-semibold tracking-widest pb-0.5" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
                 background: 'linear-gradient(90deg, hsl(187 100% 65%), hsl(187 100% 50%), hsl(190 80% 40%))',
                 WebkitBackgroundClip: 'text',
