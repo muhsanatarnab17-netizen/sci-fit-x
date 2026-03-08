@@ -278,7 +278,7 @@ export default function Profile() {
                 <Input
                   id="username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                   placeholder="your_username"
                 />
               </div>

@@ -229,7 +229,7 @@ export default function Landing() {
                             type="text"
                             placeholder="johndoe"
                             value={signupUsername}
-                            onChange={(e) => setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                            onChange={(e) => setSignupUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                             required
                           />
                         </div>

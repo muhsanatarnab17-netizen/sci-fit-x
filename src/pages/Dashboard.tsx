@@ -89,10 +89,10 @@ export default function Dashboard() {
                   background: 'linear-gradient(90deg, hsl(25 100% 50% / 0.4), hsl(260 80% 50% / 0.3), hsl(187 100% 50% / 0.4), hsl(330 80% 50% / 0.3), hsl(25 100% 50% / 0.4))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                }}>{`Hi There ${profile.full_name || ''} ! CHAMP`}</span>
+                }}>{`Hi There ! ${(profile.username || 'CHAMP').toUpperCase()}`}</span>
                 
-                {/* "Hi There {name} !" - frosty glass matching CHAMP style, silver metallic */}
-                {`Hi There ${profile.full_name || ''} ! `.split('').map((letter, i) => {
+                {/* "Hi There !" - frosty glass, silver metallic */}
+                {'Hi There ! '.split('').map((letter, i) => {
                   if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
                   return (
                     <span key={`ht-${i}`} className="relative inline-block text-2xl md:text-3xl font-black" style={{
@@ -103,30 +103,35 @@ export default function Dashboard() {
                   );
                 })}
 
-                {/* CHAMP - each letter frosty glass with colored backlight */}
-                {'CHAMP'.split('').map((letter, i) => {
-                  const glowColors = [
+                {/* Username - each letter frosty glass with colored backlight */}
+                {(() => {
+                  const displayName = (profile.username || 'CHAMP').toUpperCase();
+                  const glowPalette = [
                     'hsl(187 100% 50% / 0.7)',
                     'hsl(260 80% 55% / 0.7)',
                     'hsl(25 100% 55% / 0.7)',
                     'hsl(330 80% 55% / 0.7)',
                     'hsl(25 100% 50% / 0.7)',
                   ];
-                  const strokeColors = [
+                  const strokePalette = [
                     'hsl(187 100% 70% / 0.7)',
                     'hsl(260 80% 70% / 0.7)',
                     'hsl(25 100% 70% / 0.7)',
                     'hsl(330 80% 65% / 0.7)',
                     'hsl(25 100% 65% / 0.7)',
                   ];
-                  return (
-                    <span key={i} className="relative inline-block" style={{
-                      WebkitTextFillColor: 'transparent',
-                      WebkitTextStroke: `1.5px ${strokeColors[i]}`,
-                      filter: `drop-shadow(0 0 12px ${glowColors[i]}) drop-shadow(0 0 25px ${glowColors[i]})`,
-                    }}>{letter}</span>
-                  );
-                })}
+                  return displayName.split('').map((letter, i) => {
+                    if (letter === ' ') return <span key={`u-${i}`}>&nbsp;</span>;
+                    const ci = i % glowPalette.length;
+                    return (
+                      <span key={`u-${i}`} className="relative inline-block" style={{
+                        WebkitTextFillColor: 'transparent',
+                        WebkitTextStroke: `1.5px ${strokePalette[ci]}`,
+                        filter: `drop-shadow(0 0 12px ${glowPalette[ci]}) drop-shadow(0 0 25px ${glowPalette[ci]})`,
+                      }}>{letter}</span>
+                    );
+                  });
+                })()}
               </h1>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
