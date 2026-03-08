@@ -54,7 +54,10 @@ export default function Landing() {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(signupEmail, signupPassword);
+      const { error } = await signUp(signupEmail, signupPassword, {
+        full_name: signupFullName || undefined,
+        username: signupUsername || undefined,
+      });
       
       if (error) {
         if (error.message.includes("rate limit") || error.message.includes("too many")) {
