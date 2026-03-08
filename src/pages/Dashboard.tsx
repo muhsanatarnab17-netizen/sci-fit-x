@@ -12,7 +12,7 @@ import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import CategoryBadge from "@/components/ui/category-badge";
 import {
   Activity,
   Flame,
