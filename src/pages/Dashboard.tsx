@@ -89,14 +89,15 @@ export default function Dashboard() {
                   background: 'linear-gradient(90deg, hsl(25 100% 50% / 0.4), hsl(260 80% 50% / 0.3), hsl(187 100% 50% / 0.4), hsl(330 80% 50% / 0.3), hsl(25 100% 50% / 0.4))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                }}>Hey There ! CHAMP</span>
+                }}>Hi there ! CHAMP</span>
                 
-                {/* "Hey There !" - frosty outline style */}
-                <span className="relative" style={{
-                  WebkitTextFillColor: 'transparent',
-                  WebkitTextStroke: '1.5px hsl(0 0% 55%)',
-                  filter: 'drop-shadow(0 0 8px hsl(25 100% 50% / 0.3)) drop-shadow(0 0 20px hsl(260 70% 50% / 0.2))',
-                }}>Hey There ! </span>
+                {/* "Hi there !" - smaller, deep blueish jade green */}
+                <span className="relative text-2xl md:text-3xl" style={{
+                  color: 'hsl(170 60% 30%)',
+                  WebkitTextFillColor: 'hsl(170 60% 30%)',
+                  WebkitTextStroke: 'none',
+                  filter: 'drop-shadow(0 0 6px hsl(170 60% 35% / 0.4))',
+                }}>Hi there ! </span>
 
                 {/* CHAMP - each letter frosty glass with colored backlight */}
                 {'CHAMP'.split('').map((letter, i) => {
