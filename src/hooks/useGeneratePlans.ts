@@ -34,7 +34,7 @@ export interface SleepPlan {
 
 export interface DailyTaskSuggestion {
   title: string;
-  category: string;
+  category: "workout" | "meal" | "hydration" | "posture" | "health" | "sleep" | "fun" | "social" | "gaming" | string;
 }
 
 export interface GeneratedPlans {
