@@ -168,7 +168,7 @@ export default function Landing() {
 
             {/* Right Content - Auth Form */}
             <div className="lg:pl-12">
-              <Card className="glass border-border/50">
+              <Card className="glass border-border/50" style={{ background: 'hsl(220 18% 10% / 0.85)' }}>
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-4 w-fit">
                     <img src={appLogo} alt="PosFitx Logo" className="h-14 w-14" />
