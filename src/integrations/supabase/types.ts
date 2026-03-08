@@ -136,6 +136,7 @@ export type Database = {
           stress_level: string | null
           updated_at: string
           user_id: string
+          username: string | null
           weight_kg: number | null
           work_schedule: string | null
           workout_experience: string | null
@@ -165,6 +166,7 @@ export type Database = {
           stress_level?: string | null
           updated_at?: string
           user_id: string
+          username?: string | null
           weight_kg?: number | null
           work_schedule?: string | null
           workout_experience?: string | null
@@ -194,6 +196,7 @@ export type Database = {
           stress_level?: string | null
           updated_at?: string
           user_id?: string
+          username?: string | null
           weight_kg?: number | null
           work_schedule?: string | null
           workout_experience?: string | null
