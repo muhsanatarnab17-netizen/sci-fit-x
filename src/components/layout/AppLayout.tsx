@@ -154,12 +154,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     }} />
                     <span className="text-xl font-semibold tracking-widest pb-0.5" style={{
                       fontFamily: "'Work Sans', system-ui, sans-serif",
-                      background: 'linear-gradient(90deg, hsl(187 100% 65%), hsl(187 100% 50%), hsl(190 80% 40%))',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 0 6px hsl(187 100% 50% / 0.3))',
                     }}>
-                      PosFitx
+                      <span style={{
+                        background: 'linear-gradient(90deg, hsl(260 70% 45%), hsl(240 60% 50%), hsl(220 70% 55%))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        filter: 'drop-shadow(0 0 4px hsl(250 70% 50% / 0.4))',
+                      }}>Pos</span>
+                      <span style={{
+                        background: 'linear-gradient(90deg, hsl(187 100% 60%), hsl(187 100% 70%), hsl(185 100% 75%))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        filter: 'drop-shadow(0 0 8px hsl(187 100% 60% / 0.6))',
+                      }}>Fitx</span>
                     </span>
                   </div>
                   <NavLinks mobile />
