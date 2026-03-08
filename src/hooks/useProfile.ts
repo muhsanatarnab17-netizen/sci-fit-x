@@ -8,6 +8,7 @@ export interface Profile {
   id: string;
   user_id: string;
   full_name: string | null;
+  username: string | null;
   avatar_url: string | null;
   age: number | null;
   gender: "male" | "female" | "other" | "prefer_not_to_say" | null;
