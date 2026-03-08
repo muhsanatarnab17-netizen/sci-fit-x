@@ -212,6 +212,28 @@ export default function Landing() {
                     <TabsContent value="signup">
                       <form onSubmit={handleSignup} className="space-y-4">
                         <div className="space-y-2">
+                          <Label htmlFor="signup-fullname">Full Name</Label>
+                          <Input
+                            id="signup-fullname"
+                            type="text"
+                            placeholder="John Doe"
+                            value={signupFullName}
+                            onChange={(e) => setSignupFullName(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-username">Username</Label>
+                          <Input
+                            id="signup-username"
+                            type="text"
+                            placeholder="johndoe"
+                            value={signupUsername}
+                            onChange={(e) => setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
                           <Label htmlFor="signup-email">Email</Label>
                           <Input
                             id="signup-email"
