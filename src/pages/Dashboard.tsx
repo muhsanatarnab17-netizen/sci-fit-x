@@ -80,9 +80,25 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold">
-              <span className="bg-gradient-to-r from-[hsl(0,0%,75%)] to-[hsl(0,0%,90%)] bg-clip-text text-transparent drop-shadow-[0_0_6px_hsl(0,0%,80%/0.3)]">Hey There </span><span className="bg-gradient-to-r from-[hsl(43,100%,55%)] to-[hsl(43,100%,75%)] bg-clip-text text-transparent drop-shadow-[0_0_8px_hsl(43,100%,65%/0.4)]">CHAMP</span>
-            </h1>
+            <h1 className="text-3xl md:text-4xl font-bold uppercase" style={{
+                fontFamily: "'Work Sans', system-ui, sans-serif",
+                letterSpacing: '4px',
+              }}>
+                <span style={{
+                  background: 'linear-gradient(180deg, hsl(0 0% 90%) 0%, hsl(0 0% 60%) 50%, hsl(0 0% 40%) 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 0 6px hsl(0 0% 70% / 0.3))',
+                  textShadow: 'none',
+                }}>Hey There </span>
+                <span style={{
+                  background: 'linear-gradient(180deg, hsl(187 100% 75%) 0%, hsl(260 70% 55%) 40%, hsl(240 60% 35%) 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 2px 0 hsl(240 60% 20%)) drop-shadow(0 0 12px hsl(260 70% 50% / 0.6)) drop-shadow(0 0 30px hsl(187 100% 50% / 0.3))',
+                  WebkitTextStroke: '0.5px hsl(187 100% 70% / 0.3)',
+                }}>CHAMP</span>
+              </h1>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
           <div className="flex items-center gap-3">
