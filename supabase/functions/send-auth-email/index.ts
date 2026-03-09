@@ -83,7 +83,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
                 Click the button below to sign in to your FitLife Pro account.
               </p>
               <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Sign In to FitLife Pro
+                Sign In to PosFitx
               </a>
             </div>
             <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
