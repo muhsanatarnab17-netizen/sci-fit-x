@@ -26,7 +26,20 @@ import {
   Save,
   Loader2,
   Camera,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { calculateBMI, calculateBMR, calculateDailyCalories, getBMICategory, type ACTIVITY_MULTIPLIERS } from "@/lib/health-utils";
 
 export default function Profile() {
