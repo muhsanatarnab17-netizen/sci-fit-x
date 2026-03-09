@@ -114,7 +114,7 @@ export default function CameraCapture({
               playsInline
               muted
               className={cn(
-                "w-full h-full object-cover",
+                "absolute inset-0 w-full h-full object-cover",
                 facingMode === "user" && "transform scale-x-[-1]",
                 !isStreaming && "hidden"
               )}
