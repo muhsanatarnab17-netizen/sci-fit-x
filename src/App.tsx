@@ -11,6 +11,9 @@ import Posture from "./pages/Posture";
 import Plans from "./pages/Plans";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
+import ResetPassword from "./pages/ResetPassword";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
