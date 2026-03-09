@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { Button } from "@/components/ui/button";
 import { Camera, Loader2, AlertCircle, Video, VideoOff, SwitchCamera, Scan } from "lucide-react";
