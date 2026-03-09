@@ -97,7 +97,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
         subject: "PosFitx - Email Confirmation",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px;">
-            <h1 style="color: #3b82f6;">FitLife Pro</h1>
+            <h1 style="color: #3b82f6;">PosFitx</h1>
             <p>Click below to confirm:</p>
             <a href="${confirmUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Confirm</a>
           </div>
