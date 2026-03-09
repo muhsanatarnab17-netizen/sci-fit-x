@@ -184,12 +184,12 @@ Be honest about severity. If posture is poor (score <60), emphasize the importan
                   issues: {
                     type: "array",
                     items: { type: "string" },
-                    description: "List of posture issues detected"
+                    description: "List of specific anatomical posture issues detected (e.g., 'Forward head posture', 'Rounded shoulders', 'Anterior pelvic tilt')"
                   },
                   recommendations: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Actionable recommendations for improvement"
+                    description: "Specific, actionable exercises and stretches with sets/reps/duration (e.g., 'Chin tucks - 10 reps, 3 sets daily', 'Doorway chest stretch - 30 seconds, 3x daily')"
                   },
                   details: {
                     type: "string",
