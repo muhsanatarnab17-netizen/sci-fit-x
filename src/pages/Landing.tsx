@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Dumbbell, Target, Zap, Apple } from "lucide-react";
+import ForgotPasswordDialog from "@/components/auth/ForgotPasswordDialog";
 import appLogo from "@/assets/app-logo.png";
 import leafyR from "@/assets/leafy-r.png";
 
