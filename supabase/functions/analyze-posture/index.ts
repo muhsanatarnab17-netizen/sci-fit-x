@@ -88,6 +88,42 @@ serve(async (req) => {
 
     console.log("Analyzing posture from image...");
 
+    // Fetch user's posture history for context
+    const { data: postureHistory, error: historyError } = await supabaseClient
+      .from("posture_assessments")
+      .select("score, issues, recommendations, assessed_at")
+      .eq("user_id", userId)
+      .order("assessed_at", { ascending: false })
+      .limit(5);
+
+    if (historyError) {
+      console.error("Error fetching posture history:", historyError);
+    }
+
+    // Build context about user's posture history
+    let historyContext = "";
+    if (postureHistory && postureHistory.length > 0) {
+      const avgScore = Math.round(
+        postureHistory.reduce((sum, p) => sum + p.score, 0) / postureHistory.length
+      );
+      const latestScore = postureHistory[0].score;
+      const commonIssues = postureHistory
+        .flatMap((p) => p.issues || [])
+        .filter((issue, index, arr) => arr.indexOf(issue) === index)
+        .slice(0, 3);
+
+      historyContext = `
+User's Posture History:
+- Latest score: ${latestScore}/100
+- Average score (last 5 assessments): ${avgScore}/100
+- Common recurring issues: ${commonIssues.length > 0 ? commonIssues.join(", ") : "None recorded yet"}
+- Total assessments: ${postureHistory.length}
+
+Please consider this history when providing recommendations. If you see recurring issues, emphasize exercises that target those specific problems. If the user is improving, acknowledge their progress.`;
+    } else {
+      historyContext = "This is the user's first posture assessment. Provide comprehensive guidance.";
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
