@@ -127,15 +127,30 @@ export default function CameraCapture({
             )}
             {isStreaming && (
               <div className="absolute inset-0 pointer-events-none">
-                {/* Posture guide overlay - Larger */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-64 h-80 md:w-56 md:h-72 border-2 border-dashed border-primary/50 rounded-lg" />
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-center">
-                  <p className="text-sm bg-background/80 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
-                    Position yourself in the frame, sitting or standing naturally
-                  </p>
-                </div>
+                {/* Countdown overlay for auto-scan */}
+                {autoScan && scanCountdown !== null && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <div className="text-center">
+                      <div className="text-8xl font-bold text-white drop-shadow-lg animate-pulse">
+                        {scanCountdown}
+                      </div>
+                      <p className="text-white text-lg mt-4 bg-black/50 px-4 py-2 rounded-lg">
+                        Get ready...
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Instruction overlay */}
+                {!scanCountdown && (
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <p className="text-sm bg-background/90 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
+                      {autoScan 
+                        ? "Auto-scan will begin shortly. Stand or sit naturally." 
+                        : "Position yourself in the frame, sitting or standing naturally"}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             
