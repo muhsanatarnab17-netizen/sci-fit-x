@@ -71,7 +71,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
       };
     case "magic_link":
       return {
-        subject: "Your FitLife Pro Login Link",
+        subject: "Your PosFitx Login Link",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 32px;">
