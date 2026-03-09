@@ -31,27 +31,36 @@ export default function CameraCapture({
 
   const [autoScan, setAutoScan] = useState(true);
   const [scanCountdown, setScanCountdown] = useState<number | null>(null);
+  const captureTriggeredRef = useRef(false);
 
   useEffect(() => {
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
 
-  // Auto-scanning logic
+  // Reset capture trigger when analysis completes or autoScan toggles
   useEffect(() => {
-    if (!autoScan || !isStreaming || isAnalyzing) {
-      setScanCountdown(null);
+    if (!isAnalyzing) {
+      captureTriggeredRef.current = false;
+    }
+  }, [isAnalyzing]);
+
+  // Auto-scanning logic - only run once per scan cycle
+  useEffect(() => {
+    if (!autoScan || !isStreaming || isAnalyzing || captureTriggeredRef.current) {
+      if (!autoScan || !isStreaming || isAnalyzing) {
+        setScanCountdown(null);
+      }
       return;
     }
 
-    // Start countdown when camera is ready
     setScanCountdown(3);
     const countdownInterval = setInterval(() => {
       setScanCountdown((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(countdownInterval);
-          // Capture automatically when countdown reaches 0
-          if (prev === 1) {
+          if (prev === 1 && !captureTriggeredRef.current) {
+            captureTriggeredRef.current = true;
             const image = captureImage();
             if (image) {
               onCapture(image);
@@ -64,7 +73,8 @@ export default function CameraCapture({
     }, 1000);
 
     return () => clearInterval(countdownInterval);
-  }, [autoScan, isStreaming, isAnalyzing, captureImage, onCapture]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoScan, isStreaming, isAnalyzing]);
 
   const handleCapture = () => {
     const image = captureImage();

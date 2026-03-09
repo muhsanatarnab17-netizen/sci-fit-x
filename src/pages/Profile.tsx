@@ -428,18 +428,69 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Danger Zone */}
-        <Card className="glass border-destructive/20">
+        {/* Account Actions */}
+        <Card className="glass">
           <CardHeader>
-            <CardTitle className="text-destructive">Account</CardTitle>
+            <CardTitle>Account</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Button variant="destructive" onClick={handleSignOut}>
+          <CardContent className="space-y-4">
+            <Button variant="outline" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </Button>
+            
+            <Separator />
+            
+            <div className="pt-2">
+              <p className="text-sm text-muted-foreground mb-3">
+                <AlertTriangle className="inline h-4 w-4 mr-1 text-destructive" />
+                Permanently delete your account and all data. This action cannot be undone.
+              </p>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete your account, profile, workout logs, meal logs, 
+                      posture assessments, and all other data. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase.rpc("delete_user");
+                          if (error) throw error;
+                          await signOut();
+                          navigate("/");
+                          toast.success("Account deleted successfully");
+                        } catch (err: any) {
+                          toast.error("Failed to delete account: " + err.message);
+                        }
+                      }}
+                    >
+                      Delete My Account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Legal Links */}
+        <div className="flex justify-center gap-6 text-sm text-muted-foreground pb-8">
+          <a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
+        </div>
       </div>
     </AppLayout>
   );

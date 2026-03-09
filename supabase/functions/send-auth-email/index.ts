@@ -211,7 +211,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { subject, html } = getEmailContent(type, confirmUrl || "");
 
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "FitLife Pro <noreply@resend.dev>";
+    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "PosFitx <noreply@resend.dev>";
 
     const emailResponse = await resend.emails.send({
       from: fromEmail,
