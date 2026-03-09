@@ -29,10 +29,42 @@ export default function CameraCapture({
     switchCamera,
   } = useCamera("environment"); // Default to rear camera
 
+  const [autoScan, setAutoScan] = useState(true);
+  const [scanCountdown, setScanCountdown] = useState<number | null>(null);
+
   useEffect(() => {
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
+
+  // Auto-scanning logic
+  useEffect(() => {
+    if (!autoScan || !isStreaming || isAnalyzing) {
+      setScanCountdown(null);
+      return;
+    }
+
+    // Start countdown when camera is ready
+    setScanCountdown(3);
+    const countdownInterval = setInterval(() => {
+      setScanCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(countdownInterval);
+          // Capture automatically when countdown reaches 0
+          if (prev === 1) {
+            const image = captureImage();
+            if (image) {
+              onCapture(image);
+            }
+          }
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [autoScan, isStreaming, isAnalyzing, captureImage, onCapture]);
 
   const handleCapture = () => {
     const image = captureImage();
