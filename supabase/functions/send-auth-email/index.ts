@@ -20,88 +20,91 @@ interface AuthEmailRequest {
 
 const VALID_TYPES = ["signup", "recovery", "email_change", "magic_link"];
 
+const emailWrapper = (content: string) => `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#080b14;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#080b14;padding:40px 16px;">
+<tr><td align="center">
+<table role="presentation" width="100%" style="max-width:560px;border-radius:16px;overflow:hidden;border:1px solid rgba(59,130,246,0.15);background:linear-gradient(168deg,#0d1025 0%,#111827 100%);">
+  <!-- Header -->
+  <tr><td style="padding:32px 32px 0;text-align:center;">
+    <div style="display:inline-block;padding:10px 20px;border-radius:40px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));border:1px solid rgba(59,130,246,0.2);margin-bottom:16px;">
+      <span style="color:#60a5fa;font-size:22px;font-weight:700;letter-spacing:0.5px;">PosFitx</span>
+    </div>
+    <p style="color:#64748b;font-size:13px;margin:8px 0 0;">AI-Powered Fitness &amp; Posture Partner</p>
+  </td></tr>
+  <!-- Content -->
+  <tr><td style="padding:28px 32px 32px;">
+    ${content}
+  </td></tr>
+  <!-- Footer -->
+  <tr><td style="padding:0 32px 28px;text-align:center;border-top:1px solid rgba(100,116,139,0.15);">
+    <p style="color:#475569;font-size:12px;margin:20px 0 0;line-height:1.6;">
+      © ${new Date().getFullYear()} PosFitx · Your AI Health Companion<br/>
+      <span style="color:#374151;">This is an automated message. Please do not reply.</span>
+    </p>
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
+
+const ctaButton = (url: string, label: string) => `
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px auto;">
+<tr><td style="border-radius:10px;background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);box-shadow:0 4px 24px rgba(59,130,246,0.35);">
+  <a href="${url}" target="_blank" style="display:inline-block;padding:14px 36px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">${label}</a>
+</td></tr></table>`;
+
 const getEmailContent = (type: string, confirmUrl: string) => {
   switch (type) {
     case "signup":
       return {
-        subject: "Welcome to PosFitx - Confirm Your Email",
-        html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
-              <p style="color: #94a3b8; margin-top: 8px;">Your AI-Powered Fitness Partner</p>
-            </div>
-            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Welcome aboard! 🎉</h2>
-              <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
-                You're one step away from starting your fitness transformation. Click the button below to confirm your email and unlock your personalized health journey.
-              </p>
-              <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Confirm Email &amp; Get Started
-              </a>
-            </div>
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
-              If you didn't create an account, you can safely ignore this email.
-            </p>
-          </div>
-        `,
+        subject: "Welcome to PosFitx — Confirm Your Email",
+        html: emailWrapper(`
+          <h1 style="color:#f1f5f9;font-size:22px;font-weight:700;margin:0 0 8px;">Welcome aboard! 🎉</h1>
+          <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0 0 4px;">
+            You're one step away from starting your AI-powered fitness transformation.
+          </p>
+          <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0;">
+            Confirm your email below to unlock personalized workouts, posture analysis, and smart nutrition plans.
+          </p>
+          ${ctaButton(confirmUrl, "Confirm Email &amp; Get Started")}
+          <p style="color:#475569;font-size:13px;text-align:center;margin:0;">If you didn't create an account, you can safely ignore this email.</p>
+        `),
       };
     case "recovery":
       return {
-        subject: "Reset Your PosFitx Password",
-        html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
-            </div>
-            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Password Reset Request</h2>
-              <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
-                We received a request to reset your password. Click the button below to set a new password.
-              </p>
-              <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Reset Password
-              </a>
-            </div>
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
-              This link expires in 1 hour. If you didn't request this, ignore this email.
-            </p>
-          </div>
-        `,
+        subject: "PosFitx — Reset Your Password",
+        html: emailWrapper(`
+          <h1 style="color:#f1f5f9;font-size:22px;font-weight:700;margin:0 0 8px;">Password Reset 🔒</h1>
+          <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0;">
+            We received a request to reset your PosFitx password. Click below to choose a new one.
+          </p>
+          ${ctaButton(confirmUrl, "Reset Password")}
+          <p style="color:#475569;font-size:13px;text-align:center;margin:0;">This link expires in 1 hour. Didn't request this? Ignore this email.</p>
+        `),
       };
     case "magic_link":
       return {
-        subject: "Your PosFitx Login Link",
-        html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
-            </div>
-            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Magic Login Link</h2>
-              <p style="color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0;">
-                Click the button below to sign in to your FitLife Pro account.
-              </p>
-              <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Sign In to PosFitx
-              </a>
-            </div>
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
-              This link expires in 1 hour.
-            </p>
-          </div>
-        `,
+        subject: "PosFitx — Your Login Link",
+        html: emailWrapper(`
+          <h1 style="color:#f1f5f9;font-size:22px;font-weight:700;margin:0 0 8px;">Magic Login Link ✨</h1>
+          <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0;">
+            Tap the button below to sign in to your PosFitx account instantly — no password needed.
+          </p>
+          ${ctaButton(confirmUrl, "Sign In to PosFitx")}
+          <p style="color:#475569;font-size:13px;text-align:center;margin:0;">This link expires in 1 hour.</p>
+        `),
       };
     default:
       return {
-        subject: "PosFitx - Email Confirmation",
-        html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px;">
-            <h1 style="color: #3b82f6;">PosFitx</h1>
-            <p>Click below to confirm:</p>
-            <a href="${confirmUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Confirm</a>
-          </div>
-        `,
+        subject: "PosFitx — Email Confirmation",
+        html: emailWrapper(`
+          <h1 style="color:#f1f5f9;font-size:22px;font-weight:700;margin:0 0 8px;">Confirm Your Email</h1>
+          <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0;">Click the button below to confirm your email address.</p>
+          ${ctaButton(confirmUrl, "Confirm")}
+        `),
       };
   }
 };
