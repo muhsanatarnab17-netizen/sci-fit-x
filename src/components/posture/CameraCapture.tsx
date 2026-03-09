@@ -83,9 +83,9 @@ export default function CameraCapture({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Camera Preview - Larger frame */}
-      <div className="aspect-[3/4] md:aspect-video max-h-[70vh] bg-muted rounded-xl flex items-center justify-center relative overflow-hidden">
+    <div className="space-y-4">
+      {/* Camera Preview - Full frame */}
+      <div className="w-full aspect-[3/4] md:aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden">
         {error ? (
           <div className="text-center p-6">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
