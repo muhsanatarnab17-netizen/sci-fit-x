@@ -94,7 +94,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
       };
     default:
       return {
-        subject: "FitLife Pro - Email Confirmation",
+        subject: "PosFitx - Email Confirmation",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px;">
             <h1 style="color: #3b82f6;">FitLife Pro</h1>
