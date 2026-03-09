@@ -36,13 +36,15 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    if (userError || !user) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const userId = user.id;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -86,6 +88,42 @@ serve(async (req) => {
 
     console.log("Analyzing posture from image...");
 
+    // Fetch user's posture history for context
+    const { data: postureHistory, error: historyError } = await supabaseClient
+      .from("posture_assessments")
+      .select("score, issues, recommendations, assessed_at")
+      .eq("user_id", userId)
+      .order("assessed_at", { ascending: false })
+      .limit(5);
+
+    if (historyError) {
+      console.error("Error fetching posture history:", historyError);
+    }
+
+    // Build context about user's posture history
+    let historyContext = "";
+    if (postureHistory && postureHistory.length > 0) {
+      const avgScore = Math.round(
+        postureHistory.reduce((sum, p) => sum + p.score, 0) / postureHistory.length
+      );
+      const latestScore = postureHistory[0].score;
+      const commonIssues = postureHistory
+        .flatMap((p) => p.issues || [])
+        .filter((issue, index, arr) => arr.indexOf(issue) === index)
+        .slice(0, 3);
+
+      historyContext = `
+User's Posture History:
+- Latest score: ${latestScore}/100
+- Average score (last 5 assessments): ${avgScore}/100
+- Common recurring issues: ${commonIssues.length > 0 ? commonIssues.join(", ") : "None recorded yet"}
+- Total assessments: ${postureHistory.length}
+
+Please consider this history when providing recommendations. If you see recurring issues, emphasize exercises that target those specific problems. If the user is improving, acknowledge their progress.`;
+    } else {
+      historyContext = "This is the user's first posture assessment. Provide comprehensive guidance.";
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -97,19 +135,29 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert posture analyst. Analyze the person's posture in the image and provide:
-1. A posture score from 0-100 (100 being perfect posture)
-2. Specific issues detected (e.g., forward head, rounded shoulders, slouching)
-3. Actionable recommendations to improve posture
+            content: `You are an expert posture analyst and physical therapist. Analyze the person's posture in the image with precision.
 
-Be encouraging but honest. Focus on the most impactful improvements.`
+${historyContext}
+
+Provide:
+1. A posture score from 0-100 (100 being perfect ergonomic alignment)
+   - Deduct points for: forward head posture, rounded shoulders, slouching, uneven shoulders, anterior pelvic tilt, etc.
+   - Be specific and realistic in scoring
+2. Specific anatomical issues detected (e.g., "Forward head posture - ears ahead of shoulders", "Rounded shoulders - scapular protraction", "Anterior pelvic tilt")
+3. Actionable, evidence-based recommendations:
+   - Specific stretches with duration (e.g., "Doorway chest stretch - 30 seconds, 3 sets")
+   - Strengthening exercises with sets/reps (e.g., "Chin tucks - 10 reps, 3 sets")
+   - Ergonomic adjustments (e.g., "Raise monitor to eye level")
+   - Daily habits to reinforce good posture
+
+Be honest about severity. If posture is poor (score <60), emphasize the importance of correction. If improving based on history, acknowledge progress. Focus on the 2-3 most critical issues that will have the biggest impact.`
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Please analyze my posture in this image. Provide a score, list any issues you notice, and give me specific recommendations for improvement."
+                text: "Analyze my posture in this image. Look carefully at head position, shoulder alignment, spinal curvature, and overall body positioning. Provide a detailed assessment with a numerical score, specific issues, and personalized exercise recommendations based on what you observe and my history."
               },
               {
                 type: "image_url",
@@ -136,12 +184,12 @@ Be encouraging but honest. Focus on the most impactful improvements.`
                   issues: {
                     type: "array",
                     items: { type: "string" },
-                    description: "List of posture issues detected"
+                    description: "List of specific anatomical posture issues detected (e.g., 'Forward head posture', 'Rounded shoulders', 'Anterior pelvic tilt')"
                   },
                   recommendations: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Actionable recommendations for improvement"
+                    description: "Specific, actionable exercises and stretches with sets/reps/duration (e.g., 'Chin tucks - 10 reps, 3 sets daily', 'Doorway chest stretch - 30 seconds, 3x daily')"
                   },
                   details: {
                     type: "string",

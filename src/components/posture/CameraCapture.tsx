@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, AlertCircle, Video, VideoOff, SwitchCamera } from "lucide-react";
+import { Camera, Loader2, AlertCircle, Video, VideoOff, SwitchCamera, Scan } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface CameraCaptureProps {
   onCapture: (imageBase64: string) => void;
@@ -27,10 +29,42 @@ export default function CameraCapture({
     switchCamera,
   } = useCamera("environment"); // Default to rear camera
 
+  const [autoScan, setAutoScan] = useState(true);
+  const [scanCountdown, setScanCountdown] = useState<number | null>(null);
+
   useEffect(() => {
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
+
+  // Auto-scanning logic
+  useEffect(() => {
+    if (!autoScan || !isStreaming || isAnalyzing) {
+      setScanCountdown(null);
+      return;
+    }
+
+    // Start countdown when camera is ready
+    setScanCountdown(3);
+    const countdownInterval = setInterval(() => {
+      setScanCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(countdownInterval);
+          // Capture automatically when countdown reaches 0
+          if (prev === 1) {
+            const image = captureImage();
+            if (image) {
+              onCapture(image);
+            }
+          }
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [autoScan, isStreaming, isAnalyzing, captureImage, onCapture]);
 
   const handleCapture = () => {
     const image = captureImage();
@@ -49,9 +83,9 @@ export default function CameraCapture({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Camera Preview - Larger frame */}
-      <div className="aspect-[3/4] md:aspect-video max-h-[70vh] bg-muted rounded-xl flex items-center justify-center relative overflow-hidden">
+    <div className="space-y-4">
+      {/* Camera Preview - Full frame */}
+      <div className="w-full aspect-[3/4] md:aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden">
         {error ? (
           <div className="text-center p-6">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
@@ -80,7 +114,7 @@ export default function CameraCapture({
               playsInline
               muted
               className={cn(
-                "w-full h-full object-cover",
+                "absolute inset-0 w-full h-full object-cover",
                 facingMode === "user" && "transform scale-x-[-1]",
                 !isStreaming && "hidden"
               )}
@@ -93,15 +127,30 @@ export default function CameraCapture({
             )}
             {isStreaming && (
               <div className="absolute inset-0 pointer-events-none">
-                {/* Posture guide overlay - Larger */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-64 h-80 md:w-56 md:h-72 border-2 border-dashed border-primary/50 rounded-lg" />
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-center">
-                  <p className="text-sm bg-background/80 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
-                    Position yourself in the frame, sitting or standing naturally
-                  </p>
-                </div>
+                {/* Countdown overlay for auto-scan */}
+                {autoScan && scanCountdown !== null && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <div className="text-center">
+                      <div className="text-8xl font-bold text-white drop-shadow-lg animate-pulse">
+                        {scanCountdown}
+                      </div>
+                      <p className="text-white text-lg mt-4 bg-black/50 px-4 py-2 rounded-lg">
+                        Get ready...
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Instruction overlay */}
+                {!scanCountdown && (
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <p className="text-sm bg-background/90 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
+                      {autoScan 
+                        ? "Auto-scan will begin shortly. Stand or sit naturally." 
+                        : "Position yourself in the frame, sitting or standing naturally"}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             
@@ -124,35 +173,44 @@ export default function CameraCapture({
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      {/* Camera mode indicator */}
-      {isStreaming && (
-        <p className="text-xs text-center text-muted-foreground">
-          Using {facingMode === "environment" ? "rear" : "front"} camera
-        </p>
-      )}
+      {/* Auto-scan toggle */}
+      <div className="flex items-center justify-center space-x-2 py-2">
+        <Switch
+          id="auto-scan"
+          checked={autoScan}
+          onCheckedChange={setAutoScan}
+          disabled={isAnalyzing}
+        />
+        <Label htmlFor="auto-scan" className="text-sm font-medium cursor-pointer">
+          <Scan className="inline h-4 w-4 mr-1" />
+          Auto-scan mode {autoScan && "(3s countdown)"}
+        </Label>
+      </div>
 
       {/* Controls */}
-      <div className="flex justify-between">
+      <div className="flex justify-between gap-2">
         <Button variant="outline" onClick={handleCancel} disabled={isAnalyzing}>
           <VideoOff className="mr-2 h-4 w-4" />
           Cancel
         </Button>
-        <Button
-          onClick={handleCapture}
-          disabled={!isStreaming || isAnalyzing}
-        >
-          {isAnalyzing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <Camera className="mr-2 h-4 w-4" />
-              Capture & Analyze
-            </>
-          )}
-        </Button>
+        {!autoScan && (
+          <Button
+            onClick={handleCapture}
+            disabled={!isStreaming || isAnalyzing}
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Camera className="mr-2 h-4 w-4" />
+                Capture & Analyze
+              </>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );
