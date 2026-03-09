@@ -29,6 +29,7 @@ import CameraCapture from "@/components/posture/CameraCapture";
 import PostureHistory from "@/components/posture/PostureHistory";
 import ExerciseCard from "@/components/posture/ExerciseCard";
 import { getExercisesForIssues, getTipsForScore, type PostureTip } from "@/lib/posture-exercises";
+import spineDnaBg from "@/assets/spine-dna-bg.jpg";
 
 const POSTURE_QUESTIONS = [
   {
@@ -256,7 +257,17 @@ export default function Posture() {
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      {/* DNA Spine Background - Seamless on mobile & desktop */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center">
+        <img 
+          src={spineDnaBg} 
+          alt="" 
+          className="h-full w-auto object-contain opacity-[0.05] mix-blend-screen scale-110 md:scale-100" 
+          aria-hidden="true"
+        />
+      </div>
+      
+      <div className="relative z-10 max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl md:text-3xl font-display font-bold flex items-center gap-3">
