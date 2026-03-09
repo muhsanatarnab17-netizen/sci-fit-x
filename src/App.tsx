@@ -11,6 +11,9 @@ import Posture from "./pages/Posture";
 import Plans from "./pages/Plans";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
+import ResetPassword from "./pages/ResetPassword";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -62,6 +65,9 @@ function AppRoutes() {
       <Route path="/plans" element={<ProtectedRoute><Plans /></ProtectedRoute>} />
       <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

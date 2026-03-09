@@ -24,11 +24,11 @@ const getEmailContent = (type: string, confirmUrl: string) => {
   switch (type) {
     case "signup":
       return {
-        subject: "Welcome to FitLife Pro - Confirm Your Email",
+        subject: "Welcome to PosFitx - Confirm Your Email",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
+              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
               <p style="color: #94a3b8; margin-top: 8px;">Your AI-Powered Fitness Partner</p>
             </div>
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -48,11 +48,11 @@ const getEmailContent = (type: string, confirmUrl: string) => {
       };
     case "recovery":
       return {
-        subject: "Reset Your FitLife Pro Password",
+        subject: "Reset Your PosFitx Password",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
+              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
             </div>
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
               <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Password Reset Request</h2>
@@ -71,11 +71,11 @@ const getEmailContent = (type: string, confirmUrl: string) => {
       };
     case "magic_link":
       return {
-        subject: "Your FitLife Pro Login Link",
+        subject: "Your PosFitx Login Link",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
+              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
             </div>
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
               <h2 style="color: #e2e8f0; font-size: 24px; margin: 0 0 16px 0;">Magic Login Link</h2>
@@ -83,7 +83,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
                 Click the button below to sign in to your FitLife Pro account.
               </p>
               <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Sign In to FitLife Pro
+                Sign In to PosFitx
               </a>
             </div>
             <p style="color: #64748b; font-size: 14px; text-align: center; margin: 0;">
@@ -94,10 +94,10 @@ const getEmailContent = (type: string, confirmUrl: string) => {
       };
     default:
       return {
-        subject: "FitLife Pro - Email Confirmation",
+        subject: "PosFitx - Email Confirmation",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px;">
-            <h1 style="color: #3b82f6;">FitLife Pro</h1>
+            <h1 style="color: #3b82f6;">PosFitx</h1>
             <p>Click below to confirm:</p>
             <a href="${confirmUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Confirm</a>
           </div>
@@ -211,7 +211,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { subject, html } = getEmailContent(type, confirmUrl || "");
 
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "FitLife Pro <noreply@resend.dev>";
+    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "PosFitx <noreply@resend.dev>";
 
     const emailResponse = await resend.emails.send({
       from: fromEmail,

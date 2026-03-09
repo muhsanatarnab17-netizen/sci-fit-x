@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Dumbbell, Target, Zap, Apple } from "lucide-react";
+import ForgotPasswordDialog from "@/components/auth/ForgotPasswordDialog";
 import appLogo from "@/assets/app-logo.png";
 import leafyR from "@/assets/leafy-r.png";
 
@@ -210,6 +211,9 @@ export default function Landing() {
                         <Button type="submit" className="w-full" disabled={isLoading}>
                           {isLoading ? "Signing in..." : "Sign In"}
                         </Button>
+                        <div className="text-center mt-2">
+                          <ForgotPasswordDialog />
+                        </div>
                       </form>
                     </TabsContent>
 
@@ -279,7 +283,10 @@ export default function Landing() {
                 </CardContent>
                 <CardFooter className="text-center text-xs text-muted-foreground">
                   <p className="w-full">
-                    By continuing, you agree to our Terms of Service and Privacy Policy
+                    By continuing, you agree to our{" "}
+                    <a href="/terms" className="text-primary hover:underline">Terms of Service</a>{" "}
+                    and{" "}
+                    <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
                   </p>
                 </CardFooter>
               </Card>
