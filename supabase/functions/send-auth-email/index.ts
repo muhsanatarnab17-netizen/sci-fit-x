@@ -28,7 +28,7 @@ const getEmailContent = (type: string, confirmUrl: string) => {
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); padding: 40px; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">FitLife Pro</h1>
+              <h1 style="color: #3b82f6; font-size: 32px; margin: 0;">PosFitx</h1>
               <p style="color: #94a3b8; margin-top: 8px;">Your AI-Powered Fitness Partner</p>
             </div>
             <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
