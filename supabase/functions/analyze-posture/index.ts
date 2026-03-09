@@ -157,7 +157,7 @@ Be honest about severity. If posture is poor (score <60), emphasize the importan
             content: [
               {
                 type: "text",
-                text: "Please analyze my posture in this image. Provide a score, list any issues you notice, and give me specific recommendations for improvement."
+                text: "Analyze my posture in this image. Look carefully at head position, shoulder alignment, spinal curvature, and overall body positioning. Provide a detailed assessment with a numerical score, specific issues, and personalized exercise recommendations based on what you observe and my history."
               },
               {
                 type: "image_url",
