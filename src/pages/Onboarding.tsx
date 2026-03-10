@@ -28,7 +28,7 @@ const TOTAL_STEPS = 5;
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { } = useAuth();
   const { profile, updateProfile, isLoading: profileLoading } = useProfile();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);

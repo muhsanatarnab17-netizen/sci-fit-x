@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import CategoryBadge from "@/components/ui/category-badge";
 import {
   Activity,
-  Flame,
+  
   Target,
   Dumbbell,
   Utensils,

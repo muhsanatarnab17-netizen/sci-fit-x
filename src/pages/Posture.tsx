@@ -28,7 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 import CameraCapture from "@/components/posture/CameraCapture";
 import PostureHistory from "@/components/posture/PostureHistory";
 import ExerciseCard from "@/components/posture/ExerciseCard";
-import { getExercisesForIssues, getTipsForScore, type PostureTip } from "@/lib/posture-exercises";
+import { getExercisesForIssues, getTipsForScore } from "@/lib/posture-exercises";
 import spineDnaBg from "@/assets/spine-dna-bg.jpg";
 
 const POSTURE_QUESTIONS = [

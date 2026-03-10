@@ -16,7 +16,7 @@ import { TrendingUp, Scale, Target, Dumbbell, CheckCircle2 } from "lucide-react"
 
 export default function Progress() {
   const { profile } = useProfile();
-  const { weeklyData: weightWeekly, monthlyData: weightMonthly, weightChange, weightChangePercent, isLoading: weightLoading } = useWeightHistory();
+  const { weeklyData: weightWeekly, monthlyData: weightMonthly, weightChangePercent, isLoading: weightLoading } = useWeightHistory();
   const { weeklyChart: workoutWeekly, monthlyChart: workoutMonthly, totalWorkouts, thisMonthWorkouts, isLoading: workoutLoading } = useWorkoutHistory();
   const { weeklyChart: mealWeekly, monthlyChart: mealMonthly, isLoading: mealLoading } = useMealHistory();
   const { weeklyChart: postureWeekly, monthlyChart: postureMonthly, stats: postureStats, isLoading: postureLoading } = usePostureHistory();
