@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Scale, Target, Dumbbell, Calendar, Utensils, CheckCircle2 } from "lucide-react";
+import { TrendingUp, Scale, Target, Dumbbell, CheckCircle2 } from "lucide-react";
 
 export default function Progress() {
   const { profile } = useProfile();
