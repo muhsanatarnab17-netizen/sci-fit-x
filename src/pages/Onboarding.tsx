@@ -22,7 +22,7 @@ import {
   FITNESS_GOALS,
   type ACTIVITY_MULTIPLIERS,
 } from "@/lib/health-utils";
-import { Activity, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 const TOTAL_STEPS = 5;
 
