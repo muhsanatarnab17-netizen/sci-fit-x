@@ -16,10 +16,8 @@ import { toast } from "sonner";
 import {
   User,
   Settings,
-  Activity,
   Scale,
   Ruler,
-  Calendar,
   Dumbbell,
   Heart,
   LogOut,

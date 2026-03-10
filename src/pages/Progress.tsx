@@ -12,11 +12,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Scale, Target, Dumbbell, Calendar, Utensils, CheckCircle2 } from "lucide-react";
+import { TrendingUp, Scale, Target, Dumbbell, CheckCircle2 } from "lucide-react";
 
 export default function Progress() {
   const { profile } = useProfile();
-  const { weeklyData: weightWeekly, monthlyData: weightMonthly, weightChange, weightChangePercent, isLoading: weightLoading } = useWeightHistory();
+  const { weeklyData: weightWeekly, monthlyData: weightMonthly, weightChangePercent, isLoading: weightLoading } = useWeightHistory();
   const { weeklyChart: workoutWeekly, monthlyChart: workoutMonthly, totalWorkouts, thisMonthWorkouts, isLoading: workoutLoading } = useWorkoutHistory();
   const { weeklyChart: mealWeekly, monthlyChart: mealMonthly, isLoading: mealLoading } = useMealHistory();
   const { weeklyChart: postureWeekly, monthlyChart: postureMonthly, stats: postureStats, isLoading: postureLoading } = usePostureHistory();
