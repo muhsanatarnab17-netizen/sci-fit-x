@@ -17,7 +17,7 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  Loader2,
+  
   History,
   Dumbbell,
   Lightbulb,
