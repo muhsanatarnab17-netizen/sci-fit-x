@@ -2,11 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-function formatDate(dateStr: string, short = false) {
-  const d = new Date(dateStr);
-  return short
-    ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 function filterByDays(logs: any[], dateKey: string, days: number) {

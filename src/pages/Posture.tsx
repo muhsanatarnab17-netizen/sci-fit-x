@@ -17,7 +17,6 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  
   History,
   Dumbbell,
   Lightbulb,
