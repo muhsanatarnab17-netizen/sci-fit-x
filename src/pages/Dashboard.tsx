@@ -15,8 +15,6 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import CategoryBadge from "@/components/ui/category-badge";
 import {
-  Activity,
-  
   Target,
   Dumbbell,
   Utensils,
@@ -27,6 +25,7 @@ import {
   Heart,
   Loader2,
   CheckCircle2,
+  Activity,
 } from "lucide-react";
 import { getBMICategory, getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
