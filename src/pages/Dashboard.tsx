@@ -199,9 +199,9 @@ export default function Dashboard() {
 
           {/* Posture - spine-like, deep neon */}
           <Card className="glass hover-lift hover-glow-purple border-neon-purple/20 transition-all duration-300 shadow-[0_4px_25px_hsl(260_80%_55%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
                   {/* Spine-like vertical icon */}
                   <div className="flex flex-col items-center gap-[2px] h-7 w-7 justify-center">
                     {[5, 6.5, 7.5, 7, 5.5, 4].map((w, i) => (
