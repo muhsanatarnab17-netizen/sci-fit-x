@@ -183,14 +183,14 @@ export default function Dashboard() {
 
           {/* Meals - orange */}
           <Card className="glass hover-lift hover-glow-orange border-neon-orange/20 transition-all duration-300 shadow-[0_4px_25px_hsl(25_100%_50%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
-                  <Utensils className="h-7 w-7 text-neon-orange" strokeWidth={1.5} />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
+                  <Utensils className="h-5 w-5 sm:h-7 sm:w-7 text-neon-orange" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Today's Meals</p>
-                  <p className="text-2xl font-bold">{todayMeals}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Today's Meals</p>
+                  <p className="text-xl sm:text-2xl font-bold">{todayMeals}</p>
                   <p className="text-xs text-muted-foreground">{todayCalories} cal logged</p>
                 </div>
               </div>
