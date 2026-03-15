@@ -150,10 +150,10 @@ export default function Dashboard() {
           <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
             <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
+                <div className="p-2 sm:p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
                   <div className="relative">
-                    <Activity className="h-7 w-7 text-primary" strokeWidth={1.5} />
-                    <Heart className="h-3.5 w-3.5 text-neon-pink absolute -bottom-0.5 -right-1" strokeWidth={1.5} />
+                    <Activity className="h-5 w-5 sm:h-7 sm:w-7 text-primary" strokeWidth={1.5} />
+                    <Heart className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-neon-pink absolute -bottom-0.5 -right-1" strokeWidth={1.5} />
                   </div>
                 </div>
                 <div>
