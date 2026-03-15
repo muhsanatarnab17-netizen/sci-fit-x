@@ -334,7 +334,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-pink border-neon-pink/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/progress")}>
+            <Card className="glass hover-lift hover-glow-pink border-neon-pink/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/progress")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-pink/10 shadow-[0_0_15px_hsl(330_81%_60%/0.2)]">
