@@ -148,8 +148,8 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 stagger-children">
           {/* BMI - combined Activity + Heart */}
           <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
                   <div className="relative">
                     <Activity className="h-7 w-7 text-primary" strokeWidth={1.5} />
