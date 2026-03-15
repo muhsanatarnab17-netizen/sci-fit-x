@@ -79,7 +79,7 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase relative" style={{
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase relative" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
                 letterSpacing: '6px',
               }}>

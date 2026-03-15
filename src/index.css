@@ -298,4 +298,36 @@
       box-shadow: 0 0 30px hsl(199 89% 48% / 0.5);
     }
   }
+
+  /* Touch-friendly active states for interactive cards */
+  @media (hover: none) {
+    .hover-glow-blue:active,
+    .hover-glow-green:active,
+    .hover-glow-purple:active,
+    .hover-glow-pink:active,
+    .hover-glow-orange:active {
+      opacity: 0.85;
+      transition: opacity 0.1s ease;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-children > * {
+      animation: none;
+      opacity: 1;
+    }
+    .hover-lift {
+      transition: none;
+    }
+    .animate-pulse-glow {
+      animation: none;
+    }
+  }
+
+  /* Smooth scrolling */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
 }
