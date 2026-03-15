@@ -167,10 +167,10 @@ export default function Dashboard() {
 
           {/* Workouts - green */}
           <Card className="glass hover-lift hover-glow-green border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
-                  <Dumbbell className="h-7 w-7 text-neon-green" strokeWidth={1.5} />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
+                  <Dumbbell className="h-5 w-5 sm:h-7 sm:w-7 text-neon-green" strokeWidth={1.5} />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Workouts</p>
