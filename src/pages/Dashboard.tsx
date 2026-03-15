@@ -75,11 +75,11 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 stagger-children">
+      <div className="space-y-6 sm:space-y-8 stagger-children">
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase relative" style={{
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase relative" style={{
                 fontFamily: "'Work Sans', system-ui, sans-serif",
                 letterSpacing: '6px',
               }}>
@@ -94,7 +94,7 @@ export default function Dashboard() {
                 {'Hi There ! '.split('').map((letter, i) => {
                   if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
                   return (
-                    <span key={`ht-${i}`} className="relative inline-block text-2xl md:text-3xl font-black" style={{
+                    <span key={`ht-${i}`} className="relative inline-block text-lg sm:text-2xl md:text-3xl font-black" style={{
                       WebkitTextFillColor: 'transparent',
                       WebkitTextStroke: '1.5px hsl(220 20% 75% / 0.8)',
                       filter: 'drop-shadow(0 0 10px hsl(220 20% 70% / 0.5)) drop-shadow(0 0 20px hsl(220 15% 60% / 0.3))',
@@ -145,20 +145,20 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 stagger-children">
           {/* BMI - combined Activity + Heart */}
           <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-primary/15 shadow-[0_0_20px_hsl(187_100%_50%/0.3)]">
                   <div className="relative">
-                    <Activity className="h-7 w-7 text-primary" strokeWidth={1.5} />
-                    <Heart className="h-3.5 w-3.5 text-neon-pink absolute -bottom-0.5 -right-1" strokeWidth={1.5} />
+                    <Activity className="h-5 w-5 sm:h-7 sm:w-7 text-primary" strokeWidth={1.5} />
+                    <Heart className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-neon-pink absolute -bottom-0.5 -right-1" strokeWidth={1.5} />
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">BMI</p>
-                  <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">BMI</p>
+                  <p className="text-xl sm:text-2xl font-bold">{profile.bmi || "--"}</p>
                   {bmiCategory && <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>}
                 </div>
               </div>
@@ -167,15 +167,15 @@ export default function Dashboard() {
 
           {/* Workouts - green */}
           <Card className="glass hover-lift hover-glow-green border-neon-green/20 transition-all duration-300 shadow-[0_4px_25px_hsl(160_80%_45%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
-                  <Dumbbell className="h-7 w-7 text-neon-green" strokeWidth={1.5} />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-green/15 shadow-[0_0_20px_hsl(160_80%_45%/0.3)]">
+                  <Dumbbell className="h-5 w-5 sm:h-7 sm:w-7 text-neon-green" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Workouts</p>
-                  <p className="text-2xl font-bold">{thisMonthWorkouts}</p>
-                  <p className="text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Workouts</p>
+                  <p className="text-xl sm:text-2xl font-bold">{thisMonthWorkouts}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
                 </div>
               </div>
             </CardContent>
@@ -183,15 +183,15 @@ export default function Dashboard() {
 
           {/* Meals - orange */}
           <Card className="glass hover-lift hover-glow-orange border-neon-orange/20 transition-all duration-300 shadow-[0_4px_25px_hsl(25_100%_50%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
-                  <Utensils className="h-7 w-7 text-neon-orange" strokeWidth={1.5} />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-orange/15 shadow-[0_0_20px_hsl(25_100%_50%/0.3)]">
+                  <Utensils className="h-5 w-5 sm:h-7 sm:w-7 text-neon-orange" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Today's Meals</p>
-                  <p className="text-2xl font-bold">{todayMeals}</p>
-                  <p className="text-xs text-muted-foreground">{todayCalories} cal logged</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Today's Meals</p>
+                  <p className="text-xl sm:text-2xl font-bold">{todayMeals}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">{todayCalories} cal logged</p>
                 </div>
               </div>
             </CardContent>
@@ -199,9 +199,9 @@ export default function Dashboard() {
 
           {/* Posture - spine-like, deep neon */}
           <Card className="glass hover-lift hover-glow-purple border-neon-purple/20 transition-all duration-300 shadow-[0_4px_25px_hsl(260_80%_55%/0.25)]">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-neon-purple/15 shadow-[0_0_20px_hsl(260_80%_55%/0.3)]">
                   {/* Spine-like vertical icon */}
                   <div className="flex flex-col items-center gap-[2px] h-7 w-7 justify-center">
                     {[5, 6.5, 7.5, 7, 5.5, 4].map((w, i) => (
@@ -219,9 +219,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Posture</p>
-                  <p className="text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
-                  <Badge variant="outline" className="mt-1 text-xs">{postureInfo.label}</Badge>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Posture</p>
+                  <p className="text-xl sm:text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
+                  <Badge variant="outline" className="mt-1 text-[10px] sm:text-xs">{postureInfo.label}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -229,7 +229,7 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Today's Tasks */}
           <Card className="lg:col-span-2 glass-elevated">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -287,7 +287,7 @@ export default function Dashboard() {
 
           {/* Quick Actions */}
           <div className="space-y-4 stagger-children">
-            <Card className="glass hover-lift hover-glow-blue border-primary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/posture")}>
+            <Card className="glass hover-lift hover-glow-blue border-primary/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/posture")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-primary/10 shadow-[0_0_15px_hsl(187_100%_50%/0.2)]">
@@ -304,7 +304,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-green border-neon-green/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-green border-neon-green/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-green/10 shadow-[0_0_15px_hsl(160_80%_45%/0.2)]">
@@ -319,7 +319,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-purple border-secondary/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-purple border-secondary/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-secondary/10 shadow-[0_0_15px_hsl(260_60%_55%/0.2)]">
@@ -334,7 +334,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-pink border-neon-pink/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/progress")}>
+            <Card className="glass hover-lift hover-glow-pink border-neon-pink/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/progress")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-pink/10 shadow-[0_0_15px_hsl(330_81%_60%/0.2)]">
@@ -352,7 +352,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity Summary */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
           <Card className="glass">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">

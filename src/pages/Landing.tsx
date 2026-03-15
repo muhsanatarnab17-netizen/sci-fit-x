@@ -121,10 +121,10 @@ export default function Landing() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/15 rounded-full blur-3xl" />
 
-        <div className="relative container mx-auto px-4 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative container mx-auto px-4 py-8 sm:py-12 lg:py-20">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
                 <img src={appLogo} alt="PosFitx Logo" className="h-5 w-5" />
                 <span className="text-sm text-muted-foreground">Your AI-Powered Fitness Partner</span>
@@ -149,18 +149,18 @@ export default function Landing() {
               </p>
 
               {/* Features Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className={`relative flex items-start gap-3 p-4 rounded-lg glass hover:scale-[1.02] transition-all duration-300 ${feature.glowColor}`}
+                    className={`relative flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg glass hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ${feature.glowColor}`}
                   >
-                    <div className={`p-2 rounded-lg ${feature.bgColor}`}>
-                      <feature.icon className={`h-5 w-5 ${feature.color}`} />
+                    <div className={`p-1.5 sm:p-2 rounded-lg ${feature.bgColor} flex-shrink-0`}>
+                      <feature.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${feature.color}`} />
                     </div>
-                    <div>
-                      <h3 className="font-medium text-sm">{feature.title}</h3>
-                      <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-medium text-xs sm:text-sm">{feature.title}</h3>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">{feature.description}</p>
                     </div>
                   </div>
                 ))}
