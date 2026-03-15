@@ -193,8 +193,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">{children}</main>
+      {/* Main Content — tighter padding on mobile */}
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">{children}</main>
     </div>
   );
 }

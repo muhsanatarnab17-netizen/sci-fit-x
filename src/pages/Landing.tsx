@@ -149,18 +149,18 @@ export default function Landing() {
               </p>
 
               {/* Features Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className={`relative flex items-start gap-3 p-4 rounded-lg glass hover:scale-[1.02] transition-all duration-300 ${feature.glowColor}`}
+                    className={`relative flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg glass hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ${feature.glowColor}`}
                   >
-                    <div className={`p-2 rounded-lg ${feature.bgColor}`}>
-                      <feature.icon className={`h-5 w-5 ${feature.color}`} />
+                    <div className={`p-1.5 sm:p-2 rounded-lg ${feature.bgColor} flex-shrink-0`}>
+                      <feature.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${feature.color}`} />
                     </div>
-                    <div>
-                      <h3 className="font-medium text-sm">{feature.title}</h3>
-                      <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-medium text-xs sm:text-sm">{feature.title}</h3>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">{feature.description}</p>
                     </div>
                   </div>
                 ))}

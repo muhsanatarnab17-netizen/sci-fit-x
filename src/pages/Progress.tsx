@@ -115,7 +115,7 @@ export default function Progress() {
 
         {/* Trading-style Charts */}
         <Tabs defaultValue="weight" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl overflow-x-auto">
             <TabsTrigger value="weight">Weight</TabsTrigger>
             <TabsTrigger value="bmi">BMI</TabsTrigger>
             <TabsTrigger value="posture">Posture</TabsTrigger>
