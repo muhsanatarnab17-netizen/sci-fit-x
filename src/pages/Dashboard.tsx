@@ -219,9 +219,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Posture</p>
-                  <p className="text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
-                  <Badge variant="outline" className="mt-1 text-xs">{postureInfo.label}</Badge>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Posture</p>
+                  <p className="text-xl sm:text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
+                  <Badge variant="outline" className="mt-1 text-[10px] sm:text-xs">{postureInfo.label}</Badge>
                 </div>
               </div>
             </CardContent>
