@@ -157,8 +157,8 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">BMI</p>
-                  <p className="text-2xl font-bold">{profile.bmi || "--"}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">BMI</p>
+                  <p className="text-xl sm:text-2xl font-bold">{profile.bmi || "--"}</p>
                   {bmiCategory && <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>}
                 </div>
               </div>
