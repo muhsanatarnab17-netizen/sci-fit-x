@@ -173,9 +173,9 @@ export default function Dashboard() {
                   <Dumbbell className="h-5 w-5 sm:h-7 sm:w-7 text-neon-green" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Workouts</p>
-                  <p className="text-2xl font-bold">{thisMonthWorkouts}</p>
-                  <p className="text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Workouts</p>
+                  <p className="text-xl sm:text-2xl font-bold">{thisMonthWorkouts}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
                 </div>
               </div>
             </CardContent>
