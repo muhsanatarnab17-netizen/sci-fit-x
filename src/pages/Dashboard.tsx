@@ -94,7 +94,7 @@ export default function Dashboard() {
                 {'Hi There ! '.split('').map((letter, i) => {
                   if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
                   return (
-                    <span key={`ht-${i}`} className="relative inline-block text-2xl md:text-3xl font-black" style={{
+                    <span key={`ht-${i}`} className="relative inline-block text-lg sm:text-2xl md:text-3xl font-black" style={{
                       WebkitTextFillColor: 'transparent',
                       WebkitTextStroke: '1.5px hsl(220 20% 75% / 0.8)',
                       filter: 'drop-shadow(0 0 10px hsl(220 20% 70% / 0.5)) drop-shadow(0 0 20px hsl(220 15% 60% / 0.3))',
