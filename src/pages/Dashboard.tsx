@@ -191,7 +191,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-xs sm:text-sm text-muted-foreground">Today's Meals</p>
                   <p className="text-xl sm:text-2xl font-bold">{todayMeals}</p>
-                  <p className="text-xs text-muted-foreground">{todayCalories} cal logged</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">{todayCalories} cal logged</p>
                 </div>
               </div>
             </CardContent>
