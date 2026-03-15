@@ -75,7 +75,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-8 stagger-children">
+      <div className="space-y-6 sm:space-y-8 stagger-children">
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
