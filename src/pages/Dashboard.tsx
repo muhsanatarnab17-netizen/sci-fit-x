@@ -352,7 +352,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity Summary */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
           <Card className="glass">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
