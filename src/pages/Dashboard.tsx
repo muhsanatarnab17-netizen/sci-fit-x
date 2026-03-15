@@ -304,7 +304,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-green border-neon-green/20 cursor-pointer transition-all duration-300" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-green border-neon-green/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-neon-green/10 shadow-[0_0_15px_hsl(160_80%_45%/0.2)]">
