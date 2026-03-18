@@ -143,7 +143,7 @@ export default function Posture() {
           score: calculatedScore,
           issues,
           recommendations,
-          assessment_type: "self-assessment",
+          assessment_type: "self_assessment",
         }),
       ]);
       toast.success("Posture assessment saved!");
@@ -184,7 +184,7 @@ export default function Posture() {
           score: analysisScore,
           issues: issues || [],
           recommendations: recommendations || [],
-          assessment_type: "camera",
+          assessment_type: "camera_analysis",
         }),
       ]);
       toast.success("AI posture analysis complete!");
