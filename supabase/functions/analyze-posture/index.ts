@@ -8,6 +8,8 @@ const corsHeaders = {
 };
 
 interface PostureAnalysis {
+  person_detected: boolean;
+  visibility_confidence: number;
   score: number;
   issues: string[];
   recommendations: string[];
@@ -68,6 +70,18 @@ serve(async (req) => {
     if (typeof imageBase64 !== "string" || imageBase64.length > MAX_BASE64) {
       return new Response(
         JSON.stringify({ error: "Image too large (max 10 MB)" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Reject obviously tiny/invalid captures
+    const MIN_BASE64 = 5_000;
+    if (imageBase64.length < MIN_BASE64) {
+      return new Response(
+        JSON.stringify({ error: "Image is too small to analyze. Please retake the photo." }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -139,25 +153,35 @@ Please consider this history when providing recommendations. If you see recurrin
 
 ${historyContext}
 
-Provide:
-1. A posture score from 0-100 (100 being perfect ergonomic alignment)
-   - Deduct points for: forward head posture, rounded shoulders, slouching, uneven shoulders, anterior pelvic tilt, etc.
-   - Be specific and realistic in scoring
-2. Specific anatomical issues detected (e.g., "Forward head posture - ears ahead of shoulders", "Rounded shoulders - scapular protraction", "Anterior pelvic tilt")
-3. Actionable, evidence-based recommendations:
-   - Specific stretches with duration (e.g., "Doorway chest stretch - 30 seconds, 3 sets")
-   - Strengthening exercises with sets/reps (e.g., "Chin tucks - 10 reps, 3 sets")
-   - Ergonomic adjustments (e.g., "Raise monitor to eye level")
-   - Daily habits to reinforce good posture
+CRITICAL VALIDATION RULES:
+- First determine if a PERSON is clearly visible (upper body required: head, neck, shoulders, and torso).
+- If no person is visible OR the person is too unclear/too far/too dark/too blurry, DO NOT guess posture.
+- In those invalid cases return:
+  - person_detected: false
+  - visibility_confidence: a number between 0 and 0.5
+  - score: 0
+  - issues: []
+  - recommendations: []
+  - details: short explanation why analysis is not possible
 
-Be honest about severity. If posture is poor (score <60), emphasize the importance of correction. If improving based on history, acknowledge progress. Focus on the 2-3 most critical issues that will have the biggest impact.`
+If person is visible and assessable:
+1. Return posture score from 0-100 (100 = perfect ergonomic alignment)
+2. Specific anatomical issues (e.g., forward head posture, rounded shoulders, anterior pelvic tilt)
+3. Actionable recommendations:
+   - Stretches with duration
+   - Strength work with sets/reps
+   - Ergonomic adjustments
+   - Daily habits
+4. person_detected must be true and visibility_confidence between 0.6 and 1.0.
+
+Be strict and evidence-based.`
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Analyze my posture in this image. Look carefully at head position, shoulder alignment, spinal curvature, and overall body positioning. Provide a detailed assessment with a numerical score, specific issues, and personalized exercise recommendations based on what you observe and my history."
+                text: "Analyze my posture in this image. Only provide posture scoring if a person is clearly visible and assessable."
               },
               {
                 type: "image_url",
@@ -173,10 +197,18 @@ Be honest about severity. If posture is poor (score <60), emphasize the importan
             type: "function",
             function: {
               name: "analyze_posture",
-              description: "Return structured posture analysis results",
+              description: "Return structured posture analysis with person-detection validation",
               parameters: {
                 type: "object",
                 properties: {
+                  person_detected: {
+                    type: "boolean",
+                    description: "Whether a person is clearly visible for posture analysis"
+                  },
+                  visibility_confidence: {
+                    type: "number",
+                    description: "Confidence from 0 to 1 that person is visible and assessable"
+                  },
                   score: {
                     type: "number",
                     description: "Posture score from 0-100"
@@ -184,19 +216,19 @@ Be honest about severity. If posture is poor (score <60), emphasize the importan
                   issues: {
                     type: "array",
                     items: { type: "string" },
-                    description: "List of specific anatomical posture issues detected (e.g., 'Forward head posture', 'Rounded shoulders', 'Anterior pelvic tilt')"
+                    description: "List of specific anatomical posture issues detected"
                   },
                   recommendations: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Specific, actionable exercises and stretches with sets/reps/duration (e.g., 'Chin tucks - 10 reps, 3 sets daily', 'Doorway chest stretch - 30 seconds, 3x daily')"
+                    description: "Specific, actionable exercises and stretches with sets/reps/duration"
                   },
                   details: {
                     type: "string",
-                    description: "Brief overall assessment of the posture"
+                    description: "Brief overall assessment or reason analysis was not possible"
                   }
                 },
-                required: ["score", "issues", "recommendations", "details"],
+                required: ["person_detected", "visibility_confidence", "score", "issues", "recommendations", "details"],
                 additionalProperties: false
               }
             }
@@ -238,12 +270,32 @@ Be honest about severity. If posture is poor (score <60), emphasize the importan
     }
 
     const analysis: PostureAnalysis = JSON.parse(toolCall.function.arguments);
+
+    if (!analysis.person_detected || analysis.visibility_confidence < 0.6) {
+      return new Response(
+        JSON.stringify({
+          error: "No person clearly detected in frame. Please stand in front of the camera and retake the scan.",
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     analysis.score = Math.max(0, Math.min(100, Math.round(analysis.score)));
+    analysis.issues = Array.isArray(analysis.issues) ? analysis.issues : [];
+    analysis.recommendations = Array.isArray(analysis.recommendations) ? analysis.recommendations : [];
 
     console.log("Posture analysis complete:", analysis.score);
 
     return new Response(
-      JSON.stringify(analysis),
+      JSON.stringify({
+        score: analysis.score,
+        issues: analysis.issues,
+        recommendations: analysis.recommendations,
+        details: analysis.details,
+      }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

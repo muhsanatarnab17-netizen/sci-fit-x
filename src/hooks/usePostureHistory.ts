@@ -58,7 +58,7 @@ export function usePostureHistory() {
       score: number;
       issues?: string[];
       recommendations?: string[];
-      assessment_type: "camera" | "self-assessment";
+      assessment_type: "camera_analysis" | "self_assessment";
     }) => {
       if (!user?.id) throw new Error("No user logged in");
       const { data, error } = await supabase
