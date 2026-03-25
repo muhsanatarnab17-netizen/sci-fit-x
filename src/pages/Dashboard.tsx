@@ -79,42 +79,26 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase relative" style={{
-                fontFamily: "'Work Sans', system-ui, sans-serif",
-                letterSpacing: '6px',
-              }}>
-                {/* Backlight glow layer */}
-                <span className="absolute inset-0 blur-xl opacity-60 pointer-events-none" aria-hidden="true" style={{
-                  background: 'linear-gradient(90deg, hsl(25 100% 50% / 0.4), hsl(260 80% 50% / 0.3), hsl(187 100% 50% / 0.4), hsl(330 80% 50% / 0.3), hsl(25 100% 50% / 0.4))',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>{`Hi There ! ${(profile.username || 'CHAMP').toUpperCase()}`}</span>
-                
-                {/* "Hi There !" - frosty glass, silver metallic */}
-                {'Hi There ! '.split('').map((letter, i) => {
+            <div className="relative" style={{ fontFamily: "'Work Sans', system-ui, sans-serif" }}>
+              {/* "Hi There !" line */}
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black uppercase" style={{ letterSpacing: '4px' }}>
+                {'Hi There !'.split('').map((letter, i) => {
                   if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
                   return (
-                    <span key={`ht-${i}`} className="relative inline-block text-lg sm:text-2xl md:text-3xl font-black" style={{
+                    <span key={`ht-${i}`} className="relative inline-block" style={{
                       WebkitTextFillColor: 'transparent',
                       WebkitTextStroke: '1.5px hsl(220 20% 75% / 0.8)',
                       filter: 'drop-shadow(0 0 10px hsl(220 20% 70% / 0.5)) drop-shadow(0 0 20px hsl(220 15% 60% / 0.3))',
                     }}>{letter}</span>
                   );
                 })}
-
-                {/* Username - each letter frosty glass with colored backlight */}
+              </h1>
+              {/* Username on its own line, truncated */}
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-black uppercase truncate max-w-[90vw] sm:max-w-md md:max-w-lg" style={{ letterSpacing: '5px' }}>
                 {(() => {
                   const displayName = (profile.username || 'CHAMP').toUpperCase();
-                  const glowPalette = [
-                    'hsl(187 100% 50% / 0.7)',
-                    'hsl(260 80% 55% / 0.7)',
-                    'hsl(25 100% 55% / 0.7)',
-                  ];
-                  const strokePalette = [
-                    'hsl(187 100% 70% / 0.7)',
-                    'hsl(260 80% 70% / 0.7)',
-                    'hsl(25 100% 70% / 0.7)',
-                  ];
+                  const glowPalette = ['hsl(187 100% 50% / 0.7)', 'hsl(260 80% 55% / 0.7)', 'hsl(25 100% 55% / 0.7)'];
+                  const strokePalette = ['hsl(187 100% 70% / 0.7)', 'hsl(260 80% 70% / 0.7)', 'hsl(25 100% 70% / 0.7)'];
                   const len = displayName.replace(/\s/g, '').length;
                   const sectionSize = Math.ceil(len / 3);
                   let charIndex = 0;
@@ -131,7 +115,8 @@ export default function Dashboard() {
                     );
                   });
                 })()}
-              </h1>
+              </h2>
+            </div>
             <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
           </div>
           <div className="flex items-center gap-3">
