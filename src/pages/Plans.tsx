@@ -182,41 +182,70 @@ export default function Plans() {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="glass">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Dumbbell className="h-5 w-5 text-primary" />
+              <Card className="glass overflow-hidden">
+                <CardHeader className="pb-4">
+                  {/* Hero header with large icon and skill indicator */}
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
+                      <Dumbbell className="h-7 w-7 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-xl leading-tight mb-1">
                         {workoutPlan.title}
                       </CardTitle>
-                      <CardDescription>
-                        Tailored for your{" "}
-                        <span className="capitalize">{profile?.workout_experience || "beginner"}</span> level
+                      <CardDescription className="text-sm">
+                        Tailored for your level
                       </CardDescription>
-                    </div>
-                    <div className="flex gap-3">
-                      <Badge variant="outline" className="gap-1">
-                        <Clock className="h-3 w-3" />
-                        {workoutPlan.duration}
-                      </Badge>
-                      <Badge variant="outline" className="gap-1">
-                        <Flame className="h-3 w-3" />
-                        {workoutPlan.calories} cal
-                      </Badge>
+                      {/* Skill level bar */}
+                      <div className="flex items-center gap-2 mt-2.5">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((level) => {
+                            const exp = profile?.workout_experience || "beginner";
+                            const filled = exp === "beginner" ? 1 : exp === "intermediate" ? 3 : 5;
+                            return (
+                              <div
+                                key={level}
+                                className={cn(
+                                  "w-1.5 rounded-full transition-all",
+                                  level <= filled
+                                    ? "bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.5)]"
+                                    : "bg-muted",
+                                  level <= filled
+                                    ? level <= 1 ? "h-3" : level <= 2 ? "h-4" : level <= 3 ? "h-5" : level <= 4 ? "h-6" : "h-7"
+                                    : level <= 1 ? "h-3" : level <= 2 ? "h-4" : level <= 3 ? "h-5" : level <= 4 ? "h-6" : "h-7"
+                                )}
+                              />
+                            );
+                          })}
+                        </div>
+                        <span className="text-xs text-muted-foreground capitalize font-medium">
+                          {profile?.workout_experience || "beginner"}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  {/* Duration & calories pills */}
+                  <div className="flex gap-2.5 mt-4">
+                    <Badge variant="outline" className="gap-1.5 px-3 py-1.5 text-sm">
+                      <Clock className="h-3.5 w-3.5" />
+                      {workoutPlan.duration}
+                    </Badge>
+                    <Badge variant="outline" className="gap-1.5 px-3 py-1.5 text-sm">
+                      <Flame className="h-3.5 w-3.5" />
+                      {workoutPlan.calories} cal
+                    </Badge>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-2">
                   <div className="space-y-3">
                     {workoutPlan.exercises.map((exercise, i) => (
                       <div
                         key={i}
                         className={cn(
-                          "flex items-center gap-3 p-4 rounded-lg border transition-all",
+                          "flex items-center gap-4 p-4 rounded-xl border transition-all",
                           completedExercises[i]
                             ? "bg-accent/5 border-accent/20"
-                            : "hover:border-primary/50"
+                            : "hover:border-primary/50 border-border"
                         )}
                       >
                         <CompletionTick
@@ -224,12 +253,15 @@ export default function Plans() {
                           onToggle={() => toggleExercise(i)}
                           category="workout"
                         />
-                        <div className="flex-1">
-                          <span className={cn("font-medium", completedExercises[i] && "line-through text-muted-foreground")}>
+                        <div className="flex-1 min-w-0">
+                          <span className={cn(
+                            "font-medium text-[15px] leading-snug block",
+                            completedExercises[i] && "line-through text-muted-foreground"
+                          )}>
                             {exercise.name}
                           </span>
                         </div>
-                        <Badge variant="secondary">
+                        <Badge variant="secondary" className="shrink-0 px-3 py-1 text-xs font-semibold">
                           {exercise.sets || exercise.duration || "—"}
                         </Badge>
                       </div>
