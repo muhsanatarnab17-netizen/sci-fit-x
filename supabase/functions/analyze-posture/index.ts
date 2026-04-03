@@ -11,6 +11,9 @@ interface PostureAnalysis {
   person_detected: boolean;
   visibility_confidence: number;
   score: number;
+  cva_angle: number;
+  shoulder_alignment: number;
+  symmetry_score: number;
   issues: string[];
   recommendations: string[];
   details: string;
@@ -22,7 +25,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -31,14 +33,13 @@ serve(async (req) => {
       );
     }
 
-    const supabaseClient = createClient(
+    const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
@@ -54,14 +55,10 @@ serve(async (req) => {
     }
 
     const { imageBase64 } = await req.json();
-
     if (!imageBase64) {
       return new Response(
         JSON.stringify({ error: "No image provided" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -103,7 +100,7 @@ serve(async (req) => {
     console.log("Analyzing posture from image...");
 
     // Fetch user's posture history for context
-    const { data: postureHistory, error: historyError } = await supabaseClient
+    const { data: postureHistory, error: historyError } = await supabase
       .from("posture_assessments")
       .select("score, issues, recommendations, assessed_at")
       .eq("user_id", userId)
@@ -138,6 +135,7 @@ Please consider this history when providing recommendations. If you see recurrin
       historyContext = "This is the user's first posture assessment. Provide comprehensive guidance.";
     }
 
+    // Call Lovable AI Gateway for Gemini Vision
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -145,48 +143,60 @@ Please consider this history when providing recommendations. If you see recurrin
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.0-flash-exp",
         messages: [
           {
             role: "system",
-            content: `You are an expert posture analyst and physical therapist. Analyze the person's posture in the image with precision.
+            content: `You are the clinical core of the PosFitX 'Tri-Metric' Posture Engine and a physical therapist. 
+            Your goal is to provide precise, medical-grade skeletal alignment analysis from images.
 
-${historyContext}
+            ${historyContext}
 
-CRITICAL VALIDATION RULES:
-- First determine if a PERSON is clearly visible (upper body required: head, neck, shoulders, and torso).
-- If no person is visible OR the person is too unclear/too far/too dark/too blurry, DO NOT guess posture.
-- In those invalid cases return:
-  - person_detected: false
-  - visibility_confidence: a number between 0 and 0.5
-  - score: 0
-  - issues: []
-  - recommendations: []
-  - details: short explanation why analysis is not possible
+            CRITICAL VALIDATION RULES:
+            - First determine if a PERSON is clearly visible (upper body required: head, neck, shoulders, and torso).
+            - If no person is visible OR the person is too unclear/too far/too dark/too blurry, DO NOT guess posture.
+            - In those invalid cases return:
+              - person_detected: false
+              - visibility_confidence: a number between 0 and 0.5
+              - score: 0
+              - cva_angle: 0
+              - shoulder_alignment: 0
+              - symmetry_score: 0
+              - issues: []
+              - recommendations: []
+              - details: short explanation why analysis is not possible
 
-If person is visible and assessable:
-1. Return posture score from 0-100 (100 = perfect ergonomic alignment)
-2. Specific anatomical issues (e.g., forward head posture, rounded shoulders, anterior pelvic tilt)
-3. Actionable recommendations:
-   - Stretches with duration
-   - Strength work with sets/reps
-   - Ergonomic adjustments
-   - Daily habits
-4. person_detected must be true and visibility_confidence between 0.6 and 1.0.
+            If person is visible and assessable, analyze based on these three clinical pillars:
+            1. Craniovertebral Angle (CVA): The angle between a horizontal line through C7 and a line connecting C7 to the tragus. 
+               - Normal: >50°
+               - Forward Head Posture: <50°
+            2. Shoulder Alignment: Horizontal tilt of the bi-acromial line (0-100%).
+            3. Symmetry Score: Bilateral balance across the midsagittal plane (0-100%).
+            
+            Return structure:
+            - person_detected: true
+            - visibility_confidence: 0.6 to 1.0
+            - score: overall 0-100
+            - cva_angle: numerical degrees
+            - shoulder_alignment: 0-100
+            - symmetry_score: 0-100
+            - issues: specific clinical observations (e.g., 'Rounded shoulders', 'Kyphosis')
+            - recommendations: actionable corrective exercises/stretches
+            - details: clinical analysis summary
 
-Be strict and evidence-based.`
+            Be strict and evidence-based.`
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Analyze my posture in this image. Only provide posture scoring if a person is clearly visible and assessable."
+                text: "Perform a high-precision 'Tri-Metric' skeletal analysis. Calculate CVA Angle, Shoulder Alignment %, and Symmetry Score %. Identify specific postural deviations and provide corrective exercises."
               },
               {
                 type: "image_url",
                 image_url: {
-                  url: imageBase64
+                  url: imageBase64.startsWith("data:") ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`
                 }
               }
             ]
@@ -196,77 +206,45 @@ Be strict and evidence-based.`
           {
             type: "function",
             function: {
-              name: "analyze_posture",
-              description: "Return structured posture analysis with person-detection validation",
+              name: "provide_tri_metric_analysis",
+              description: "Provides a structured Tri-Metric posture analysis with person-detection validation",
               parameters: {
                 type: "object",
                 properties: {
-                  person_detected: {
-                    type: "boolean",
-                    description: "Whether a person is clearly visible for posture analysis"
-                  },
-                  visibility_confidence: {
-                    type: "number",
-                    description: "Confidence from 0 to 1 that person is visible and assessable"
-                  },
-                  score: {
-                    type: "number",
-                    description: "Posture score from 0-100"
-                  },
+                  person_detected: { type: "boolean" },
+                  visibility_confidence: { type: "number" },
+                  score: { type: "number" },
+                  cva_angle: { type: "number" },
+                  shoulder_alignment: { type: "number" },
+                  symmetry_score: { type: "number" },
                   issues: {
                     type: "array",
-                    items: { type: "string" },
-                    description: "List of specific anatomical posture issues detected"
+                    items: { type: "string" }
                   },
                   recommendations: {
                     type: "array",
-                    items: { type: "string" },
-                    description: "Specific, actionable exercises and stretches with sets/reps/duration"
+                    items: { type: "string" }
                   },
-                  details: {
-                    type: "string",
-                    description: "Brief overall assessment or reason analysis was not possible"
-                  }
+                  details: { type: "string" }
                 },
-                required: ["person_detected", "visibility_confidence", "score", "issues", "recommendations", "details"],
-                additionalProperties: false
+                required: ["person_detected", "visibility_confidence", "score", "cva_angle", "shoulder_alignment", "symmetry_score", "issues", "recommendations", "details"]
               }
             }
           }
         ],
-        tool_choice: { type: "function", function: { name: "analyze_posture" } }
-      }),
+        tool_choice: { type: "function", function: { name: "provide_tri_metric_analysis" } }
+      })
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
       console.error("AI gateway error:", response.status);
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("AI response received");
-
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) {
-      throw new Error("No analysis result from AI");
+      throw new Error("No analysis generated from AI");
     }
 
     const analysis: PostureAnalysis = JSON.parse(toolCall.function.arguments);
@@ -287,28 +265,17 @@ Be strict and evidence-based.`
     analysis.issues = Array.isArray(analysis.issues) ? analysis.issues : [];
     analysis.recommendations = Array.isArray(analysis.recommendations) ? analysis.recommendations : [];
 
-    console.log("Posture analysis complete:", analysis.score);
+    console.log("Tri-Metric Analysis generated successfully:", analysis.score);
 
     return new Response(
-      JSON.stringify({
-        score: analysis.score,
-        issues: analysis.issues,
-        recommendations: analysis.recommendations,
-        details: analysis.details,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify(analysis),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Error analyzing posture:", error);
     return new Response(
-      JSON.stringify({ error: "An error occurred during posture analysis" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: "Failed to analyze posture" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

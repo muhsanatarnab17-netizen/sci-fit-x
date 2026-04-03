@@ -5,6 +5,7 @@ import { Camera, Loader2, AlertCircle, Video, VideoOff, SwitchCamera, Scan } fro
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { motion, AnimatePresence } from "framer-motion"; // Essential for World-Class UI
 
 interface CameraCaptureProps {
   onCapture: (imageBase64: string) => void;
@@ -12,16 +13,7 @@ interface CameraCaptureProps {
   isAnalyzing: boolean;
 }
 
-/**
- * @component CameraCapture
- * @description Handles real-time camera feed, auto-scanning logic, and posture alignment UI.
- * Optimized for: Performance (minimal re-renders) and Security (clean stream disposal).
- */
-export default function CameraCapture({
-  onCapture,
-  onCancel,
-  isAnalyzing,
-}: CameraCaptureProps) {
+export default function CameraCapture({ onCapture, onCancel, isAnalyzing }: CameraCaptureProps) {
   const {
     videoRef,
     canvasRef,
@@ -32,35 +24,24 @@ export default function CameraCapture({
     stopCamera,
     captureImage,
     switchCamera,
-  } = useCamera("environment"); 
+  } = useCamera("environment");
 
   const [autoScan, setAutoScan] = useState(true);
   const [scanCountdown, setScanCountdown] = useState<number | null>(null);
-  
-  // Ref used to prevent race conditions during the capture cycle
   const captureTriggeredRef = useRef(false);
 
-  // DEV NOTE: Strict lifecycle management to prevent memory leaks/camera-in-use bugs
   useEffect(() => {
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
 
   useEffect(() => {
-    if (!isAnalyzing) {
-      captureTriggeredRef.current = false;
-    }
+    if (!isAnalyzing) captureTriggeredRef.current = false;
   }, [isAnalyzing]);
 
-  /**
-   * AUTO-SCAN LOGIC
-   * Includes fix for infinite capture loop and state synchronization.
-   */
   useEffect(() => {
     if (!autoScan || !isStreaming || isAnalyzing || captureTriggeredRef.current) {
-      if (!autoScan || !isStreaming || isAnalyzing) {
-        setScanCountdown(null);
-      }
+      if (!autoScan || !isStreaming || isAnalyzing) setScanCountdown(null);
       return;
     }
 
@@ -73,8 +54,7 @@ export default function CameraCapture({
             captureTriggeredRef.current = true;
             const image = captureImage();
             if (image) {
-              // SECURITY & UX FIX: Disable auto-scan after successful capture to prevent credit drain/infinite loops
-              setAutoScan(false); 
+              setAutoScan(false);
               onCapture(image);
             }
           }
@@ -89,21 +69,15 @@ export default function CameraCapture({
 
   const handleCapture = () => {
     const image = captureImage();
-    if (image) {
-      onCapture(image);
-    }
-  };
-
-  const handleCancel = () => {
-    stopCamera();
-    onCancel();
+    if (image) onCapture(image);
   };
 
   return (
-    <div className="space-y-4">
-      {/* UI NOTE: Aspect ratio optimized for mobile (3/4) and desktop (video).
-          Uses backdrop-blur for a "Premium OS" aesthetic.
-      */}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
       <div className="w-full aspect-[3/4] md:aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden ring-1 ring-white/10 shadow-2xl">
         
         {error ? (
@@ -111,12 +85,6 @@ export default function CameraCapture({
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
             <p className="text-destructive font-medium">{error}</p>
             <Button variant="outline" onClick={startCamera} className="mt-4">Try Again</Button>
-          </div>
-        ) : isAnalyzing ? (
-          <div className="text-center z-20">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-lg font-medium">Analyzing Posture...</p>
-            <p className="text-sm text-muted-foreground italic">AI-Engine processing biometric data</p>
           </div>
         ) : (
           <>
@@ -126,54 +94,68 @@ export default function CameraCapture({
               playsInline
               muted
               className={cn(
-                "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+                "absolute inset-0 w-full h-full object-cover transition-opacity duration-1000",
                 facingMode === "user" && "transform scale-x-[-1]",
-                !isStreaming ? "opacity-0" : "opacity-100"
+                !isStreaming || isAnalyzing ? "opacity-30 grayscale" : "opacity-100"
               )}
             />
 
-            {/* 🌟 PREMIUM FEATURE: Posture Alignment Grid (Overlay) */}
-            {isStreaming && (
-              <div className="absolute inset-0 pointer-events-none z-10">
-                <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  {/* Head Target */}
-                  <div className="w-24 h-32 border-2 border-dashed border-white rounded-full mb-20 animate-pulse" />
-                  {/* Center Alignment Axis */}
-                  <div className="absolute h-full w-[1px] bg-white/50 left-1/2" />
-                  <div className="absolute w-full h-[1px] bg-white/20 top-1/2" />
+            {/* 🌟 PREMIUM FEATURE: The Biotech Laser Scanner Overlay */}
+            <AnimatePresence>
+              {isStreaming && !isAnalyzing && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 pointer-events-none z-20"
+                >
+                  {/* Vertical Neon Laser Line */}
+                  <motion.div 
+                    animate={{ top: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_15px_hsl(var(--primary))] z-30"
+                  />
+                  
+                  {/* Cyber-Medical Corner Brackets */}
+                  <div className="absolute inset-8 border-t-2 border-l-2 border-primary/40 w-12 h-12 rounded-tl-lg" />
+                  <div className="absolute top-8 right-8 border-t-2 border-r-2 border-primary/40 w-12 h-12 rounded-tr-lg" />
+                  <div className="absolute bottom-8 left-8 border-b-2 border-l-2 border-primary/40 w-12 h-12 rounded-bl-lg" />
+                  <div className="absolute bottom-8 right-8 border-b-2 border-r-2 border-primary/40 w-12 h-12 rounded-br-lg" />
+
+                  {/* Axis Alignment Lines */}
+                  <div className="absolute h-full w-[1px] bg-primary/20 left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-full h-[1px] bg-primary/10 top-1/2 -translate-y-1/2" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Analysis Overlay */}
+            {isAnalyzing && (
+              <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                <div className="text-center">
+                  <Loader2 className="h-16 w-16 animate-spin text-primary mx-auto mb-4" />
+                  <motion.p 
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    className="text-xl font-bold tracking-tighter uppercase text-white"
+                  >
+                    Processing Biometrics...
+                  </motion.p>
                 </div>
               </div>
             )}
 
-            {!isStreaming && (
-              <div className="text-center">
-                <Video className="h-16 w-16 text-muted-foreground mx-auto mb-4 animate-pulse" />
-                <p className="text-muted-foreground">Initializing Camera...</p>
-              </div>
-            )}
-
-            {isStreaming && (
-              <div className="absolute inset-0 pointer-events-none z-20">
-                {autoScan && scanCountdown !== null && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all">
-                    <div className="text-center">
-                      <div className="text-9xl font-black text-white drop-shadow-2xl scale-110">
-                        {scanCountdown}
-                      </div>
-                      <p className="text-white font-semibold uppercase tracking-widest mt-4">Steady...</p>
-                    </div>
-                  </div>
-                )}
-                
-                {!scanCountdown && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full px-8">
-                    <p className="text-xs font-medium bg-black/60 text-white backdrop-blur-md rounded-full py-2 px-6 text-center shadow-lg border border-white/10 uppercase tracking-tighter">
-                      {autoScan 
-                        ? "Scan starting automatically" 
-                        : "Align your spine with the vertical center line"}
-                    </p>
-                  </div>
-                )}
+            {/* Countdown HUD */}
+            {autoScan && scanCountdown !== null && !isAnalyzing && (
+              <div className="absolute inset-0 flex items-center justify-center z-50">
+                <motion.div 
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  key={scanCountdown}
+                  className="text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+                >
+                  {scanCountdown}
+                </motion.div>
               </div>
             )}
             
@@ -181,7 +163,7 @@ export default function CameraCapture({
               <Button
                 variant="secondary"
                 size="icon"
-                className="absolute top-4 right-4 z-30 bg-black/40 text-white hover:bg-black/60 border-none backdrop-blur-md rounded-full"
+                className="absolute top-4 right-4 z-50 bg-black/40 text-white hover:bg-black/60 border-none backdrop-blur-md rounded-full"
                 onClick={switchCamera}
                 disabled={isAnalyzing}
               >
@@ -194,46 +176,28 @@ export default function CameraCapture({
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      <div className="flex items-center justify-between px-2 py-1 bg-muted/30 rounded-lg border border-white/5">
+      {/* Control Panel (Simplified and High-End) */}
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-xl border border-white/5 backdrop-blur-sm">
         <div className="flex items-center space-x-3">
-          <Switch
-            id="auto-scan"
-            checked={autoScan}
-            onCheckedChange={setAutoScan}
-            disabled={isAnalyzing}
-          />
-          <Label htmlFor="auto-scan" className="text-xs font-bold uppercase tracking-wider cursor-pointer flex items-center">
-            <Scan className="h-3 w-3 mr-1.5 text-primary" />
-            Smart Auto-Scan
+          <Switch id="auto-scan" checked={autoScan} onCheckedChange={setAutoScan} disabled={isAnalyzing} />
+          <Label htmlFor="auto-scan" className="text-[10px] font-black uppercase tracking-[0.2em] cursor-pointer flex items-center text-muted-foreground">
+            <Scan className="h-3 w-3 mr-2 text-primary" />
+            AI-Auto Scan
           </Label>
         </div>
-        {autoScan && <span className="text-[10px] text-primary font-bold animate-pulse">TIMER ACTIVE</span>}
+        {autoScan && <span className="text-[9px] text-primary font-bold tracking-widest animate-pulse">SYSTEM ARMED</span>}
       </div>
 
-      <div className="flex justify-between gap-3">
-        <Button 
-          variant="ghost" 
-          onClick={handleCancel} 
-          disabled={isAnalyzing}
-          className="hover:bg-destructive/10 hover:text-destructive transition-colors"
-        >
-          <VideoOff className="mr-2 h-4 w-4" />
-          Stop Session
+      <div className="flex justify-between gap-3 pt-2">
+        <Button variant="ghost" onClick={onCancel} disabled={isAnalyzing} className="text-xs uppercase font-bold tracking-widest text-muted-foreground hover:text-destructive">
+          <VideoOff className="mr-2 h-4 w-4" /> Disconnect
         </Button>
         {!autoScan && (
-          <Button
-            onClick={handleCapture}
-            disabled={!isStreaming || isAnalyzing}
-            className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
-          >
-            {isAnalyzing ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</>
-            ) : (
-              <><Camera className="mr-2 h-4 w-4" /> Capture Analysis</>
-            )}
+          <Button onClick={handleCapture} disabled={!isStreaming || isAnalyzing} className="bg-primary hover:scale-105 transition-transform px-8">
+             <Camera className="mr-2 h-4 w-4" /> Capture Now
           </Button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

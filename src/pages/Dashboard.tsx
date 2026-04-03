@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { useDailyTasks } from "@/hooks/useDailyTasks";
 import { useStreak } from "@/hooks/useStreak";
@@ -15,17 +16,16 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import CategoryBadge from "@/components/ui/category-badge";
 import {
+  Activity,
   Target,
   Dumbbell,
   Utensils,
-  Moon,
   TrendingUp,
   ChevronRight,
-  Zap,
-  Heart,
   Loader2,
   CheckCircle2,
-  Activity,
+  Heart,
+  Moon
 } from "lucide-react";
 import { getBMICategory, getPostureScoreDescription } from "@/lib/health-utils";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ export default function Dashboard() {
   const { profile, isLoading } = useProfile();
   const { tasks, isLoading: tasksLoading, toggleTask, seedDefaultTasks } = useDailyTasks();
   const { streak } = useStreak();
-  const { totalWorkouts, thisMonthWorkouts } = useWorkoutHistory();
+  const { thisMonthWorkouts } = useWorkoutHistory();
   const { mealLogs } = useMealHistory();
   const { stats: postureStats } = usePostureHistory();
 
@@ -49,7 +49,7 @@ export default function Dashboard() {
     if (!tasksLoading && tasks.length === 0 && profile?.onboarding_completed) {
       seedDefaultTasks.mutate();
     }
-  }, [tasksLoading, tasks.length, profile?.onboarding_completed]);
+  }, [tasksLoading, tasks.length, profile?.onboarding_completed, seedDefaultTasks]);
 
   if (isLoading) {
     return (
@@ -64,72 +64,54 @@ export default function Dashboard() {
   if (!profile) return null;
 
   const bmiCategory = profile.bmi ? getBMICategory(profile.bmi) : null;
-  const postureInfo = getPostureScoreDescription(profile.posture_score);
+  const postureScore = postureStats?.latestScore ?? profile.posture_score ?? 0;
+  const postureInfo = getPostureScoreDescription(postureScore);
   const completedTasks = tasks.filter((t) => t.completed).length;
   const taskProgress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
-  // Activity summary from real data
   const todayStr = new Date().toISOString().split("T")[0];
   const todayMeals = (mealLogs || []).filter((l) => l.logged_at.startsWith(todayStr)).length;
   const todayCalories = (mealLogs || []).filter((l) => l.logged_at.startsWith(todayStr)).reduce((s, l) => s + (l.calories || 0), 0);
 
   return (
     <AppLayout>
-      <div className="space-y-6 sm:space-y-8 stagger-children">
-        {/* Welcome Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="relative" style={{ fontFamily: "'Work Sans', system-ui, sans-serif" }}>
-              {/* "Hi There !" line */}
-              <h1 className="text-lg sm:text-2xl md:text-3xl font-black uppercase" style={{ letterSpacing: '4px' }}>
-                {'Hi There !'.split('').map((letter, i) => {
-                  if (letter === ' ') return <span key={`ht-${i}`}>&nbsp;</span>;
-                  return (
-                    <span key={`ht-${i}`} className="relative inline-block" style={{
-                      WebkitTextFillColor: 'transparent',
-                      WebkitTextStroke: '1.5px hsl(220 20% 75% / 0.8)',
-                      filter: 'drop-shadow(0 0 10px hsl(220 20% 70% / 0.5)) drop-shadow(0 0 20px hsl(220 15% 60% / 0.3))',
-                    }}>{letter}</span>
-                  );
-                })}
-              </h1>
-              {/* Username on its own line, truncated */}
-              <h2 className="text-xl sm:text-3xl md:text-4xl font-black uppercase truncate max-w-[90vw] sm:max-w-md md:max-w-lg" style={{ letterSpacing: '5px' }}>
-                {(() => {
-                  const displayName = (profile.username || 'CHAMP').toUpperCase();
-                  const glowPalette = ['hsl(187 100% 50% / 0.7)', 'hsl(260 80% 55% / 0.7)', 'hsl(25 100% 55% / 0.7)'];
-                  const strokePalette = ['hsl(187 100% 70% / 0.7)', 'hsl(260 80% 70% / 0.7)', 'hsl(25 100% 70% / 0.7)'];
-                  const len = displayName.replace(/\s/g, '').length;
-                  const sectionSize = Math.ceil(len / 3);
-                  let charIndex = 0;
-                  return displayName.split('').map((letter, i) => {
-                    if (letter === ' ') return <span key={`u-${i}`}>&nbsp;</span>;
-                    const ci = Math.min(Math.floor(charIndex / sectionSize), 2);
-                    charIndex++;
-                    return (
-                      <span key={`u-${i}`} className="relative inline-block" style={{
-                        WebkitTextFillColor: 'transparent',
-                        WebkitTextStroke: `1.5px ${strokePalette[ci]}`,
-                        filter: `drop-shadow(0 0 12px ${glowPalette[ci]}) drop-shadow(0 0 25px ${glowPalette[ci]})`,
-                      }}>{letter}</span>
-                    );
-                  });
-                })()}
-              </h2>
+      <div className="space-y-8 stagger-children pb-20">
+        {/* Instagram-CLI Header */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="flex flex-col items-start space-y-1">
+            <div className="flex items-center space-x-2 text-xs font-mono text-gray-500">
+              <span className="text-orange-500">@{profile.username?.toLowerCase() || 'arnab'}</span>
+              <span className="text-gray-600">~</span>
+              <span>$ ./posfitx --status</span>
             </div>
-            <p className="text-muted-foreground mt-1">Here's your fitness overview for today</p>
+            
+            <motion.h1 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: 'spring', stiffness: 100 }}
+              className="text-5xl font-black font-mono tracking-tighter uppercase"
+              style={{
+                background: 'linear-gradient(to right, #6366f1, #d946ef, #fb923c)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(3px 3px 0px rgba(217, 70, 239, 0.4)) drop-shadow(-2px -2px 0px rgba(99, 102, 241, 0.4))'
+              }}
+            >
+              {(profile.username || 'ARNAB007').toUpperCase()}
+            </motion.h1>
+            <p className="font-mono text-sm text-gray-400 mt-2">System online. Waiting for input...</p>
           </div>
           <div className="flex items-center gap-3">
             <WeightLogDialog />
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full glass">
-              <Zap className="h-4 w-4 text-neon-orange" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full glass border-primary/20">
+              <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="text-sm font-medium">{streak > 0 ? `${streak} day streak` : "No streak yet"}</span>
-              {streak > 0 && <span className="text-lg">🔥</span>}
+              {streak > 0 && <span>🔥</span>}
             </div>
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 stagger-children">
           {/* BMI - combined Activity + Heart */}
           <Card className="glass hover-lift hover-glow-blue border-primary/20 transition-all duration-300 shadow-[0_4px_25px_hsl(187_100%_50%/0.25)]">
@@ -142,7 +124,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">BMI</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground uppercase font-black">BMI</p>
                   <p className="text-xl sm:text-2xl font-bold">{profile.bmi || "--"}</p>
                   {bmiCategory && <Badge variant="outline" className="mt-1 text-xs">{bmiCategory.label}</Badge>}
                 </div>
@@ -158,9 +140,9 @@ export default function Dashboard() {
                   <Dumbbell className="h-5 w-5 sm:h-7 sm:w-7 text-neon-green" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Workouts</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground uppercase font-black">Workouts</p>
                   <p className="text-xl sm:text-2xl font-bold">{thisMonthWorkouts}</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">this month ({totalWorkouts} total)</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground opacity-70">this month</p>
                 </div>
               </div>
             </CardContent>
@@ -174,9 +156,9 @@ export default function Dashboard() {
                   <Utensils className="h-5 w-5 sm:h-7 sm:w-7 text-neon-orange" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Today's Meals</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground uppercase font-black">Meals</p>
                   <p className="text-xl sm:text-2xl font-bold">{todayMeals}</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground">{todayCalories} cal logged</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground opacity-70">{todayCalories} kcal</p>
                 </div>
               </div>
             </CardContent>
@@ -204,8 +186,8 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Posture</p>
-                  <p className="text-xl sm:text-2xl font-bold">{postureStats.latestScore ?? profile.posture_score}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground uppercase font-black">Posture</p>
+                  <p className="text-xl sm:text-2xl font-bold">{postureScore}</p>
                   <Badge variant="outline" className="mt-1 text-[10px] sm:text-xs">{postureInfo.label}</Badge>
                 </div>
               </div>
@@ -214,58 +196,35 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Today's Tasks */}
-          <Card className="lg:col-span-2 glass-elevated">
+          <Card className="lg:col-span-2 glass-elevated border-white/5">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
                   Today's Tasks
                 </CardTitle>
-                <CardDescription>
-                  {completedTasks} of {tasks.length} completed
-                </CardDescription>
+                <CardDescription>{completedTasks} of {tasks.length} completed</CardDescription>
               </div>
               <Button variant="outline" size="sm" onClick={() => navigate("/plans")}>
-                View All
-                <ChevronRight className="h-4 w-4 ml-1" />
+                View All <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </CardHeader>
             <CardContent>
-              <Progress value={taskProgress} className="h-2 mb-4" />
+              <Progress value={taskProgress} className="h-2 mb-4 bg-white/5" />
               <div className="space-y-3">
                 {tasks.slice(0, 6).map((task) => (
-                  <div
-                    key={task.id}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg border transition-all",
-                      task.completed
-                        ? "bg-accent/5 border-accent/20"
-                        : "bg-muted/30 border-border hover:border-primary/50"
-                    )}
-                  >
-                    <CompletionTick
-                      completed={!!task.completed}
-                      onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
-                      category={(task.category as any) || "workout"}
+                  <div key={task.id} className={cn("flex items-center gap-3 p-3 rounded-lg border transition-all", task.completed ? "bg-accent/5 opacity-60" : "bg-muted/30 hover:border-primary/50")}>
+                    <CompletionTick 
+                      completed={!!task.completed} 
+                      onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })} 
+                      category={(task.category as "workout" | "meal" | "sleep" | "health" | "posture" | "hydration" | "wellness") || "workout"} 
                     />
-                    <span className={cn("flex-1", task.completed && "line-through text-muted-foreground")}>
-                      {task.title}
-                    </span>
+                    <span className={cn("flex-1 text-sm font-medium", task.completed && "line-through")}>{task.title}</span>
                     <CategoryBadge category={task.category || "other"} />
                   </div>
                 ))}
-                {tasks.length > 6 && (
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/plans")} className="w-full text-muted-foreground">
-                    +{tasks.length - 6} more tasks
-                  </Button>
-                )}
-                {tasksLoading && (
-                  <div className="flex justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -279,10 +238,8 @@ export default function Dashboard() {
                     <Target className="h-8 w-8 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">Posture Check</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {postureStats.totalAssessments} assessments done
-                    </p>
+                    <h3 className="font-semibold">Posture Lab</h3>
+                    <p className="text-sm text-muted-foreground">Start AI scan</p>
                   </div>
                   <ChevronRight className="h-5 w-5 text-primary/60" />
                 </div>
@@ -304,17 +261,17 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-lift hover-glow-purple border-secondary/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/plans")}>
+            <Card className="glass hover-lift hover-glow-orange border-neon-orange/20 cursor-pointer transition-all duration-300 active:scale-[0.98]" onClick={() => navigate("/plans")}>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-secondary/10 shadow-[0_0_15px_hsl(260_60%_55%/0.2)]">
-                    <Utensils className="h-8 w-8 text-secondary" />
+                  <div className="p-3 rounded-xl bg-neon-orange/10 shadow-[0_0_15px_hsl(25_100%_50%/0.2)]">
+                    <Utensils className="h-8 w-8 text-neon-orange" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Meal Plan</h3>
                     <p className="text-sm text-muted-foreground">Check today's meals</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-secondary/60" />
+                  <ChevronRight className="h-5 w-5 text-neon-orange/60" />
                 </div>
               </CardContent>
             </Card>
@@ -333,55 +290,19 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Sleep Goal Info */}
+            <Card className="glass p-6 border-white/5">
+                <div className="flex items-center gap-4">
+                   <Moon className="h-6 w-6 text-neon-purple" />
+                   <div className="flex-1">
+                      <p className="text-xs font-black uppercase opacity-50">Sleep Goal</p>
+                      <p className="text-xl font-bold">{profile.sleep_hours || 8} Hours</p>
+                   </div>
+                   <Heart className="h-4 w-4 text-neon-pink/40 animate-pulse" />
+                </div>
+            </Card>
           </div>
-        </div>
-
-        {/* Activity Summary */}
-        <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
-          <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-neon-purple/10">
-                    <Moon className="h-6 w-6 text-neon-purple" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Sleep Goal</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Target: {profile.sleep_hours || 8} hours tonight
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold">{profile.sleep_hours || 8}h</p>
-                  <p className="text-xs text-muted-foreground">recommended</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-primary/10">
-                    <CheckCircle2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Today's Progress</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {completedTasks}/{tasks.length} tasks done
-                    </p>
-                  </div>
-                </div>
-                <Badge className={cn(
-                  taskProgress === 100 ? "bg-neon-green/20 text-neon-green" : ""
-                )}>
-                  {taskProgress === 100 ? "All Done! 🎉" : `${Math.round(taskProgress)}%`}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </AppLayout>

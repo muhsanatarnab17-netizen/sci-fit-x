@@ -84,28 +84,37 @@ export type Database = {
         Row: {
           assessed_at: string
           assessment_type: string | null
+          cva_angle: number | null
           id: string
           issues: string[] | null
           recommendations: string[] | null
           score: number
+          shoulder_alignment: number | null
+          symmetry_score: number | null
           user_id: string
         }
         Insert: {
           assessed_at?: string
           assessment_type?: string | null
+          cva_angle?: number | null
           id?: string
           issues?: string[] | null
           recommendations?: string[] | null
           score: number
+          shoulder_alignment?: number | null
+          symmetry_score?: number | null
           user_id: string
         }
         Update: {
           assessed_at?: string
           assessment_type?: string | null
+          cva_angle?: number | null
           id?: string
           issues?: string[] | null
           recommendations?: string[] | null
           score?: number
+          shoulder_alignment?: number | null
+          symmetry_score?: number | null
           user_id?: string
         }
         Relationships: []
@@ -129,6 +138,9 @@ export type Database = {
           height_cm: number | null
           id: string
           injuries: string[] | null
+          latest_cva_angle: number | null
+          latest_shoulder_alignment: number | null
+          latest_symmetry_score: number | null
           onboarding_completed: boolean | null
           onboarding_step: number | null
           posture_score: number | null
@@ -159,6 +171,9 @@ export type Database = {
           height_cm?: number | null
           id?: string
           injuries?: string[] | null
+          latest_cva_angle?: number | null
+          latest_shoulder_alignment?: number | null
+          latest_symmetry_score?: number | null
           onboarding_completed?: boolean | null
           onboarding_step?: number | null
           posture_score?: number | null
@@ -189,6 +204,9 @@ export type Database = {
           height_cm?: number | null
           id?: string
           injuries?: string[] | null
+          latest_cva_angle?: number | null
+          latest_shoulder_alignment?: number | null
+          latest_symmetry_score?: number | null
           onboarding_completed?: boolean | null
           onboarding_step?: number | null
           posture_score?: number | null

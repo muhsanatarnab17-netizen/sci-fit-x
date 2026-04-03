@@ -7,6 +7,9 @@ export interface PostureAssessment {
   id: string;
   user_id: string;
   score: number;
+  cva_angle: number | null;
+  shoulder_alignment: number | null;
+  symmetry_score: number | null;
   issues: string[] | null;
   recommendations: string[] | null;
   assessment_type: string | null;
@@ -22,7 +25,8 @@ function filterByDays(items: PostureAssessment[], days: number) {
 function aggregateByDay(items: PostureAssessment[]): { date: string; value: number }[] {
   const map: Record<string, { score: number; count: number }> = {};
   items.forEach((a) => {
-    const key = new Date(a.assessed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const date = new Date(a.assessed_at);
+    const key = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     if (!map[key]) map[key] = { score: 0, count: 0 };
     map[key].score += a.score;
     map[key].count += 1;
@@ -56,6 +60,9 @@ export function usePostureHistory() {
   const saveAssessment = useMutation({
     mutationFn: async (assessment: {
       score: number;
+      cva_angle?: number;
+      shoulder_alignment?: number;
+      symmetry_score?: number;
       issues?: string[];
       recommendations?: string[];
       assessment_type: "camera_analysis" | "self_assessment";
@@ -66,6 +73,9 @@ export function usePostureHistory() {
         .insert({
           user_id: user.id,
           score: assessment.score,
+          cva_angle: assessment.cva_angle || null,
+          shoulder_alignment: assessment.shoulder_alignment || null,
+          symmetry_score: assessment.symmetry_score || null,
           issues: assessment.issues || null,
           recommendations: assessment.recommendations || null,
           assessment_type: assessment.assessment_type,
@@ -73,19 +83,25 @@ export function usePostureHistory() {
         .select()
         .single();
       if (error) throw error;
+
+      // Update latest metrics in profile too
+      await supabase.from("profiles").update({
+        posture_score: assessment.score,
+        latest_cva_angle: assessment.cva_angle || null,
+        latest_shoulder_alignment: assessment.shoulder_alignment || null,
+        latest_symmetry_score: assessment.symmetry_score || null,
+      }).eq("user_id", user.id);
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posture-assessments", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
     },
     onError: (error) => {
       toast.error("Failed to save assessment: " + error.message);
     },
   });
-
-  const sorted = [...(assessments || [])].reverse(); // ascending order
-  const weeklyChart = aggregateByDay(filterByDays(sorted, 7));
-  const monthlyChart = aggregateByDay(filterByDays(sorted, 30));
 
   const stats = {
     totalAssessments: assessments?.length || 0,
@@ -93,6 +109,9 @@ export function usePostureHistory() {
       ? Math.round(assessments.reduce((sum, a) => sum + a.score, 0) / assessments.length)
       : 0,
     latestScore: assessments?.[0]?.score || null,
+    latestCVA: assessments?.[0]?.cva_angle || null,
+    latestShoulderAlignment: assessments?.[0]?.shoulder_alignment || null,
+    latestSymmetry: assessments?.[0]?.symmetry_score || null,
     previousScore: assessments?.[1]?.score || null,
     improvement: assessments && assessments.length >= 2
       ? assessments[0].score - assessments[1].score
@@ -100,27 +119,11 @@ export function usePostureHistory() {
     bestScore: assessments?.length
       ? Math.max(...assessments.map((a) => a.score))
       : 0,
-    weeklyProgress: calculateWeeklyProgress(assessments || []),
   };
 
-  return { assessments, isLoading, saveAssessment, stats, weeklyChart, monthlyChart };
-}
+  const sorted = assessments ? [...assessments].reverse() : [];
+  const weeklyChart = aggregateByDay(filterByDays(sorted, 7));
+  const monthlyChart = aggregateByDay(filterByDays(sorted, 30));
 
-function calculateWeeklyProgress(assessments: PostureAssessment[]): { date: string; score: number }[] {
-  const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const recentAssessments = assessments.filter((a) => {
-    const date = new Date(a.assessed_at);
-    return date >= weekAgo && date <= now;
-  });
-  const dailyScores: Record<string, number> = {};
-  recentAssessments.forEach((a) => {
-    const dateKey = new Date(a.assessed_at).toISOString().split("T")[0];
-    if (!dailyScores[dateKey] || new Date(a.assessed_at) > new Date(dailyScores[dateKey])) {
-      dailyScores[dateKey] = a.score;
-    }
-  });
-  return Object.entries(dailyScores)
-    .map(([date, score]) => ({ date, score }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return { assessments, isLoading, saveAssessment, stats, weeklyChart, monthlyChart };
 }
