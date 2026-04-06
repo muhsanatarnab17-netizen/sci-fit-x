@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,8 +101,9 @@ export default function Profile() {
       
       await updateProfile.mutateAsync({ avatar_url: url });
       toast.success("Avatar updated!");
-    } catch (err: any) {
-      toast.error("Failed to upload avatar: " + err.message);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
+      toast.error("Failed to upload avatar: " + error.message);
     } finally {
       setIsUploading(false);
     }
@@ -470,8 +471,9 @@ export default function Profile() {
                           await signOut();
                           navigate("/");
                           toast.success("Account deleted successfully");
-                        } catch (err: any) {
-                          toast.error("Failed to delete account: " + err.message);
+                        } catch (err: unknown) {
+                          const error = err instanceof Error ? err : new Error("Unknown error");
+                          toast.error("Failed to delete account: " + error.message);
                         }
                       }}
                     >

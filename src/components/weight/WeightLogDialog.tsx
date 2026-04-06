@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Scale, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -49,8 +49,9 @@ export default function WeightLogDialog() {
       toast.success(`Weight logged: ${w} kg ✅`);
       setWeight("");
       setOpen(false);
-    } catch (e: any) {
-      toast.error("Failed to log weight: " + e.message);
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error("Unknown error");
+      toast.error("Failed to log weight: " + error.message);
     } finally {
       setSaving(false);
     }

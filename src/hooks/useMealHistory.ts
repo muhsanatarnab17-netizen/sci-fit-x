@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+import type { Meal, ChartDataPoint } from "@/types";
 
-function filterByDays(logs: any[], dateKey: string, days: number) {
+function filterByDays(logs: Meal[], dateKey: keyof Meal, days: number): Meal[] {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
-  return logs.filter((l) => new Date(l[dateKey]) >= cutoff);
+  return logs.filter((l) => new Date(String(l[dateKey])) >= cutoff);
 }
 
-function aggregateCalByDay(logs: any[]) {
+function aggregateCalByDay(logs: Meal[]): ChartDataPoint[] {
   const map: Record<string, number> = {};
   logs.forEach((l) => {
     const key = new Date(l.logged_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });

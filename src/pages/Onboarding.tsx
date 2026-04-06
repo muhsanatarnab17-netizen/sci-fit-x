@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +28,7 @@ const TOTAL_STEPS = 5;
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { } = useAuth();
+  useAuth();
   const { profile, updateProfile, isLoading: profileLoading } = useProfile();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
@@ -87,22 +87,22 @@ export default function Onboarding() {
       await updateProfile.mutateAsync({
         full_name: fullName,
         age,
-        gender,
+        gender: gender as "male" | "female" | "other" | "prefer_not_to_say",
         height_cm: heightCm,
         weight_kg: weightKg,
-        body_type: bodyType as any,
+        body_type: bodyType as string,
         bmi,
         bmr,
         daily_calorie_goal: dailyCalories,
         dietary_restrictions: dietaryRestrictions,
         allergies,
-        eating_habits: eatingHabits as any,
-        activity_level: activityLevel as any,
-        workout_experience: workoutExperience as any,
+        eating_habits: eatingHabits as string,
+        activity_level: activityLevel as string,
+        workout_experience: workoutExperience as string,
         fitness_goals: fitnessGoals,
         sleep_hours: sleepHours,
-        work_schedule: workSchedule as any,
-        stress_level: stressLevel as any,
+        work_schedule: workSchedule as string,
+        stress_level: stressLevel as string,
         onboarding_completed: true,
         onboarding_step: TOTAL_STEPS,
       });
@@ -195,7 +195,7 @@ export default function Onboarding() {
                   </div>
                   <div className="space-y-2">
                     <Label>Gender</Label>
-                    <RadioGroup value={gender} onValueChange={(v) => setGender(v as any)}>
+                    <RadioGroup value={gender} onValueChange={(v) => setGender(v as "male" | "female" | "other" | "prefer_not_to_say")}>
                       <div className="grid grid-cols-2 gap-2">
                         {["male", "female", "other", "prefer_not_to_say"].map((g) => (
                           <div key={g} className="flex items-center space-x-2">

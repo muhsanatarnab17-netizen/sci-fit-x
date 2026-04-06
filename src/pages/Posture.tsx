@@ -202,7 +202,7 @@ export default function Posture() {
             <p className="text-muted-foreground mt-1">Next-gen skeletal alignment analysis</p>
           </div>
           
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-fit">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "assess" | "history")} className="w-fit">
             <TabsList className="bg-background/50 backdrop-blur-md border border-white/10">
               <TabsTrigger value="assess" className="gap-2"><Target className="h-4 w-4" /> Analyze</TabsTrigger>
               <TabsTrigger value="history" className="gap-2"><History className="h-4 w-4" /> History</TabsTrigger>

@@ -1,12 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+
+interface WeightLog {
+  recorded_at: string;
+  weight_kg: number;
+  [key: string]: unknown;
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function filterByDays(logs: any[], dateKey: string, days: number) {
+function filterByDays(logs: WeightLog[], dateKey: string, days: number) {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
   return logs.filter((l) => new Date(l[dateKey]) >= cutoff);
@@ -31,7 +37,7 @@ export function useWeightHistory() {
     enabled: !!user?.id,
   });
 
-  const toChartData = (logs: any[]) =>
+  const toChartData = (logs: WeightLog[]) =>
     logs.map((log) => ({
       date: formatDate(log.recorded_at),
       value: Number(log.weight_kg),

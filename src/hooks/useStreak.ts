@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export function useStreak() {
   const { user } = useAuth();
@@ -28,7 +28,7 @@ export function useStreak() {
       // Calculate consecutive streak from today/yesterday
       const today = new Date().toISOString().split("T")[0];
       let streakCount = 0;
-      let checkDate = new Date(today);
+      const checkDate = new Date(today);
 
       // If no tasks completed today, start checking from yesterday
       if (!uniqueDates.includes(today)) {

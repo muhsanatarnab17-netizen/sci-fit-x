@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, AlertCircle, Video, VideoOff, SwitchCamera, Scan } from "lucide-react";
+import { Camera, Loader2, AlertCircle, VideoOff, SwitchCamera, Scan } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";

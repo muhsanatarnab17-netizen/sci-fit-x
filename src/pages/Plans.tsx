@@ -3,7 +3,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
 import { useDailyTasks } from "@/hooks/useDailyTasks";
 import { useCachedPlans } from "@/hooks/useCachedPlans";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CompletionTick from "@/components/ui/completion-tick";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +62,7 @@ export default function Plans() {
         if (result) seedTasksFromPlan(result);
       });
     }
-  }, [profile?.onboarding_completed, hasPlansToday]);
+  }, [profile?.onboarding_completed, hasPlansToday, isGenerating, generateAndCache, seedTasksFromPlan]);
 
   const handleGenerateNew = async () => {
     if (!profile) return;
@@ -99,14 +99,15 @@ export default function Plans() {
       if (user?.id && plans?.meals) {
         const mealData = plans.meals[key as keyof typeof plans.meals];
         if (mealData && "calories" in mealData) {
+          const mealItem = mealData as { meal: string; calories: number; protein: number; carbs: number; fat: number };
           await supabase.from("meal_logs").insert({
             user_id: user.id,
             meal_type: key,
-            food_items: [{ name: (mealData as any).meal }],
-            calories: (mealData as any).calories,
-            protein_g: (mealData as any).protein,
-            carbs_g: (mealData as any).carbs,
-            fat_g: (mealData as any).fat,
+            food_items: [{ name: mealItem.meal }],
+            calories: mealItem.calories,
+            protein_g: mealItem.protein,
+            carbs_g: mealItem.carbs,
+            fat_g: mealItem.fat,
           });
         }
       }
@@ -483,7 +484,7 @@ export default function Plans() {
                         <CompletionTick
                           completed={!!task.completed}
                           onToggle={() => toggleTask.mutate({ id: task.id, completed: !task.completed })}
-                          category={(task.category as any) || "workout"}
+                          category={(task.category as string) || "workout"}
                         />
                         <div className="flex-1">
                           <span className={cn("font-medium", task.completed && "line-through text-muted-foreground")}>
