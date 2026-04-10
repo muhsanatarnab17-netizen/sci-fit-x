@@ -4,7 +4,7 @@
 **PosFitX** is a premium, commercial-grade AI Health Ecosystem. It transcends a standard fitness tracker by acting as a personalized, AI-driven biometric diagnostic and planning tool. 
 * **Target Benchmark:** Exceed the visual quality and functional depth of industry leaders (e.g., MyFitnessPal, Whoop).
 * **Primary Objective:** Achieve a "Commercial Portfolio Ready" state to attract high-value freelance clients and establish an architecture capable of future monetization (affiliate product integrations, premium content).
-* **Local Development Environment:** `http://192.168.0.4:8080/`
+* **Local Development Environment:** http://localhost:808x (typically 8080 or 8081)
 
 ---
 
