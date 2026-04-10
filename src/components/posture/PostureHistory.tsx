@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function PostureHistory() {
-  const { assessments, isLoading, stats } = usePostureHistory();
+  const { assessments, isLoading, stats, weeklyChart } = usePostureHistory();
 
   if (isLoading) {
     return (
@@ -117,10 +117,10 @@ export default function PostureHistory() {
               <CardDescription>Your posture score over time</CardDescription>
             </CardHeader>
             <CardContent>
-              {stats.weeklyProgress.length > 0 ? (
+              {weeklyChart && weeklyChart.length > 0 ? (
                 <div className="h-[250px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.weeklyProgress}>
+                    <LineChart data={weeklyChart}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis 
                         dataKey="date" 
