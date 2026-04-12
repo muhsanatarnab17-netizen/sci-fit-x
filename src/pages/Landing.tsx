@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,12 @@ import leafyR from "@/assets/leafy-r.png";
 export default function Landing() {
   const navigate = useNavigate();
   const { signIn, signUp } = useAuth();
+
+  // Force-remove .light class to ensure the Landing Page stays in "Dark Biotech" mode
+  useEffect(() => {
+    document.documentElement.classList.remove("light");
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -174,7 +180,20 @@ export default function Landing() {
                   <div className="mx-auto mb-4 w-fit">
                     <img src={appLogo} alt="PosFitx Logo" className="h-14 w-14" />
                   </div>
-                  <CardTitle className="text-2xl font-display">PosFitx</CardTitle>
+                  <CardTitle className="text-2xl font-display">
+                    <span style={{
+                      background: 'linear-gradient(90deg, hsl(260 70% 45%), hsl(240 60% 50%), hsl(220 70% 55%))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 4px hsl(250 70% 50% / 0.4))',
+                    }}>Pos</span>
+                    <span style={{
+                      background: 'linear-gradient(90deg, hsl(187 100% 60%), hsl(187 100% 70%))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 8px hsl(187 100% 60% / 0.6))',
+                    }}>Fitx</span>
+                  </CardTitle>
                   <CardDescription>Start your fitness journey today</CardDescription>
                 </CardHeader>
                 <CardContent>

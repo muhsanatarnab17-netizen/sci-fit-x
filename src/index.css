@@ -57,7 +57,9 @@
     --gradient-accent: linear-gradient(135deg, hsl(160, 80%, 45%), hsl(187, 100%, 50%));
     --gradient-warm: linear-gradient(135deg, hsl(25, 95%, 53%), hsl(330, 81%, 60%));
 
-    /* Shadows */
+    --logo-accent-gradient: linear-gradient(90deg, hsl(187 100% 60%), hsl(187 100% 70%), hsl(185 100% 75%));
+    --logo-accent-shadow: drop-shadow(0 0 8px hsl(187 100% 60% / 0.6));
+
     --shadow-glow-blue: 0 0 20px hsl(187 100% 50% / 0.3);
     --shadow-glow-purple: 0 0 20px hsl(260 60% 55% / 0.3);
     --shadow-glow-green: 0 0 20px hsl(160 80% 45% / 0.3);
@@ -91,60 +93,63 @@
     --spacing: 0.25rem;
   }
 
-  /* WHITELISTED: LIGHT MODE EARTHY PALETTE */
+  /* WHITELISTED: LIGHT MODE SURGICAL PALETTE */
   .light {
-    --background: 38 25% 95%;
-    --foreground: 25 12% 12%;
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 38 18% 98%;
-    --card-foreground: 25 12% 12%;
+    --card: 210 30% 96% / 0.7;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 38 18% 98%;
-    --popover-foreground: 25 12% 12%;
+    --popover: 210 30% 96% / 0.95;
+    --popover-foreground: 222 47% 11%;
 
     /* Deep forest green primary — richer & darker */
     --primary: 150 60% 22%;
-    --primary-foreground: 40 30% 96%;
+    --primary-foreground: 210 20% 98%;
 
     /* Chocolate brown secondary — deeper */
-    --secondary: 20 50% 25%;
-    --secondary-foreground: 40 30% 96%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 210 20% 98%;
 
     /* Warm stone muted — slightly warmer */
-    --muted: 35 12% 88%;
-    --muted-foreground: 25 10% 38%;
+    --muted: 210 20% 90%;
+    --muted-foreground: 215 16% 47%;
 
     /* Olive accent — more saturated */
-    --accent: 85 18% 90%;
+    --accent: 210 30% 90%;
     --accent-foreground: 150 60% 22%;
 
-    --destructive: 0 72% 42%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 30 10% 82%;
-    --input: 30 10% 82%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 150 60% 22%;
 
     /* Earthy tones — stronger saturation & lower lightness */
     --neon-blue: 150 60% 22%;
-    --neon-purple: 20 50% 25%;
-    --neon-green: 85 40% 32%;
-    --neon-pink: 8 60% 38%;
-    --neon-orange: 28 65% 35%;
+    --neon-purple: 222 47% 11%;
+    --neon-green: 142 76% 36%;
+    --neon-pink: 346 84% 61%;
+    --neon-orange: 24 94% 50%;
 
     --chart-1: 150 60% 22%;
-    --chart-2: 85 40% 32%;
-    --chart-3: 20 50% 25%;
-    --chart-4: 28 65% 35%;
-    --chart-5: 8 60% 38%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 222 47% 11%;
+    --chart-4: 24 94% 50%;
+    --chart-5: 346 84% 61%;
 
-    --sidebar: 38 20% 93%;
-    --sidebar-foreground: 25 12% 12%;
+    --logo-accent-gradient: linear-gradient(90deg, hsl(190 100% 25%), hsl(190 100% 35%));
+    --logo-accent-shadow: drop-shadow(0 0 2px hsl(190 100% 20% / 0.2));
+
+    --sidebar: 210 30% 94%;
+    --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 150 60% 22%;
-    --sidebar-primary-foreground: 40 30% 96%;
-    --sidebar-accent: 35 12% 88%;
-    --sidebar-accent-foreground: 25 12% 12%;
-    --sidebar-border: 30 10% 82%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 210 20% 90%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
     --sidebar-ring: 150 60% 22%;
   }
 

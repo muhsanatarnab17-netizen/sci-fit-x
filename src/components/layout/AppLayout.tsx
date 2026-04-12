@@ -93,10 +93,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   filter: 'drop-shadow(0 0 4px hsl(250 70% 50% / 0.4))',
                 }}>Pos</span>
                 <span style={{
-                  background: 'linear-gradient(90deg, hsl(187 100% 60%), hsl(187 100% 70%), hsl(185 100% 75%))',
+                  background: 'var(--logo-accent-gradient)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 8px hsl(187 100% 60% / 0.6))',
+                  filter: 'var(--logo-accent-shadow)',
                 }}>Fitx</span>
               </span>
             </Link>
@@ -165,10 +165,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         filter: 'drop-shadow(0 0 4px hsl(250 70% 50% / 0.4))',
                       }}>Pos</span>
                       <span style={{
-                        background: 'linear-gradient(90deg, hsl(187 100% 60%), hsl(187 100% 70%), hsl(185 100% 75%))',
+                        background: 'var(--logo-accent-gradient)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        filter: 'drop-shadow(0 0 8px hsl(187 100% 60% / 0.6))',
+                        filter: 'var(--logo-accent-shadow)',
                       }}>Fitx</span>
                     </span>
                   </div>
