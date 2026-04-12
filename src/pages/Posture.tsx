@@ -31,7 +31,6 @@ import CameraCapture from "@/components/posture/CameraCapture";
 import PostureHistory from "@/components/posture/PostureHistory";
 import ExerciseCard from "@/components/posture/ExerciseCard";
 import { getExercisesForIssues, getTipsForScore } from "@/lib/posture-exercises";
-import spineDnaBg from "@/assets/spine-dna-bg.jpg";
 
 const POSTURE_QUESTIONS = [
   {
@@ -188,14 +187,19 @@ export default function Posture() {
 
   return (
     <AppLayout>
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]">
-        <img src={spineDnaBg} alt="" className="w-full h-full object-cover" />
-      </div>
+      <div className="relative min-h-[calc(100vh-12rem)] max-w-[1000px] mx-auto space-y-8 py-6">
+        {/* SYMMETRICAL_TRANSPARENT_WATERMARK */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[85vh] pointer-events-none z-0 overflow-hidden select-none flex items-center justify-center">
+          <img 
+            src="/spine-dna-bg.png" 
+            alt="" 
+            className="w-full h-full object-contain transition-all duration-700 opacity-40 dark:opacity-40 light:opacity-20 light:brightness-[0.9] light:contrast-[1.1]" 
+          />
+        </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-8 py-6">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-4 md:px-0">
+        <header className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 px-4 md:px-0">
           <div>
-            <h1 className="text-3xl font-display font-bold tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl font-display font-bold tracking-tight flex items-center gap-3 text-foreground">
               <Sparkles className="h-8 w-8 text-primary animate-pulse" />
               Posture Lab
             </h1>
@@ -217,7 +221,7 @@ export default function Posture() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-6 px-4 md:px-0"
+              className="relative z-10 space-y-6 px-4 md:px-0"
             >
               {mode === "select" && (
                 <div className="grid md:grid-cols-2 gap-6">
@@ -239,71 +243,75 @@ export default function Posture() {
               )}
 
               {mode === "camera" && (
-                <Card className="overflow-hidden border-primary/20 glass animate-in fade-in zoom-in-95 duration-500">
-                  <CardHeader>
-                    <CardTitle>AI Vision Scan</CardTitle>
-                    <CardDescription>Position yourself clearly in the frame.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <CameraCapture 
-                      onCapture={handleCameraCapture} 
-                      onCancel={() => setMode("select")} 
-                      isAnalyzing={isAnalyzing} 
-                    />
-                  </CardContent>
-                </Card>
+                <div className="max-w-3xl mx-auto animate-in fade-in zoom-in-95 duration-500">
+                  <Card className="overflow-hidden border-primary/20 glass shadow-2xl">
+                    <CardHeader>
+                      <CardTitle>AI Vision Scan</CardTitle>
+                      <CardDescription>Position yourself clearly in the frame.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <CameraCapture 
+                        onCapture={handleCameraCapture} 
+                        onCancel={() => setMode("select")} 
+                        isAnalyzing={isAnalyzing} 
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
               )}
 
               {mode === "assessment" && (
-                <Card className="glass border-primary/10">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle>Self-Assessment</CardTitle>
-                      <Badge variant="secondary">{currentQuestion + 1} / {POSTURE_QUESTIONS.length}</Badge>
-                    </div>
-                    <Progress value={((currentQuestion + 1) / POSTURE_QUESTIONS.length) * 100} className="h-1" />
-                  </CardHeader>
-                  <CardContent className="space-y-8">
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-medium">{POSTURE_QUESTIONS[currentQuestion].question}</h3>
-                      <RadioGroup 
-                        onValueChange={(v) => handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, v)}
-                        value={answers[POSTURE_QUESTIONS[currentQuestion].id]}
-                      >
-                        <div className="grid gap-3">
-                          {POSTURE_QUESTIONS[currentQuestion].options.map((opt) => (
-                            <Label 
-                              key={opt.value}
-                              className={cn(
-                                "flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer",
-                                answers[POSTURE_QUESTIONS[currentQuestion].id] === opt.value 
-                                  ? "border-primary bg-primary/5" 
-                                  : "border-transparent bg-white/5 hover:bg-white/10"
-                              )}
-                            >
-                              <RadioGroupItem value={opt.value} />
-                              {opt.label}
-                            </Label>
-                          ))}
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="flex justify-between">
-                      <Button variant="ghost" onClick={() => currentQuestion === 0 ? setMode("select") : setCurrentQuestion(q => q - 1)}>Back</Button>
-                      <Button 
-                        disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
-                        onClick={() => currentQuestion === POSTURE_QUESTIONS.length - 1 ? handleCompleteAssessment() : setCurrentQuestion(q => q + 1)}
-                      >
-                        {currentQuestion === POSTURE_QUESTIONS.length - 1 ? "Finish Analysis" : "Next Question"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="max-w-2xl mx-auto">
+                  <Card className="glass border-primary/10 shadow-xl">
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
+                        <CardTitle>Self-Assessment</CardTitle>
+                        <Badge variant="secondary">{currentQuestion + 1} / {POSTURE_QUESTIONS.length}</Badge>
+                      </div>
+                      <Progress value={((currentQuestion + 1) / POSTURE_QUESTIONS.length) * 100} className="h-1" />
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-medium">{POSTURE_QUESTIONS[currentQuestion].question}</h3>
+                        <RadioGroup 
+                          onValueChange={(v) => handleAnswer(POSTURE_QUESTIONS[currentQuestion].id, v)}
+                          value={answers[POSTURE_QUESTIONS[currentQuestion].id]}
+                        >
+                          <div className="grid gap-3">
+                            {POSTURE_QUESTIONS[currentQuestion].options.map((opt) => (
+                              <Label 
+                                key={opt.value}
+                                className={cn(
+                                  "flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                                  answers[POSTURE_QUESTIONS[currentQuestion].id] === opt.value 
+                                    ? "border-primary bg-primary/5" 
+                                    : "border-transparent bg-white/5 hover:bg-white/10"
+                                )}
+                              >
+                                <RadioGroupItem value={opt.value} />
+                                {opt.label}
+                              </Label>
+                            ))}
+                          </div>
+                        </RadioGroup>
+                      </div>
+                      <div className="flex justify-between">
+                        <Button variant="ghost" onClick={() => currentQuestion === 0 ? setMode("select") : setCurrentQuestion(q => q - 1)}>Back</Button>
+                        <Button 
+                          disabled={!answers[POSTURE_QUESTIONS[currentQuestion].id]}
+                          onClick={() => currentQuestion === POSTURE_QUESTIONS.length - 1 ? handleCompleteAssessment() : setCurrentQuestion(q => q + 1)}
+                        >
+                          {currentQuestion === POSTURE_QUESTIONS.length - 1 ? "Finish Analysis" : "Next Question"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
 
               {mode === "results" && score !== null && (
                 <div className="grid gap-6 animate-in slide-in-from-bottom-4 duration-700">
-                  <Card className="glass border-primary/30 text-center py-8">
+                  <Card className="glass border-primary/30 text-center py-8 shadow-2xl text-foreground">
                     <CardHeader>
                       <CardTitle className="text-4xl font-bold tracking-tighter">Your Posture: {score}%</CardTitle>
                       <Badge className="w-fit mx-auto mt-2" variant={score > 70 ? "default" : "destructive"}>
@@ -346,7 +354,7 @@ export default function Posture() {
 
                   {/* Recommendations */}
                   <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="glass border-secondary/20">
+                    <Card className="glass border-secondary/20 shadow-lg text-foreground">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-secondary">
                           <AlertCircle className="h-5 w-5" /> Detected Issues
@@ -364,7 +372,7 @@ export default function Posture() {
                       </CardContent>
                     </Card>
 
-                    <Card className="glass border-neon-green/20">
+                    <Card className="glass border-neon-green/20 shadow-lg text-foreground">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-neon-green">
                           <CheckCircle2 className="h-5 w-5" /> Recommendations
@@ -388,7 +396,7 @@ export default function Posture() {
                   </div>
 
                   {analysisDetails && (
-                    <Card className="glass border-primary/20">
+                    <Card className="glass border-primary/20 shadow-lg text-foreground">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Sparkles className="h-5 w-5 text-primary" /> AI Detailed Analysis
@@ -404,7 +412,7 @@ export default function Posture() {
                   
                   {/* Exercises */}
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold flex items-center gap-2">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
                       <Dumbbell className="h-5 w-5 text-primary" /> Recommended Corrective Exercises
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
@@ -417,7 +425,7 @@ export default function Posture() {
               )}
             </motion.div>
           ) : (
-            <motion.div key="history-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div key="history-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10">
               <PostureHistory />
             </motion.div>
           )}
@@ -460,7 +468,7 @@ interface SelectionCardProps {
 
 function SelectionCard({ title, desc, icon, onClick, variant }: SelectionCardProps) {
   return (
-    <motion.div whileHover={{ y: -5, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+    <motion.div whileHover={{ y: -5, scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative z-10">
       <Card 
         className={cn(
           "cursor-pointer h-full border-white/5 bg-white/5 backdrop-blur-lg hover:bg-white/10 transition-colors",
