@@ -91,6 +91,63 @@
     --spacing: 0.25rem;
   }
 
+  /* WHITELISTED: LIGHT MODE EARTHY PALETTE */
+  .light {
+    --background: 38 25% 95%;
+    --foreground: 25 12% 12%;
+
+    --card: 38 18% 98%;
+    --card-foreground: 25 12% 12%;
+
+    --popover: 38 18% 98%;
+    --popover-foreground: 25 12% 12%;
+
+    /* Deep forest green primary — richer & darker */
+    --primary: 150 60% 22%;
+    --primary-foreground: 40 30% 96%;
+
+    /* Chocolate brown secondary — deeper */
+    --secondary: 20 50% 25%;
+    --secondary-foreground: 40 30% 96%;
+
+    /* Warm stone muted — slightly warmer */
+    --muted: 35 12% 88%;
+    --muted-foreground: 25 10% 38%;
+
+    /* Olive accent — more saturated */
+    --accent: 85 18% 90%;
+    --accent-foreground: 150 60% 22%;
+
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 10% 82%;
+    --input: 30 10% 82%;
+    --ring: 150 60% 22%;
+
+    /* Earthy tones — stronger saturation & lower lightness */
+    --neon-blue: 150 60% 22%;
+    --neon-purple: 20 50% 25%;
+    --neon-green: 85 40% 32%;
+    --neon-pink: 8 60% 38%;
+    --neon-orange: 28 65% 35%;
+
+    --chart-1: 150 60% 22%;
+    --chart-2: 85 40% 32%;
+    --chart-3: 20 50% 25%;
+    --chart-4: 28 65% 35%;
+    --chart-5: 8 60% 38%;
+
+    --sidebar: 38 20% 93%;
+    --sidebar-foreground: 25 12% 12%;
+    --sidebar-primary: 150 60% 22%;
+    --sidebar-primary-foreground: 40 30% 96%;
+    --sidebar-accent: 35 12% 88%;
+    --sidebar-accent-foreground: 25 12% 12%;
+    --sidebar-border: 30 10% 82%;
+    --sidebar-ring: 150 60% 22%;
+  }
+
   /* Light mode intentionally mirrors dark — PosFitx is a dark-only app */
   .dark {
     --background: 220 22% 7%;

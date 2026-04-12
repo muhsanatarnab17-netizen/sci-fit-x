@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import {
@@ -26,6 +28,9 @@ import {
   Camera,
   Trash2,
   AlertTriangle,
+  Sun,
+  Moon,
+  Palette,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -39,6 +44,41 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { calculateBMI, calculateBMR, calculateDailyCalories, getBMICategory, type ACTIVITY_MULTIPLIERS } from "@/lib/health-utils";
+
+function AppearanceCard() {
+  const { theme, toggleTheme } = useTheme();
+  const isLight = theme === "light";
+
+  return (
+    <Card className="glass">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Palette className="h-5 w-5" />
+          Appearance
+        </CardTitle>
+        <CardDescription>Customize how PosFitx looks</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {isLight ? (
+              <Sun className="h-5 w-5 text-neon-orange" />
+            ) : (
+              <Moon className="h-5 w-5 text-neon-blue" />
+            )}
+            <div>
+              <p className="font-medium">{isLight ? "Light Mode" : "Dark Mode"}</p>
+              <p className="text-sm text-muted-foreground">
+                {isLight ? "Premium off-white with earthy tones" : "Cyberpunk neon aesthetic"}
+              </p>
+            </div>
+          </div>
+          <Switch checked={isLight} onCheckedChange={toggleTheme} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -98,7 +138,7 @@ export default function Profile() {
       // Add cache buster
       const url = `${publicUrl}?t=${Date.now()}`;
       setAvatarUrl(url);
-      
+
       await updateProfile.mutateAsync({ avatar_url: url });
       toast.success("Avatar updated!");
     } catch (err: unknown) {
@@ -427,6 +467,9 @@ export default function Profile() {
           </CardContent>
         </Card>
 
+        {/* Appearance */}
+        <AppearanceCard />
+
         {/* Account Actions */}
         <Card className="glass">
           <CardHeader>
@@ -437,9 +480,9 @@ export default function Profile() {
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </Button>
-            
+
             <Separator />
-            
+
             <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-3">
                 <AlertTriangle className="inline h-4 w-4 mr-1 text-destructive" />
