@@ -14,7 +14,7 @@ interface UseCameraResult {
   switchCamera: () => Promise<void>;
 }
 
-export function useCamera(initialFacingMode: FacingMode = "environment"): UseCameraResult {
+export function useCamera(initialFacingMode: FacingMode = "user"): UseCameraResult {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);

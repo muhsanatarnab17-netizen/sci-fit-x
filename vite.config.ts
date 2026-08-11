@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Add the line below to authorize your ngrok tunnel
+    allowedHosts: ["laundry-clobber-obtuse.ngrok-free.dev"],
     hmr: {
       overlay: false,
     },
